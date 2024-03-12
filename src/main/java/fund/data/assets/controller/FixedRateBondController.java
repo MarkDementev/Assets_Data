@@ -28,15 +28,15 @@ public class FixedRateBondController {
     public static final String ID_PATH = "/{id}";
     private final FixedRateBondServiceImpl fixedRateBondService;
 
-    @GetMapping(ID_PATH)
-    public FixedRateBond getFixedRateBond(@PathVariable Long id) {
-        return fixedRateBondService.getFixedRateBond(id);
-    }
+//    @GetMapping(ID_PATH)
+//    public FixedRateBond getFixedRateBond(@PathVariable Long id) {
+//        return fixedRateBondService.getFixedRateBond(id);
+//    }
 
-    @GetMapping
-    public List<FixedRateBond> getFixedRateBonds() {
-        return fixedRateBondService.getFixedRateBonds();
-    }
+//    @GetMapping
+//    public List<FixedRateBond> getFixedRateBonds() {
+//        return fixedRateBondService.getFixedRateBonds();
+//    }
 
 //    @PostMapping
 //    @ResponseStatus(HttpStatus.CREATED)
@@ -44,10 +44,10 @@ public class FixedRateBondController {
 //        return fixedRateBondService.createFixedRateBond(fixedRateBondDTO);
 //    }
 
-    @DeleteMapping(ID_PATH)
-    public void deleteFixedRateBond(@PathVariable Long id) {
-        fixedRateBondService.deleteFixedRateBond(id);
-    }
+//    @DeleteMapping(ID_PATH)
+//    public void deleteFixedRateBond(@PathVariable Long id) {
+//        fixedRateBondService.deleteFixedRateBond(id);
+//    }
 
     //Продумай, как прописать архитектуру в контроллере и сервисе касаемо того, как именно будет меняться бонд
 }

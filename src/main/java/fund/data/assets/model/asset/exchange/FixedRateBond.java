@@ -27,7 +27,6 @@ import java.time.temporal.ChronoUnit;
  * Облигация с фиксированным купоном.
  * Класс - наследник абстрактного ExchangeAsset.
  * Один из вариантов финализации сути Asset.
- * TODO Класс не закончен, не протестирован. По окончании этих задач - добавь документацию всему связанному с ним коду!
  * @version 0.0.1-alpha
  * @author MarkDementev a.k.a JavaMarkDem
  */
@@ -37,6 +36,9 @@ import java.time.temporal.ChronoUnit;
 @Getter
 @Setter
 public class FixedRateBond extends ExchangeAsset {
+    /*
+    TODO Класс не закончен, не протестирован. По окончании этих задач - добавь документацию всему связанному с ним коду!
+     */
     @NotNull
     @Positive
     private Integer bondParValue;

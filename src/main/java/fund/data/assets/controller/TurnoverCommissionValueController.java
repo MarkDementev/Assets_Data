@@ -4,6 +4,12 @@ import fund.data.assets.dto.TurnoverCommissionValueDTO;
 import fund.data.assets.model.financial_entities.TurnoverCommissionValue;
 import fund.data.assets.service.TurnoverCommissionValueService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 import jakarta.validation.Valid;
 
 import lombok.AllArgsConstructor;
@@ -37,16 +43,26 @@ public class TurnoverCommissionValueController {
     public static final String ID_PATH = "/{id}";
     private final TurnoverCommissionValueService turnoverCommissionValueService;
 
+    @Operation(summary = "Get turnover commission value by id")
+    @ApiResponse(responseCode = "200", content = @Content(
+            schema = @Schema(implementation = TurnoverCommissionValue.class))
+    )
     @GetMapping(ID_PATH)
     public TurnoverCommissionValue getTurnoverCommissionValue(@PathVariable Long id) {
         return turnoverCommissionValueService.getTurnoverCommissionValue(id);
     }
 
+    @Operation(summary = "Get all turnover commission values")
+    @ApiResponses(@ApiResponse(responseCode = "200", content = @Content(
+            schema = @Schema(implementation = TurnoverCommissionValue.class)))
+    )
     @GetMapping
     public List<TurnoverCommissionValue> getTurnoverCommissionValues() {
         return turnoverCommissionValueService.getTurnoverCommissionValues();
     }
 
+    @Operation(summary = "Create new turnover commission value")
+    @ApiResponse(responseCode = "201", description = "Turnover commission value created")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public TurnoverCommissionValue createTurnoverCommissionValue(
@@ -54,6 +70,8 @@ public class TurnoverCommissionValueController {
         return turnoverCommissionValueService.createTurnoverCommissionValue(turnoverCommissionValueDTO);
     }
 
+    @Operation(summary = "Update turnover commission value")
+    @ApiResponse(responseCode = "200", description = "Turnover commission value updated")
     @PutMapping(ID_PATH)
     public TurnoverCommissionValue updateTurnoverCommissionValue(@PathVariable Long id, @RequestBody @Valid
                                                                  TurnoverCommissionValueDTO turnoverCommissionValueDTO)
@@ -61,6 +79,8 @@ public class TurnoverCommissionValueController {
         return turnoverCommissionValueService.updateTurnoverCommissionValue(id, turnoverCommissionValueDTO);
     }
 
+    @Operation(summary = "Delete turnover commission value")
+    @ApiResponse(responseCode = "200", description = "Turnover commission value deleted")
     @DeleteMapping(ID_PATH)
     public void deleteTurnoverCommissionValue(@PathVariable Long id) {
         turnoverCommissionValueService.deleteTurnoverCommissionValue(id);

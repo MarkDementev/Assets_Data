@@ -4,6 +4,12 @@ import fund.data.assets.dto.AccountDTO;
 import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.service.impl.AccountServiceImpl;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 import jakarta.validation.Valid;
 
 import lombok.AllArgsConstructor;
@@ -37,27 +43,41 @@ public class AccountController {
     public static final String ID_PATH = "/{id}";
     private final AccountServiceImpl accountService;
 
+    @Operation(summary = "Get account by id")
+    @ApiResponse(responseCode = "200", content = @Content(
+            schema = @Schema(implementation = Account.class))
+    )
     @GetMapping(ID_PATH)
     public Account getAccount(@PathVariable Long id) {
         return accountService.getAccount(id);
     }
 
+    @Operation(summary = "Get all accounts")
+    @ApiResponses(@ApiResponse(responseCode = "200", content = @Content(
+            schema = @Schema(implementation = Account.class)))
+    )
     @GetMapping
     public List<Account> getAccounts() {
         return accountService.getAccounts();
     }
 
+    @Operation(summary = "Create new account")
+    @ApiResponse(responseCode = "201", description = "Account created")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Account createAccount(@RequestBody @Valid AccountDTO accountDTO) {
         return accountService.createAccount(accountDTO);
     }
 
+    @Operation(summary = "Update account")
+    @ApiResponse(responseCode = "200", description = "Account updated")
     @PutMapping(ID_PATH)
     public Account updateAccount(@PathVariable Long id, @RequestBody @Valid AccountDTO accountDTO) {
         return accountService.updateAccount(id, accountDTO);
     }
 
+    @Operation(summary = "Delete account")
+    @ApiResponse(responseCode = "200", description = "Account deleted")
     @DeleteMapping(ID_PATH)
     public void deleteAccount(@PathVariable Long id) {
         accountService.deleteAccount(id);
