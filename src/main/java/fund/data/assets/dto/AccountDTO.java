@@ -22,9 +22,4 @@ public class AccountDTO {
     @JsonFormat(pattern = "dd-MM-yyyy")
     @Size(min = 10, max = 10)
     private Instant accountOpeningDate;
-
-    /*
-    Не знаю, надо ли прописывать, если есть в Account Entity - cascade = CascadeType.ALL
-     */
-//    private Set<Long> assetRelationshipIds;
 }

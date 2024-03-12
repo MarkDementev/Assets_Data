@@ -2,16 +2,15 @@ package fund.data.assets.controller;
 
 import fund.data.assets.dto.AccountDTO;
 import fund.data.assets.model.Account;
+import fund.data.assets.service.AccountService;
 
 import jakarta.validation.Valid;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.query.Query;
+import lombok.AllArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,52 +24,35 @@ import static fund.data.assets.controller.AccountController.ACCOUNT_CONTROLLER_P
 
 @RestController
 @RequestMapping("{base-url}" + ACCOUNT_CONTROLLER_PATH)
+@AllArgsConstructor
 public class AccountController {
     public static final String ACCOUNT_CONTROLLER_PATH = "/accounts";
     public static final String ID_PATH = "/{id}";
-    SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+    @Autowired
+    private final AccountService accountService;
 
     @GetMapping(ID_PATH)
     public Account getAccount(@PathVariable Long id) {
-        try (Session session = sessionFactory.openSession()) {
-            return session.get(Account.class, id);
-        }
+        return accountService.getAccount(id);
     }
 
     @GetMapping
     public List<Account> getAccounts() {
-        try (Session session = sessionFactory.openSession()) {
-            Query<Account> query = session.createQuery("from Account", Account.class);
-
-            return query.list();
-        }
+        return accountService.getAccounts();
     }
 
     @PostMapping
     public void createAccount(@RequestBody @Valid AccountDTO accountDTO) {
-        try (Session session = sessionFactory.openSession()) {
-            session.persist(accountDTO);
-        }
+        accountService.createAccount(accountDTO);
     }
-//
-//    @GetMapping
-//    public List<Account> getAccounts() {
-//        try (Session session = sessionFactory.openSession()) {
-//            Query<Account> query = session.createQuery("from Account", Account.class);
-//
-//            return query.list();
-//        }
-//    }
+
+    @PutMapping(ID_PATH)
+    public void updateAccount(@PathVariable Long id, @RequestBody @Valid AccountDTO accountDTO) {
+        accountService.updateAccount(id, accountDTO);
+    }
 
     @DeleteMapping(ID_PATH)
     public void deleteAccount(@PathVariable Long id) {
-        try (Session session = sessionFactory.openSession()) {
-            Transaction transaction = session.beginTransaction();
-
-            Account accountToRemove = session.get(Account.class, id);
-            session.remove(accountToRemove);
-
-            transaction.commit();
-        }
+        accountService.deleteAccount(id);
     }
 }
