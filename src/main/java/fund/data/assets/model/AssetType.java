@@ -10,6 +10,7 @@ import jakarta.persistence.FetchType;
 import jakarta.validation.constraints.NotBlank;
 
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,6 +24,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 
 @MappedSuperclass
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 public abstract class AssetType {
