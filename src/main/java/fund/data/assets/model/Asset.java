@@ -18,7 +18,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,7 +31,6 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
@@ -66,6 +64,15 @@ public abstract class Asset {
 
     @UpdateTimestamp
     private Instant updatedAt;
+
+    public Asset(AssetCurrency assetCurrency, String assetTypeName, String assetTitle,
+                 Integer assetCount, TaxSystem assetTaxSystem) {
+        this.assetCurrency = assetCurrency;
+        this.assetTypeName = assetTypeName;
+        this.assetTitle = assetTitle;
+        this.assetCount = assetCount;
+        this.assetTaxSystem = assetTaxSystem;
+    }
 
 //    /*
 //     check - does cascade and fetch works correctly?

@@ -36,6 +36,13 @@ public class FixedRateBond extends ExchangeAsset {
     @Positive
     private Float bondPurchaseMarketPrice;
 
+    @PositiveOrZero
+    private Float totalCommissionForPurchase;
+
+    @NotNull
+    @PositiveOrZero
+    private Double totalAssetPurchasePriceWithCommission;
+
     @NotNull
     @PositiveOrZero
     private Float bondAccruedInterest;
@@ -56,38 +63,34 @@ public class FixedRateBond extends ExchangeAsset {
 
     private Float markDementevYieldIndicator;
 
-    public FixedRateBond(String iSIN,
-                         String assetIssuerTitle,
-                         LocalDate lastAssetBuyDate,
-                         AssetCurrency assetCurrency,
-                         String assetTitle,
-                         Integer assetCount,
+    public FixedRateBond(AssetCurrency assetCurrency, String assetTitle, Integer assetCount,
+                         String iSIN, String assetIssuerTitle, LocalDate lastAssetBuyDate,
                          Integer bondParValue,
                          Float bondPurchaseMarketPrice,
                          Float bondAccruedInterest,
                          Float bondCouponValue,
                          Integer expectedBondCouponPaymentsCount,
                          LocalDate bondMaturityDate) {
-        super(iSIN, assetIssuerTitle, lastAssetBuyDate);
-        super.setAssetCurrency(assetCurrency);
-        super.setAssetTypeName(FixedRateBond.class.getTypeName());
-        super.setAssetTitle(assetTitle);
-        super.setAssetCount(assetCount);
-        super.setAssetTaxSystem(AutoSelector.selectTaxSystem(getAssetCurrency(), getAssetTypeName()));
-        super.setAssetCommissionSystem(AutoSelector.selectCommissionSystem(getAssetCurrency(), getAssetTypeName()));
+        super(assetCurrency, FixedRateBond.class.getTypeName(), assetTitle, assetCount,
+                AutoSelector.selectTaxSystem(assetCurrency, FixedRateBond.class.getTypeName()),
+                iSIN, assetIssuerTitle, lastAssetBuyDate);
         this.bondParValue = bondParValue;
         this.bondPurchaseMarketPrice = bondPurchaseMarketPrice;
 
         if (getAssetCommissionSystem() != null) {
-            super.setTotalCommissionForPurchase(CommissionCalculator.calculateCommission(
+            this.totalCommissionForPurchase = CommissionCalculator.calculateTotalCommissionForPurchase(
                     getAssetCommissionSystem(),
                     getAssetCount(),
-                    bondPurchaseMarketPrice,
-                    bondParValue));
+                    bondPurchaseMarketPrice);
         } else {
-            super.setTotalCommissionForPurchase(0.00F);
+            this.totalCommissionForPurchase = 0.00F;
         }
-        super.setTotalAssetPurchasePriceWithCommission(calculateTotalAssetPurchasePriceWithCommission());
+        //Проведи работу выше по полноценному хранению размера комиссии со всеми нужными доработками!
+
+
+
+
+        this.totalAssetPurchasePriceWithCommission = calculateTotalAssetPurchasePriceWithCommission();
         this.bondAccruedInterest = bondAccruedInterest;
         this.bondCouponValue = bondCouponValue;
         this.expectedBondCouponPaymentsCount = expectedBondCouponPaymentsCount;

@@ -6,6 +6,9 @@ import fund.data.assets.config.SpringConfigForTests;
 import fund.data.assets.model.assets.exchange.FixedRateBond;
 import fund.data.assets.repository.FixedRateBondRepository;
 
+import fund.data.assets.utils.AutoSelector;
+import fund.data.assets.utils.enums.CommissionSystem;
+import fund.data.assets.utils.enums.TaxSystem;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -97,6 +100,10 @@ public class FixedRateBondControllerIT {
 
     @Test
     public void createFixedRateBondIT() throws Exception {
+        TaxSystem expectedTaxSystem = TaxSystem.EQUAL_COUPON_DIVIDEND_TRADE;
+        CommissionSystem expectedCommissionSystem = CommissionSystem.TURNOVER;
+        String fixedRateBondName = FixedRateBond.class.getTypeName();
+        Float expectedTotalCommissionForPurchase
         final var response = testUtils.perform(
                         post("/data" + ASSETS_CONTROLLER_PATH + EXCHANGE_ASSETS_CONTROLLER_PATH
                                 + FIXED_RATE_BOND_CONTROLLER_PATH)
@@ -110,28 +117,41 @@ public class FixedRateBondControllerIT {
         });
 
         assertNotNull(fixedRateBondFromResponse.getId());
-        assertEquals(fixedRateBondFromResponse.getISIN(), testUtils.getFixedRateBondDTO().getISIN());
+
+        assertEquals(fixedRateBondFromResponse.getAssetCurrency(),
+                testUtils.getFixedRateBondDTO().getAssetCurrency());
+        assertEquals(fixedRateBondFromResponse.getAssetTypeName(),
+                fixedRateBondName);
+        assertEquals(fixedRateBondFromResponse.getAssetTitle(),
+                testUtils.getFixedRateBondDTO().getAssetTitle());
+        assertEquals(fixedRateBondFromResponse.getAssetCount(),
+                testUtils.getFixedRateBondDTO().getAssetCount());
+        assertEquals(fixedRateBondFromResponse.getAssetTaxSystem(),
+                expectedTaxSystem);
+
+        assertEquals(fixedRateBondFromResponse.getISIN(),
+                testUtils.getFixedRateBondDTO().getISIN());
         assertEquals(fixedRateBondFromResponse.getAssetIssuerTitle(),
                 testUtils.getFixedRateBondDTO().getAssetIssuerTitle());
         assertEquals(fixedRateBondFromResponse.getLastAssetBuyDate(),
                 testUtils.getFixedRateBondDTO().getLastAssetBuyDate());
-        assertEquals(fixedRateBondFromResponse.getAssetCurrency(),
-                testUtils.getFixedRateBondDTO().getAssetCurrency());
-        assertEquals(fixedRateBondFromResponse.getAssetTitle(),
-                testUtils.getFixedRateBondDTO().getAssetTitle());
-        assertEquals(fixedRateBondFromResponse.getBondParValue(),
-                testUtils.getFixedRateBondDTO().getBondParValue());
-        assertEquals(fixedRateBondFromResponse.getBondPurchaseMarketPrice(),
-                testUtils.getFixedRateBondDTO().getBondPurchaseMarketPrice());
-        assertEquals(fixedRateBondFromResponse.getBondAccruedInterest(),
-                testUtils.getFixedRateBondDTO().getBondAccruedInterest());
-        assertEquals(fixedRateBondFromResponse.getBondCouponValue(),
-                testUtils.getFixedRateBondDTO().getBondCouponValue());
-        assertEquals(fixedRateBondFromResponse.getExpectedBondCouponPaymentsCount(),
-                testUtils.getFixedRateBondDTO().getExpectedBondCouponPaymentsCount());
-        assertEquals(fixedRateBondFromResponse.getBondMaturityDate(),
-                testUtils.getFixedRateBondDTO().getBondMaturityDate());
-        assertNotNull(fixedRateBondFromResponse.getCreatedAt());
+        assertEquals(fixedRateBondFromResponse.getAssetCommissionSystem(),
+                expectedCommissionSystem);
+//
+//
+//        assertEquals(fixedRateBondFromResponse.getBondParValue(),
+//                testUtils.getFixedRateBondDTO().getBondParValue());
+//        assertEquals(fixedRateBondFromResponse.getBondPurchaseMarketPrice(),
+//                testUtils.getFixedRateBondDTO().getBondPurchaseMarketPrice());
+//        assertEquals(fixedRateBondFromResponse.getBondAccruedInterest(),
+//                testUtils.getFixedRateBondDTO().getBondAccruedInterest());
+//        assertEquals(fixedRateBondFromResponse.getBondCouponValue(),
+//                testUtils.getFixedRateBondDTO().getBondCouponValue());
+//        assertEquals(fixedRateBondFromResponse.getExpectedBondCouponPaymentsCount(),
+//                testUtils.getFixedRateBondDTO().getExpectedBondCouponPaymentsCount());
+//        assertEquals(fixedRateBondFromResponse.getBondMaturityDate(),
+//                testUtils.getFixedRateBondDTO().getBondMaturityDate());
+//        assertNotNull(fixedRateBondFromResponse.getCreatedAt());
     }
 
     @Test

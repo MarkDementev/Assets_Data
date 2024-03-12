@@ -8,12 +8,12 @@ import fund.data.assets.utils.enums.TaxSystem;
 import static fund.data.assets.utils.enums.AssetCurrency.RUSRUB;
 
 public class AutoSelector {
-    public static String NOT_IMPLEMENTED_CURRENCY = "Sorry, this currency is not yet supported by the fund.";
-    public static String NOT_IMPLEMENTED_ASSET_TYPE = "Sorry, this asset type tax system is not yet" +
+    public static final String NOT_IMPLEMENTED_CURRENCY = "Sorry, this currency is not yet supported by the fund.";
+    public static final String NOT_IMPLEMENTED_ASSET_TYPE = "Sorry, this asset type tax system is not yet" +
             " supported by the fund.";
 
     public static TaxSystem selectTaxSystem(AssetCurrency assetCurrency, String assetTypeName) {
-        if (assetCurrency.getTitle().equals(RUSRUB.getTitle())) {
+        if (assetCurrency.equals(RUSRUB)) {
             if (assetTypeName.equals(FixedRateBond.class.getTypeName())) {
                 return TaxSystem.EQUAL_COUPON_DIVIDEND_TRADE;
             }
@@ -23,7 +23,7 @@ public class AutoSelector {
     }
 
     public static CommissionSystem selectCommissionSystem(AssetCurrency assetCurrency, String assetTypeName) {
-        if (assetCurrency.getTitle().equals(RUSRUB.getTitle())) {
+        if (assetCurrency.equals(RUSRUB)) {
             if (assetTypeName.equals(FixedRateBond.class.getTypeName())) {
                 return CommissionSystem.TURNOVER;
             }
