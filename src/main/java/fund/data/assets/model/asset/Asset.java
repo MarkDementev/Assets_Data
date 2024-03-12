@@ -1,6 +1,8 @@
 package fund.data.assets.model.asset;
 
 import fund.data.assets.model.asset.relationship.AssetRelationship;
+import fund.data.assets.model.asset.relationship.FinancialAssetRelationship;
+import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.utils.enums.AssetCurrency;
 import fund.data.assets.utils.enums.TaxSystem;
 
@@ -70,11 +72,12 @@ public abstract class Asset {
     private Instant updatedAt;
 
     public Asset(AssetCurrency assetCurrency, String assetTypeName, String assetTitle,
-                 Integer assetCount, TaxSystem assetTaxSystem) {
+                 Integer assetCount, TaxSystem assetTaxSystem, Account account) {
         this.assetCurrency = assetCurrency;
         this.assetTypeName = assetTypeName;
         this.assetTitle = assetTitle;
         this.assetCount = assetCount;
         this.assetTaxSystem = assetTaxSystem;
+        this.assetRelationship = new FinancialAssetRelationship(this, account);
     }
 }

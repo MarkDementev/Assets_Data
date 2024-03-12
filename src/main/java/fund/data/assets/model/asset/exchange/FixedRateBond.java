@@ -1,5 +1,6 @@
 package fund.data.assets.model.asset.exchange;
 
+import fund.data.assets.model.asset.relationship.FinancialAssetRelationship;
 import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.utils.AutoSelector;
 import fund.data.assets.utils.CommissionCalculator;
@@ -75,8 +76,8 @@ public class FixedRateBond extends ExchangeAsset {
                          LocalDate bondMaturityDate) {
         super(assetCurrency, FixedRateBond.class.getTypeName(), assetTitle, assetCount,
                 (TaxSystem) AutoSelector.selectAssetOperationsCostSystem(assetCurrency,
-                        FixedRateBond.class.getTypeName(), AutoSelector.TAX_SYSTEM_CHOOSE),
-                iSIN, assetIssuerTitle, lastAssetBuyDate);
+                        FixedRateBond.class.getTypeName(), AutoSelector.TAX_SYSTEM_CHOOSE), account, iSIN,
+                assetIssuerTitle, lastAssetBuyDate);
         this.bondParValue = bondParValue;
         this.bondPurchaseMarketPrice = bondPurchaseMarketPrice;
 
@@ -92,19 +93,18 @@ public class FixedRateBond extends ExchangeAsset {
         } else {
             this.totalCommissionForPurchase = 0.00F;
         }
-        //Проверил посюда
         this.totalAssetPurchasePriceWithCommission = calculateTotalAssetPurchasePriceWithCommission();
         this.bondAccruedInterest = bondAccruedInterest;
         this.bondCouponValue = bondCouponValue;
         this.expectedBondCouponPaymentsCount = expectedBondCouponPaymentsCount;
         this.bondMaturityDate = bondMaturityDate;
+        //Проверил посюда
         this.yieldToMaturity = calculateYieldToMaturity();
         this.markDementevYieldIndicator = calculateMarkDementevYieldIndicator();
-        //В самом конце - создай AssetRelationship и установи ссылку на него в Asset
     }
 
     private Double calculateTotalAssetPurchasePriceWithCommission() {
-        return (double) (getAssetCount() * bondParValue * bondPurchaseMarketPrice + getTotalCommissionForPurchase());
+        return (double) (getAssetCount() * bondParValue * bondPurchaseMarketPrice + totalCommissionForPurchase);
     }
 
     private Float calculateYieldToMaturity() {

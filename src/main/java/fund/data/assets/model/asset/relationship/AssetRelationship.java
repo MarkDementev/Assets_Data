@@ -47,4 +47,8 @@ public abstract class AssetRelationship {
 
     @UpdateTimestamp
     private Instant updatedAt;
+
+    public AssetRelationship(Asset asset) {
+        this.asset = asset;
+    }
 }

@@ -1,5 +1,6 @@
 package fund.data.assets.model.asset.relationship;
 
+import fund.data.assets.model.asset.Asset;
 import fund.data.assets.model.financial_entities.Account;
 
 import jakarta.persistence.Entity;
@@ -15,8 +16,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ExchangeAssetRelationship extends AssetRelationship {
+public class FinancialAssetRelationship extends AssetRelationship {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
+
+    public FinancialAssetRelationship(Asset asset, Account account) {
+        super(asset);
+
+        this.account = account;
+    }
 }
