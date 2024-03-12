@@ -4,10 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class AssetsApplication {
-
+public class FundAssetsDataApplication {
 	public static void main(String[] args) {
-		SpringApplication.run(AssetsApplication.class, args);
+		SpringApplication.run(FundAssetsDataApplication.class, args);
 	}
-
 }

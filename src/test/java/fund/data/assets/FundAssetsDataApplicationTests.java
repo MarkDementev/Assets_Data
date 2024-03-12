@@ -4,10 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class AssetsApplicationTests {
-
+class FundAssetsDataApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }
