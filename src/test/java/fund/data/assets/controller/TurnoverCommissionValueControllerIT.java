@@ -8,7 +8,6 @@ import fund.data.assets.dto.TurnoverCommissionValueDTO;
 import fund.data.assets.model.financial_entities.TurnoverCommissionValue;
 import fund.data.assets.repository.AccountRepository;
 import fund.data.assets.repository.TurnoverCommissionValueRepository;
-import fund.data.assets.utils.enums.CommissionSystem;
 
 import jakarta.servlet.ServletException;
 
@@ -111,18 +110,14 @@ public class TurnoverCommissionValueControllerIT {
     public void createTurnoverCommissionValueIT() throws Exception {
         testUtils.createDefaultAccount();
 
-        final TurnoverCommissionValueDTO turnoverCommissionValueDTO = new TurnoverCommissionValueDTO(
-                CommissionSystem.TURNOVER,
-                accountRepository.findByOrganisationWhereAccountOpened(
-                        testUtils.getAccountDTO().getOrganisationWhereAccountOpened()
-                ).getId(),
-                TEST_ASSET_TYPE_NAME,
-                TEST_COMMISSION_PERCENT_VALUE
-        );
+        final TurnoverCommissionValueDTO newTurnoverCommissionValueDTO = testUtils.getTurnoverCommissionValueDTO();
+
+        newTurnoverCommissionValueDTO.setAccountID(accountRepository.findByOrganisationWhereAccountOpened(
+                testUtils.getAccountDTO().getOrganisationWhereAccountOpened()).getId());
 
         final var response = testUtils.perform(
                         post("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH)
-                                .content(asJson(turnoverCommissionValueDTO))
+                                .content(asJson(newTurnoverCommissionValueDTO))
                                 .contentType(APPLICATION_JSON)
                 )
                 .andExpect(status().isCreated())
@@ -133,13 +128,13 @@ public class TurnoverCommissionValueControllerIT {
 
         assertNotNull(turnoverCommissionValueFromResponse.getId());
         assertEquals(turnoverCommissionValueFromResponse.getCommissionSystem(),
-                turnoverCommissionValueDTO.getCommissionSystem());
+                newTurnoverCommissionValueDTO.getCommissionSystem());
         assertEquals(turnoverCommissionValueFromResponse.getAccount().getId(),
-                turnoverCommissionValueDTO.getAccountID());
+                newTurnoverCommissionValueDTO.getAccountID());
         assertEquals(turnoverCommissionValueFromResponse.getAssetTypeName(),
-                turnoverCommissionValueDTO.getAssetTypeName());
+                newTurnoverCommissionValueDTO.getAssetTypeName());
         assertEquals(turnoverCommissionValueFromResponse.getCommissionPercentValue(),
-                turnoverCommissionValueDTO.getCommissionPercentValue());
+                newTurnoverCommissionValueDTO.getCommissionPercentValue());
         assertNotNull(turnoverCommissionValueFromResponse.getCreatedAt());
     }
 
@@ -153,19 +148,16 @@ public class TurnoverCommissionValueControllerIT {
 
         testUtils.createDefaultTurnoverCommissionValue();
 
-        final TurnoverCommissionValueDTO turnoverCommissionValueWithAnotherPercentButSameAssetTypeNameDTO
-                = new TurnoverCommissionValueDTO(
-                CommissionSystem.TURNOVER,
-                accountRepository.findByOrganisationWhereAccountOpened(
-                        testUtils.getAccountDTO().getOrganisationWhereAccountOpened()
-                ).getId(),
-                TEST_ASSET_TYPE_NAME,
-                TEST_COMMISSION_PERCENT_VALUE + TEST_COMMISSION_PERCENT_VALUE
-        );
+        final TurnoverCommissionValueDTO newTurnoverCommissionValueDTO = testUtils.getTurnoverCommissionValueDTO();
+
+        newTurnoverCommissionValueDTO.setAccountID(accountRepository.findByOrganisationWhereAccountOpened(
+                testUtils.getAccountDTO().getOrganisationWhereAccountOpened()).getId());
+        newTurnoverCommissionValueDTO.setCommissionPercentValue(TEST_COMMISSION_PERCENT_VALUE
+                + TEST_COMMISSION_PERCENT_VALUE);
 
         Assertions.assertThrows(ServletException.class,
                 () -> testUtils.perform(post("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH)
-                        .content(asJson(turnoverCommissionValueWithAnotherPercentButSameAssetTypeNameDTO))
+                        .content(asJson(newTurnoverCommissionValueDTO))
                         .contentType(APPLICATION_JSON)));
         assertThat(turnoverCommissionValueRepository.findAll()).hasSize(1);
     }
@@ -175,14 +167,13 @@ public class TurnoverCommissionValueControllerIT {
         testUtils.createDefaultTurnoverCommissionValue();
 
         Long createdTurnoverCommissionId = turnoverCommissionValueRepository.findAll().get(0).getId();
-        final TurnoverCommissionValueDTO turnoverCommissionValueSecondDTO = new TurnoverCommissionValueDTO(
-                CommissionSystem.TURNOVER,
-                accountRepository.findByOrganisationWhereAccountOpened(
-                        testUtils.getAccountDTO().getOrganisationWhereAccountOpened()
-                ).getId(),
-                TEST_ASSET_TYPE_NAME,
-                TEST_COMMISSION_PERCENT_VALUE + TEST_COMMISSION_PERCENT_VALUE
-        );
+        final TurnoverCommissionValueDTO turnoverCommissionValueSecondDTO = testUtils.getTurnoverCommissionValueDTO();
+
+        turnoverCommissionValueSecondDTO.setAccountID(accountRepository.findByOrganisationWhereAccountOpened(
+                testUtils.getAccountDTO().getOrganisationWhereAccountOpened()).getId());
+        turnoverCommissionValueSecondDTO.setCommissionPercentValue(TEST_COMMISSION_PERCENT_VALUE
+                + TEST_COMMISSION_PERCENT_VALUE);
+
         final var response = testUtils.perform(put("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH
                                 + ID_PATH, createdTurnoverCommissionId)
                         .content(asJson(turnoverCommissionValueSecondDTO)).contentType(APPLICATION_JSON))

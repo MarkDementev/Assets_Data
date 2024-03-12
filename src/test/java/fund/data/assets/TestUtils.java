@@ -60,6 +60,13 @@ public class TestUtils {
             LocalDate.of(2024, 2, 22)
     );
 
+    private final TurnoverCommissionValueDTO turnoverCommissionValueDTO = new TurnoverCommissionValueDTO(
+            CommissionSystem.TURNOVER,
+            null,
+            TEST_ASSET_TYPE_NAME,
+            TEST_COMMISSION_PERCENT_VALUE
+    );
+
     private final TurnoverCommissionValueDTO notValidTurnoverCommissionValueDTO = new TurnoverCommissionValueDTO(
             null,
             null,
@@ -88,6 +95,10 @@ public class TestUtils {
         return anotherBankButSameAccountNumberAccountDTO;
     }
 
+    public TurnoverCommissionValueDTO getTurnoverCommissionValueDTO() {
+        return turnoverCommissionValueDTO;
+    }
+
     public TurnoverCommissionValueDTO getNotValidTurnoverCommissionValueDTO() {
         return notValidTurnoverCommissionValueDTO;
     }
@@ -103,16 +114,12 @@ public class TestUtils {
     public ResultActions createDefaultTurnoverCommissionValue() throws Exception {
         createDefaultAccount();
 
-        final TurnoverCommissionValueDTO turnoverCommissionValueDTO = new TurnoverCommissionValueDTO(
-                CommissionSystem.TURNOVER,
-                accountRepository.findByOrganisationWhereAccountOpened(
-                        getAccountDTO().getOrganisationWhereAccountOpened()
-                ).getId(),
-                TEST_ASSET_TYPE_NAME,
-                TEST_COMMISSION_PERCENT_VALUE
-        );
+        final TurnoverCommissionValueDTO newTurnoverCommissionValueDTO  = turnoverCommissionValueDTO;
 
-        return createTurnoverCommissionValue(turnoverCommissionValueDTO);
+        newTurnoverCommissionValueDTO.setAccountID(accountRepository.findByOrganisationWhereAccountOpened(
+                getAccountDTO().getOrganisationWhereAccountOpened()).getId());
+
+        return createTurnoverCommissionValue(newTurnoverCommissionValueDTO);
     }
 
     public ResultActions createAccount(final AccountDTO accountDTO) throws Exception {

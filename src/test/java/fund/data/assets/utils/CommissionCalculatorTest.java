@@ -21,6 +21,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.function.Supplier;
+
 import static fund.data.assets.TestUtils.TEST_ASSET_TYPE_NAME;
 import static fund.data.assets.config.SpringConfigForTests.TEST_PROFILE;
 
@@ -58,23 +60,22 @@ public class CommissionCalculatorTest {
     @EnumSource(CommissionSystem.class)
     public void testCalculateTotalCommissionForPurchaseNotImplementedCommissionSystem(
             CommissionSystem commissionSystem) {
+        Supplier<Float> calculation = new Supplier<>() {
+            @Override
+            public Float get() {
+                return commissionCalculator.calculateTotalCommissionForPurchase(
+                        commissionSystem,
+                        accountService.getAccounts().get(0),
+                        TEST_ASSET_TYPE_NAME,
+                        TEST_ASSET_COUNT,
+                        TEST_BOND_PURCHASE_MARKET_PRICE);
+            }
+        };
+
         if (commissionSystem.equals(CommissionSystem.TURNOVER)) {
-            Assertions.assertDoesNotThrow(
-                    () -> commissionCalculator.calculateTotalCommissionForPurchase(
-                            commissionSystem,
-                            accountService.getAccounts().get(0),
-                            TEST_ASSET_TYPE_NAME,
-                            TEST_ASSET_COUNT,
-                            TEST_BOND_PURCHASE_MARKET_PRICE)
-            );
+            Assertions.assertDoesNotThrow(() -> calculation.get());
         } else {
-            Assertions.assertThrows(IllegalArgumentException.class,
-                    () -> commissionCalculator.calculateTotalCommissionForPurchase(
-                            commissionSystem,
-                            accountService.getAccounts().get(0),
-                            TEST_ASSET_TYPE_NAME,
-                            TEST_ASSET_COUNT,
-                            TEST_BOND_PURCHASE_MARKET_PRICE));
+            Assertions.assertThrows(IllegalArgumentException.class, () -> calculation.get());
         }
     }
 
@@ -83,15 +84,13 @@ public class CommissionCalculatorTest {
     public void testCalculateTotalCommissionForPurchase(Float commissionPercentValue, Float inputCorrectResult) {
         Long turnoverCommissionValueIDToUpdate = turnoverCommissionValueService
                 .getTurnoverCommissionValues().get(0).getId();
-        final TurnoverCommissionValueDTO turnoverCommissionValueDTOToUpdate = new TurnoverCommissionValueDTO(
-                CommissionSystem.TURNOVER,
-                turnoverCommissionValueIDToUpdate,
-                TEST_ASSET_TYPE_NAME,
-                commissionPercentValue
-        );
+        final TurnoverCommissionValueDTO turnoverCommissionValueDTOToUpdate = testUtils.getTurnoverCommissionValueDTO();
 
+        turnoverCommissionValueDTOToUpdate.setAccountID(turnoverCommissionValueIDToUpdate);
+        turnoverCommissionValueDTOToUpdate.setCommissionPercentValue(commissionPercentValue);
         turnoverCommissionValueService.updateTurnoverCommissionValue(turnoverCommissionValueIDToUpdate,
                 turnoverCommissionValueDTOToUpdate);
+
         Assertions.assertEquals(commissionCalculator.calculateTotalCommissionForPurchase(
                 CommissionSystem.TURNOVER,
                 accountService.getAccounts().get(0),
