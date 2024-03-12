@@ -3,9 +3,6 @@ package fund.data.assets.utils;
 import fund.data.assets.TestUtils;
 import fund.data.assets.config.SpringConfigForTests;
 import fund.data.assets.dto.TurnoverCommissionValueDTO;
-import fund.data.assets.model.financial_entities.TurnoverCommissionValue;
-import fund.data.assets.repository.AccountRepository;
-import fund.data.assets.repository.TurnoverCommissionValueRepository;
 import fund.data.assets.service.impl.AccountServiceImpl;
 import fund.data.assets.service.impl.TurnoverCommissionValueServiceImpl;
 import fund.data.assets.utils.enums.CommissionSystem;
@@ -25,7 +22,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static fund.data.assets.TestUtils.TEST_ASSET_TYPE_NAME;
-import static fund.data.assets.TestUtils.TEST_COMMISSION_PERCENT_VALUE;
 import static fund.data.assets.config.SpringConfigForTests.TEST_PROFILE;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -37,6 +33,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 public class CommissionCalculatorTest {
     public static final Integer TEST_ASSET_COUNT = 10;
     public static final Float TEST_BOND_PURCHASE_MARKET_PRICE = 1000.0F;
+    public static final String CSV_SOURCE_TEST_VALUE_FIRST = "0.02F, 200.0F";
+    public static final String CSV_SOURCE_TEST_VALUE_SECOND = "0.2F, 2000.0F";
     @Autowired
     private TestUtils testUtils;
     @Autowired
@@ -81,12 +79,19 @@ public class CommissionCalculatorTest {
     }
 
     @ParameterizedTest
-    @CsvSource(value = {"0.01F, 100.0F", "0.1F, 1000.0F"})
+    @CsvSource(value = {CSV_SOURCE_TEST_VALUE_FIRST, CSV_SOURCE_TEST_VALUE_SECOND})
     public void testCalculateTotalCommissionForPurchase(Float commissionPercentValue, Float inputCorrectResult) {
-        TurnoverCommissionValue turnoverCommissionValue = turnoverCommissionValueService
-                .getTurnoverCommissionValues().get(0);
+        Long turnoverCommissionValueIDToUpdate = turnoverCommissionValueService
+                .getTurnoverCommissionValues().get(0).getId();
+        final TurnoverCommissionValueDTO turnoverCommissionValueDTOToUpdate = new TurnoverCommissionValueDTO(
+                CommissionSystem.TURNOVER,
+                turnoverCommissionValueIDToUpdate,
+                TEST_ASSET_TYPE_NAME,
+                commissionPercentValue
+        );
 
-        turnoverCommissionValue.setCommissionPercentValue(commissionPercentValue);
+        turnoverCommissionValueService.updateTurnoverCommissionValue(turnoverCommissionValueIDToUpdate,
+                turnoverCommissionValueDTOToUpdate);
         Assertions.assertEquals(commissionCalculator.calculateTotalCommissionForPurchase(
                 CommissionSystem.TURNOVER,
                 accountService.getAccounts().get(0),
