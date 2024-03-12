@@ -6,9 +6,9 @@ import fund.data.assets.utils.AutoSelector;
 import fund.data.assets.utils.CommissionCalculator;
 import fund.data.assets.utils.enums.AssetCurrency;
 import fund.data.assets.utils.FinancialCalculationConstants;
-
 import fund.data.assets.utils.enums.CommissionSystem;
 import fund.data.assets.utils.enums.TaxSystem;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;

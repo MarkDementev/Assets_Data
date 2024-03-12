@@ -24,6 +24,9 @@ public class AutoSelector {
 
     public static CommissionSystem selectCommissionSystem(AssetCurrency assetCurrency, String assetTypeName,
                                                           String accountOrganisation) {
-
+        /*
+        Делаю запрос в БД с этими характеристиками. Если результат есть, возвращаю тип комиссии - нужный элемент из enum
+        Потом похожим образом поправь selectTaxSystem
+         */
     }
 }
