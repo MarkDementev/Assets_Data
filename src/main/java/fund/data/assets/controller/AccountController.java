@@ -23,6 +23,12 @@ import java.util.List;
 
 import static fund.data.assets.controller.AccountController.ACCOUNT_CONTROLLER_PATH;
 
+/**
+ * Контроллер с базовыми возможностями для работы с банковскими счетами.
+ * Обслуживаемая сущность - {@link fund.data.assets.model.financial_entities.Account}.
+ * @version 0.0.1-alpha
+ * @author MarkDementev a.k.a JavaMarkDem
+ */
 @RestController
 @RequestMapping("{base-url}" + ACCOUNT_CONTROLLER_PATH)
 @AllArgsConstructor

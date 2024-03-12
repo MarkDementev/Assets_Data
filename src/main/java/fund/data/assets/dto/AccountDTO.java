@@ -9,6 +9,13 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+/**
+ * DTO для обслуживания банковских счетов.
+ * Обслуживаемая сущность - {@link fund.data.assets.model.financial_entities.Account}.
+ * Сервис сущности - {@link fund.data.assets.service.impl.AccountServiceImpl}.
+ * @version 0.0.1-alpha
+ * @author MarkDementev a.k.a JavaMarkDem
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

@@ -13,6 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Реализация сервиса для обслуживания банковских счетов.
+ * Обслуживаемая сущность - {@link fund.data.assets.model.financial_entities.Account}.
+ * @version 0.0.1-alpha
+ * @author MarkDementev a.k.a JavaMarkDem
+ */
 @Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {

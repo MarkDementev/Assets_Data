@@ -22,6 +22,11 @@ import java.time.LocalDate;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
+/**
+ * Банковский счёт.
+ * @version 0.0.1-alpha
+ * @author MarkDementev a.k.a JavaMarkDem
+ */
 @Entity
 @Table(name = "in-fund and out-fund accounts")
 @AllArgsConstructor
@@ -33,9 +38,17 @@ public class Account {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
+    /**
+     * Первое значение, характеризующее банковский счёт.
+     * Обычно, речь о банке, где открыт счёт. Или о брокерском подразделении банка.
+     */
     @NotBlank
     private String organisationWhereAccountOpened;
 
+    /**
+     * Второе значение, характеризующее счёт.
+     * В одном и том же банке не может быть счётов с одинаковыми номерами.
+     */
     @NotBlank
     @Column(unique = true)
     private String accountNumber;
