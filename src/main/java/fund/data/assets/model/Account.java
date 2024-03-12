@@ -1,8 +1,5 @@
 package fund.data.assets.model;
 
-//import com.fasterxml.jackson.annotation.JsonFormat;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Entity;
@@ -14,7 +11,6 @@ import jakarta.persistence.Column;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-//import jakarta.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +21,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
+import java.time.LocalDate;
 //import java.util.Set;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -47,14 +44,8 @@ public class Account {
     @Column(unique = true)
     private String accountNumber;
 
-    /*
-        check - does JsonFormat work correctly! May be need to add timezone?
-        check size validation to!
-     */
     @NotNull
-//    @JsonFormat(pattern = "dd-MM-yyyy")
-//    @Size(min = 10, max = 10)
-    private Instant accountOpeningDate;
+    private LocalDate accountOpeningDate;
 
     @CreationTimestamp
     private Instant createdAt;

@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 import static fund.data.assets.controller.AccountController.ACCOUNT_CONTROLLER_PATH;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -29,13 +30,13 @@ public class TestUtils {
     private final AccountDTO accountDTO = new AccountDTO(
             "defaultBank",
             "1q2w3e4r5t",
-            Instant.now()
+            LocalDate.now()
     );
 
     private final AccountDTO secondAccountDTO = new AccountDTO(
             "UPDATEDdefaultBank",
             "UPDATED1q2w3e4r5t",
-            Instant.now()
+            LocalDate.now()
     );
 
     public void tearDown() {
