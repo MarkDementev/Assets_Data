@@ -31,7 +31,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @AutoConfigureMockMvc
 public class CommissionCalculatorTest {
     public static final Integer TEST_ASSET_COUNT = 10;
-    public static final Float TEST_BOND_PURCHASE_MARKET_PRICE = 1000.0F;
+    public static final Float TEST_DIRTY_BOND_PRICE_IN_CURRENCY = 1000.0F;
     public static final String CSV_SOURCE_TEST_VALUE_FIRST = "0.02F, 200.0F";
     public static final String CSV_SOURCE_TEST_VALUE_SECOND = "0.2F, 2000.0F";
     @Autowired
@@ -65,7 +65,7 @@ public class CommissionCalculatorTest {
                         accountService.getAccounts().get(0),
                         TEST_ASSET_TYPE_NAME,
                         TEST_ASSET_COUNT,
-                        TEST_BOND_PURCHASE_MARKET_PRICE);
+                        TEST_DIRTY_BOND_PRICE_IN_CURRENCY);
             }
         };
 
@@ -93,7 +93,7 @@ public class CommissionCalculatorTest {
                 accountService.getAccounts().get(0),
                 TEST_ASSET_TYPE_NAME,
                 TEST_ASSET_COUNT,
-                TEST_BOND_PURCHASE_MARKET_PRICE
+                TEST_DIRTY_BOND_PRICE_IN_CURRENCY
                 ), inputCorrectResult);
     }
 }

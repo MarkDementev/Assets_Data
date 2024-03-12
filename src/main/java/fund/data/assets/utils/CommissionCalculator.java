@@ -30,18 +30,18 @@ public class CommissionCalculator {
      * @param account Счёт, где проводится операция.
      * @param assetTypeName Тип актива, с которым проводится операция.
      * @param assetCount Количество единиц актива, с которым проводится операция.
-     * @param bondPurchaseMarketPrice % от номинала цены актива - рыночная цена покупки актива ("грязная" цена).
+     * @param dirtyBondPriceInCurrency "Грязная" цена облигации = (рыночная цена * номинал + НКД).
      * @return Возвращает общий размер комиссии с оборота по активу - число с плавающей запятой.
      * @throws IllegalArgumentException Если в качестве аргумента commissionSystem не CommissionSystem.TURNOVER.
      * @since 0.0.1-alpha
      */
     public Float calculateTotalCommissionForPurchase(CommissionSystem commissionSystem,
                                                             Account account, String assetTypeName,
-                                                            Integer assetCount, Float bondPurchaseMarketPrice) {
+                                                            Integer assetCount, Float dirtyBondPriceInCurrency) {
         if (commissionSystem.equals(TURNOVER)) {
             Float commissionPercentValue = findTurnoverCommissionValue(account, assetTypeName);
 
-            return assetCount * bondPurchaseMarketPrice * commissionPercentValue;
+            return assetCount * dirtyBondPriceInCurrency * commissionPercentValue;
         } else {
             throw new IllegalArgumentException(NOT_IMPLEMENTED_COMMISSION_SYSTEM_TO_CALCULATE);
         }

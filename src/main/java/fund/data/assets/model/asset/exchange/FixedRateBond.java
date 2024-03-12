@@ -36,27 +36,40 @@ import java.time.temporal.ChronoUnit;
 @Getter
 @Setter
 public class FixedRateBond extends ExchangeAsset {
-    /*
-    TODO Класс не закончен, не протестирован. По окончании этих задач - добавь документацию всему связанному с ним коду!
+    /**
+     * Номинальная стоимость облигации, определённая эмитентом. Обычно в РФ равна 1000 рублей.
      */
     @NotNull
     @Positive
     private Integer bondParValue;
 
+    /**
+     * "Чистая" цена облигации при покупке. Представляет собой формируемую на рынке цену, являющуюся % от номинала.
+     */
     @NotNull
     @Positive
-    private Float bondPurchaseMarketPrice;
+    private Float purchaseBondParValuePercent;
 
-    @PositiveOrZero
-    private Float totalCommissionForPurchase;
-
-    @NotNull
-    @PositiveOrZero
-    private Double totalAssetPurchasePriceWithCommission;
-
+    /**
+     * НКД облигации. НКД - накопленный купонный доход.
+     */
     @NotNull
     @PositiveOrZero
     private Float bondAccruedInterest;
+
+    /**
+     * Совокупная комиссия при покупке облигации.
+     */
+    @PositiveOrZero
+    private Float totalCommissionForPurchase;
+
+    /**
+     * Величина в валюте. Сколько надо конкретно заплатить за облигации в реальности - т.е. с учётом
+     * необходимости уплатить НКД и комиссию. Самое "народно-популярное" и наглядное значение!
+     */
+    @NotNull
+    @PositiveOrZero
+    private Double totalAssetPurchasePriceWithCommission;
 
     @NotNull
     @PositiveOrZero
@@ -77,9 +90,10 @@ public class FixedRateBond extends ExchangeAsset {
     public FixedRateBond(AssetCurrency assetCurrency, String assetTitle, Integer assetCount,
                          String iSIN, String assetIssuerTitle, LocalDate lastAssetBuyDate,
                          Integer bondParValue,
-                         Float bondPurchaseMarketPrice,
-                         Account account,
+                         Float purchaseBondParValuePercent,
                          Float bondAccruedInterest,
+                         Account account,
+
                          Float bondCouponValue,
                          Integer expectedBondCouponPaymentsCount,
                          LocalDate bondMaturityDate) {
@@ -88,7 +102,8 @@ public class FixedRateBond extends ExchangeAsset {
                         FixedRateBond.class.getTypeName(), AutoSelector.TAX_SYSTEM_CHOOSE), account, iSIN,
                 assetIssuerTitle, lastAssetBuyDate);
         this.bondParValue = bondParValue;
-        this.bondPurchaseMarketPrice = bondPurchaseMarketPrice;
+        this.purchaseBondParValuePercent = purchaseBondParValuePercent;
+        this.bondAccruedInterest = bondAccruedInterest;
 
         if (getAssetCommissionSystem() != null) {
             CommissionCalculator commissionCalculator = new CommissionCalculator();
@@ -98,12 +113,12 @@ public class FixedRateBond extends ExchangeAsset {
                     account,
                     FixedRateBond.class.getTypeName(),
                     getAssetCount(),
-                    bondPurchaseMarketPrice);
+                    purchaseBondParValuePercent * bondParValue + bondAccruedInterest);
         } else {
             this.totalCommissionForPurchase = 0.00F;
         }
         this.totalAssetPurchasePriceWithCommission = calculateTotalAssetPurchasePriceWithCommission();
-        this.bondAccruedInterest = bondAccruedInterest;
+
         this.bondCouponValue = bondCouponValue;
         this.expectedBondCouponPaymentsCount = expectedBondCouponPaymentsCount;
         this.bondMaturityDate = bondMaturityDate;
@@ -112,9 +127,15 @@ public class FixedRateBond extends ExchangeAsset {
         this.markDementevYieldIndicator = calculateMarkDementevYieldIndicator();
     }
 
-    //Проверь. bondPurchaseMarketPrice и НКД, внутри он тут, или нет?!
+    /**
+     * Умножает количество облигаций на их цену в валюте с учётом НКД, после чего суммирует с комиссией за покупку
+     * данных облигаций при данных параметрах.
+     * @return Сколько надо конкретно заплатить за облигации в реальности в валюте.
+     * @since 0.0.1-alpha
+     */
     private Double calculateTotalAssetPurchasePriceWithCommission() {
-        return (double) (getAssetCount() * bondParValue * bondPurchaseMarketPrice + totalCommissionForPurchase);
+        return (double) (getAssetCount() * (purchaseBondParValuePercent * bondParValue + bondAccruedInterest)
+                        + totalCommissionForPurchase);
     }
 
     /**
@@ -124,7 +145,7 @@ public class FixedRateBond extends ExchangeAsset {
      * @since 0.0.1-alpha
      */
     private Float calculateSimpleYieldToMaturity() {
-        float marketClearPriceInCurrency = bondPurchaseMarketPrice * bondParValue;
+        float marketClearPriceInCurrency = purchaseBondParValuePercent * bondParValue;
         float allExpectedCouponPaymentsSum = bondCouponValue * expectedBondCouponPaymentsCount;
         int daysBeforeMaturity = calculateDaysBeforeMaturity();
 
@@ -144,7 +165,7 @@ public class FixedRateBond extends ExchangeAsset {
         } else {
             return null;
         }
-        float bondValueSummedWithCommission = (bondPurchaseMarketPrice * bondParValue)
+        float bondValueSummedWithCommission = (purchaseBondParValuePercent * bondParValue)
                 + (getTotalCommissionForPurchase() / getAssetCount());
         float allExpectedCouponPaymentsValue = bondCouponValue * expectedBondCouponPaymentsCount;
         int daysBeforeMaturity = calculateDaysBeforeMaturity();
