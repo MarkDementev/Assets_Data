@@ -68,11 +68,11 @@ public class FixedRateBond extends ExchangeAsset {
                          String iSIN, String assetIssuerTitle, LocalDate lastAssetBuyDate,
                          Integer bondParValue,
                          Float bondPurchaseMarketPrice,
+                         Account account,
                          Float bondAccruedInterest,
                          Float bondCouponValue,
                          Integer expectedBondCouponPaymentsCount,
-                         LocalDate bondMaturityDate,
-                         Account account) {
+                         LocalDate bondMaturityDate) {
         super(assetCurrency, FixedRateBond.class.getTypeName(), assetTitle, assetCount,
                 AutoSelector.selectTaxSystem(assetCurrency, FixedRateBond.class.getTypeName()),
                 iSIN, assetIssuerTitle, lastAssetBuyDate);
@@ -82,6 +82,8 @@ public class FixedRateBond extends ExchangeAsset {
         if (getAssetCommissionSystem() != null) {
             this.totalCommissionForPurchase = CommissionCalculator.calculateTotalCommissionForPurchase(
                     getAssetCommissionSystem(),
+                    account,
+                    FixedRateBond.class.getTypeName(),
                     getAssetCount(),
                     bondPurchaseMarketPrice);
         } else {

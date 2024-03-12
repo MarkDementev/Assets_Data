@@ -1,26 +1,26 @@
 package fund.data.assets.utils;
 
+import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.repository.TurnoverCommissionValueRepository;
 import fund.data.assets.utils.enums.CommissionSystem;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import static fund.data.assets.utils.enums.CommissionSystem.TURNOVER;
 
-//Надо юнит-тесты прописать для всего тут.
+@Component
 public class CommissionCalculator {
     public static final String NOT_IMPLEMENTED_COMMISSION_SYSTEM_TO_CALCULATE = "Sorry, this commission system" +
             " is not yet supported by the fund.";
-    private final TurnoverCommissionValueRepository turnoverCommissionValueRepository;
+    @Autowired
+    private static TurnoverCommissionValueRepository turnoverCommissionValueRepository;
 
-    public CommissionCalculator(@Autowired TurnoverCommissionValueRepository turnoverCommissionValueRepository) {
-        this.turnoverCommissionValueRepository = turnoverCommissionValueRepository;
-    }
-
-    public static Float calculateTotalCommissionForPurchase(CommissionSystem commissionSystem, Integer assetCount,
-                                                            Float bondPurchaseMarketPrice) {
+    public static Float calculateTotalCommissionForPurchase(CommissionSystem commissionSystem,
+                                                            Account account, String assetTypeName,
+                                                            Integer assetCount, Float bondPurchaseMarketPrice) {
         if (commissionSystem.equals(TURNOVER)) {
-            Float commissionPercentValue = findCommissionPercentValue();
+            Float commissionPercentValue = findTurnoverCommissionValue(account, assetTypeName);
 
             return assetCount * bondPurchaseMarketPrice * commissionPercentValue;
         } else {
@@ -28,10 +28,8 @@ public class CommissionCalculator {
         }
     }
 
-    private static Float findCommissionPercentValue() {
-        //Здесь надо находить в БД флоат комиссии исходя из типа актива и счёта, где находится актив.
-        //Нужно внедрить AssetRelationship, чтобы получать оттуда счёт!!! ИЛИ ПОЛУЧАТЬ СЧЁТ ИЗ КОНСТРУКТОРА АССЕТА?
-//        Float commissionPercentValue = turnoverCommissionValueRepository
-        return null;
+    private static Float findTurnoverCommissionValue(Account account, String assetTypeName) {
+        return turnoverCommissionValueRepository.findByAccountAndAssetTypeName(account, assetTypeName)
+                .getCommissionPercentValue();
     }
 }
