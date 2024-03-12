@@ -1,5 +1,6 @@
 package fund.data.assets.model.assets.exchange;
 
+import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.utils.AutoSelector;
 import fund.data.assets.utils.CommissionCalculator;
 import fund.data.assets.utils.enums.AssetCurrency;
@@ -70,7 +71,8 @@ public class FixedRateBond extends ExchangeAsset {
                          Float bondAccruedInterest,
                          Float bondCouponValue,
                          Integer expectedBondCouponPaymentsCount,
-                         LocalDate bondMaturityDate) {
+                         LocalDate bondMaturityDate,
+                         Account account) {
         super(assetCurrency, FixedRateBond.class.getTypeName(), assetTitle, assetCount,
                 AutoSelector.selectTaxSystem(assetCurrency, FixedRateBond.class.getTypeName()),
                 iSIN, assetIssuerTitle, lastAssetBuyDate);
@@ -97,6 +99,7 @@ public class FixedRateBond extends ExchangeAsset {
         this.bondMaturityDate = bondMaturityDate;
         this.yieldToMaturity = calculateYieldToMaturity();
         this.markDementevYieldIndicator = calculateMarkDementevYieldIndicator();
+        //В самом конце - создай AssetRelationship и установи ссылку на него в Asset
     }
 
     private Double calculateTotalAssetPurchasePriceWithCommission() {

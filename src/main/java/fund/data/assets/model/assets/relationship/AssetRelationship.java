@@ -1,15 +1,16 @@
-package fund.data.assets.model.assets;
+package fund.data.assets.model.assets.relationship;
 
-import fund.data.assets.model.financial_entities.Account;
+import fund.data.assets.model.assets.Asset;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,18 +24,15 @@ import java.time.Instant;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "asset ownerships with account placement")
 @NoArgsConstructor
 @Getter
 @Setter
-public class AssetRelationship {
+public abstract class AssetRelationship {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id", nullable = false)
-    private Account account;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "asset_id", nullable = false)
