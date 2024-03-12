@@ -86,7 +86,7 @@ public class FixedRateBond extends ExchangeAsset {
             this.totalCommissionForPurchase = 0.00F;
         }
         //Проведи работу выше по полноценному хранению размера комиссии со всеми нужными доработками!
-
+        //ДОБАВИТЬ В КОНСТРУКТОР АККАУНТ, ЧТОБЫ СЧИТАТЬ КОМИССИЮ И ФОРМИРОВАТЬ В ПРОЦЕССЕ AssetRelationship?
 
 
 

@@ -30,7 +30,7 @@ public class CommissionCalculator {
 
     private static Float findCommissionPercentValue() {
         //Здесь надо находить в БД флоат комиссии исходя из типа актива и счёта, где находится актив.
-        //Нужно внедрить AssetRelationship, чтобы получать оттуда счёт!!!
+        //Нужно внедрить AssetRelationship, чтобы получать оттуда счёт!!! ИЛИ ПОЛУЧАТЬ СЧЁТ ИЗ КОНСТРУКТОРА АССЕТА?
 //        Float commissionPercentValue = turnoverCommissionValueRepository
         return null;
     }

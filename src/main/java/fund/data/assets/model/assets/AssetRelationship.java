@@ -9,8 +9,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.FetchType;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,8 +23,7 @@ import java.time.Instant;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
-@Table(name = "all assets on all accounts with owners")
-@AllArgsConstructor
+@Table(name = "asset ownerships with account placement")
 @NoArgsConstructor
 @Getter
 @Setter
@@ -33,23 +32,21 @@ public class AssetRelationship {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "asset_id", nullable = false)
+    private Asset asset;
+
+    /*
+    Добавь как-то список собственников... Или одного собственника...
+     */
+
     @CreationTimestamp
     private Instant createdAt;
 
     @UpdateTimestamp
     private Instant updatedAt;
-
-    @ManyToOne
-    @JoinColumn(name = "account_id", nullable = false)
-    private Account account;
-
-    @OneToOne
-    @JoinColumn(name = "asset_id", nullable = false)
-    private Asset asset;
-
-//    private Map<Long, Float> ownersWithOwnershipPercentages;
-
-//    @ManyToOne
-//    @JoinColumn(name = "assetType_id", nullable = false)
-//    private AssetType assetType;
 }

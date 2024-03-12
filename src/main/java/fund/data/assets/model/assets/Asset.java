@@ -3,9 +3,6 @@ package fund.data.assets.model.assets;
 import fund.data.assets.utils.enums.AssetCurrency;
 import fund.data.assets.utils.enums.TaxSystem;
 
-//import jakarta.persistence.JoinColumn;
-//import jakarta.persistence.OneToOne;
-//import jakarta.persistence.CascadeType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Inheritance;
@@ -13,6 +10,10 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.JoinColumn;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -38,9 +39,7 @@ public abstract class Asset {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
-    /*
-    check - does fund.data.assets.utils.Currency validation works correctly without any validation annotation?
-    */
+
     @NotNull
     @Enumerated(EnumType.STRING)
     private AssetCurrency assetCurrency;
@@ -59,6 +58,10 @@ public abstract class Asset {
     @Enumerated(EnumType.STRING)
     private TaxSystem assetTaxSystem;
 
+    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JoinColumn(name = "assetRelationship_id")
+    private AssetRelationship assetRelationship;
+
     @CreationTimestamp
     private Instant createdAt;
 
@@ -73,14 +76,4 @@ public abstract class Asset {
         this.assetCount = assetCount;
         this.assetTaxSystem = assetTaxSystem;
     }
-
-//    /*
-//     check - does cascade and fetch works correctly?
-//     */
-//    @OneToOne(cascade = CascadeType.MERGE)
-//    @JoinColumn(name = "assetRelationship_id", nullable = false)
-//    private AssetRelationship assetRelationship;
-
-//    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
-//    private Set<Asset> assets;
 }
