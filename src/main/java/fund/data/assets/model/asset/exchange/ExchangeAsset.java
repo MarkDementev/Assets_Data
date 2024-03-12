@@ -1,6 +1,7 @@
 package fund.data.assets.model.asset.exchange;
 
 import fund.data.assets.model.asset.Asset;
+import fund.data.assets.model.asset.user.AssetsOwner;
 import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.utils.AutoSelector;
 import fund.data.assets.utils.enums.AssetCurrency;
@@ -67,9 +68,9 @@ public abstract class ExchangeAsset extends Asset {
     private CommissionSystem assetCommissionSystem;
 
     public ExchangeAsset(AssetCurrency assetCurrency, String assetTypeName, String assetTitle, Integer assetCount,
-                         TaxSystem assetTaxSystem, Account account, String iSIN, String assetIssuerTitle,
-                         LocalDate lastAssetBuyDate) {
-        super(assetCurrency, assetTypeName, assetTitle, assetCount, assetTaxSystem, account);
+                         TaxSystem assetTaxSystem, Account account, AssetsOwner assetsOwner, String iSIN,
+                         String assetIssuerTitle, LocalDate lastAssetBuyDate) {
+        super(assetCurrency, assetTypeName, assetTitle, assetCount, assetTaxSystem, account, assetsOwner);
 
         this.iSIN = iSIN;
         this.assetIssuerTitle = assetIssuerTitle;

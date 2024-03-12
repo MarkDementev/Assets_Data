@@ -1,6 +1,7 @@
 package fund.data.assets.model.asset.relationship;
 
 import fund.data.assets.model.asset.Asset;
+import fund.data.assets.model.asset.user.AssetsOwner;
 import fund.data.assets.model.financial_entities.Account;
 
 import jakarta.persistence.Entity;
@@ -30,8 +31,8 @@ public class FinancialAssetRelationship extends AssetRelationship {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
-    public FinancialAssetRelationship(Asset asset, Account account) {
-        super(asset);
+    public FinancialAssetRelationship(Asset asset, Account account, AssetsOwner assetOwner) {
+        super(asset, assetOwner);
 
         this.account = account;
     }

@@ -35,7 +35,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Entity
-@Table(name = "turnover commission percent values on all accounts")
+@Table(name = "Turnover commission percent values on all accounts")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

@@ -1,5 +1,6 @@
 package fund.data.assets.model.asset.exchange;
 
+import fund.data.assets.model.asset.user.AssetsOwner;
 import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.utils.AutoSelector;
 import fund.data.assets.utils.CommissionCalculator;
@@ -115,13 +116,14 @@ public class FixedRateBond extends ExchangeAsset {
                          Float purchaseBondParValuePercent,
                          Float bondAccruedInterest,
                          Account account,
+                         AssetsOwner assetsOwner,
                          Float bondCouponValue,
                          Integer expectedBondCouponPaymentsCount,
                          LocalDate bondMaturityDate) {
         super(assetCurrency, FixedRateBond.class.getTypeName(), assetTitle, assetCount,
                 (TaxSystem) AutoSelector.selectAssetOperationsCostSystem(assetCurrency,
-                        FixedRateBond.class.getTypeName(), AutoSelector.TAX_SYSTEM_CHOOSE), account, iSIN,
-                assetIssuerTitle, lastAssetBuyDate);
+                        FixedRateBond.class.getTypeName(), AutoSelector.TAX_SYSTEM_CHOOSE), account, assetsOwner,
+                iSIN, assetIssuerTitle, lastAssetBuyDate);
         this.bondParValue = bondParValue;
         this.purchaseBondParValuePercent = purchaseBondParValuePercent;
         this.bondAccruedInterest = bondAccruedInterest;
