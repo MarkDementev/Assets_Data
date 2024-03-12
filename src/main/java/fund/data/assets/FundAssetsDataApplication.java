@@ -8,18 +8,6 @@ public class FundAssetsDataApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(FundAssetsDataApplication.class, args);
 	}
-	/*
-	Протестируй валидацию внутри сущностей!
-	 */
-
-	/*
-    НЕ ЗАБУДЬ ДОСОЗДАТЬ СУЩНОСТЬ ОУНЕРОВ И ДОПИСАТЬ ASSET!
-     */
-
-	/*
-	Протестируй методы внутри FixedRateBond
-	 */
-
 	//Продумай, как прописать архитектуру в контроллере и сервисе касаемо того, как именно будет меняться бонд
 
 	/*
