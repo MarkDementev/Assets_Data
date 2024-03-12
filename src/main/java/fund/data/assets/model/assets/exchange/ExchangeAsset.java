@@ -1,7 +1,7 @@
 package fund.data.assets.model.assets.exchange;
 
 import fund.data.assets.model.Asset;
-import fund.data.assets.utils.CommissionSystem;
+import fund.data.assets.utils.enums.CommissionSystem;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -44,28 +44,19 @@ public abstract class ExchangeAsset extends Asset {
     @Size(min = 10, max = 10)
     private Instant lastAssetBuyDate;
 
-//    @NotNull
-//    private Boolean isCommissionableAsset;
-//
-//    @Enumerated(EnumType.STRING)
-//    private CommissionSystem assetCommissionSystem;
-//
-//    @PositiveOrZero
-//    private Float oneAssetCommissionForPurchase;
-//
-//    @PositiveOrZero
-//    private Float totalCommissionForPurchase;
-//
-//    @NotNull
-//    @PositiveOrZero
-//    private Double totalAssetPurchasePriceWithCommission;
+    @Enumerated(EnumType.STRING)
+    private CommissionSystem assetCommissionSystem;
+
+    @PositiveOrZero
+    private Float totalCommissionForPurchase;
+
+    @NotNull
+    @PositiveOrZero
+    private Double totalAssetPurchasePriceWithCommission;
 
     public ExchangeAsset(String iSIN, String assetIssuerTitle, Instant lastAssetBuyDate) {
         this.iSIN = iSIN;
         this.assetIssuerTitle = assetIssuerTitle;
         this.lastAssetBuyDate = lastAssetBuyDate;
-//        this.oneAssetCommissionForPurchase = 0.00F;
-//        this.totalCommissionForPurchase = 0.00F;
-//        this.totalAssetPurchasePriceWithCommission = 0.00;
     }
 }
