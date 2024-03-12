@@ -3,7 +3,7 @@ package fund.data.assets;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import fund.data.assets.config.SpringConfigForTests;
-import fund.data.assets.model.Account;
+import fund.data.assets.model.assets.exchange.FixedRateBond;
 import fund.data.assets.repository.FixedRateBondRepository;
 
 import org.junit.jupiter.api.AfterEach;
@@ -106,17 +106,32 @@ public class FixedRateBondControllerIT {
                 .andExpect(status().isCreated())
                 .andReturn()
                 .getResponse();
-//        final Account accountFromResponse = fromJson(response.getContentAsString(), new TypeReference<>() {
-//        });
-//
-//        assertNotNull(accountFromResponse.getId());
-//        assertEquals(accountFromResponse.getOrganisationWhereAccountOpened(),
-//                testUtils.getAccountDTO().getOrganisationWhereAccountOpened());
-//        assertEquals(accountFromResponse.getAccountNumber(),
-//                testUtils.getAccountDTO().getAccountNumber());
-//        assertEquals(accountFromResponse.getAccountOpeningDate(),
-//                testUtils.getAccountDTO().getAccountOpeningDate());
-//        assertNotNull(accountFromResponse.getCreatedAt());
+        final FixedRateBond fixedRateBondFromResponse = fromJson(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        assertNotNull(fixedRateBondFromResponse.getId());
+        assertEquals(fixedRateBondFromResponse.getISIN(), testUtils.getFixedRateBondDTO().getISIN());
+        assertEquals(fixedRateBondFromResponse.getAssetIssuerTitle(),
+                testUtils.getFixedRateBondDTO().getAssetIssuerTitle());
+        assertEquals(fixedRateBondFromResponse.getLastAssetBuyDate(),
+                testUtils.getFixedRateBondDTO().getLastAssetBuyDate());
+        assertEquals(fixedRateBondFromResponse.getAssetCurrency(),
+                testUtils.getFixedRateBondDTO().getAssetCurrency());
+        assertEquals(fixedRateBondFromResponse.getAssetTitle(),
+                testUtils.getFixedRateBondDTO().getAssetTitle());
+        assertEquals(fixedRateBondFromResponse.getBondParValue(),
+                testUtils.getFixedRateBondDTO().getBondParValue());
+        assertEquals(fixedRateBondFromResponse.getBondPurchaseMarketPrice(),
+                testUtils.getFixedRateBondDTO().getBondPurchaseMarketPrice());
+        assertEquals(fixedRateBondFromResponse.getBondAccruedInterest(),
+                testUtils.getFixedRateBondDTO().getBondAccruedInterest());
+        assertEquals(fixedRateBondFromResponse.getBondCouponValue(),
+                testUtils.getFixedRateBondDTO().getBondCouponValue());
+        assertEquals(fixedRateBondFromResponse.getExpectedBondCouponPaymentsCount(),
+                testUtils.getFixedRateBondDTO().getExpectedBondCouponPaymentsCount());
+        assertEquals(fixedRateBondFromResponse.getBondMaturityDate(),
+                testUtils.getFixedRateBondDTO().getBondMaturityDate());
+        assertNotNull(fixedRateBondFromResponse.getCreatedAt());
     }
 
     @Test

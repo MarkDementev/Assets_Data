@@ -6,7 +6,10 @@ import fund.data.assets.config.SpringConfigForTests;
 import fund.data.assets.model.Account;
 import fund.data.assets.repository.AccountRepository;
 
+import jakarta.servlet.ServletException;
+
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -118,14 +121,31 @@ class AccountControllerIT {
 	}
 
 	@Test
+	public void createNotValidAccountIT() throws Exception {
+		testUtils.perform(post("/data" + ACCOUNT_CONTROLLER_PATH)
+				.content(asJson(testUtils.getNotValidAccountDTO()))
+				.contentType(APPLICATION_JSON));
+
+		assertThat(accountRepository.findAll()).hasSize(0);
+
+		testUtils.createDefaultAccount();
+
+		Assertions.assertThrows(ServletException.class,
+				() -> testUtils.perform(post("/data" + ACCOUNT_CONTROLLER_PATH)
+						.content(asJson(testUtils.getAnotherBankButSimilarAccountNumberAccountDTO()))
+						.contentType(APPLICATION_JSON)));
+		assertThat(accountRepository.findAll()).hasSize(1);
+	}
+
+	@Test
 	public void updateAccountIT() throws Exception {
 		testUtils.createDefaultAccount();
 
 		Long createdAccountId = accountRepository.findByOrganisationWhereAccountOpened(
 				testUtils.getAccountDTO().getOrganisationWhereAccountOpened()).getId();
 		final var response = testUtils.perform(put("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH,
-								createdAccountId)
-								.content(asJson(testUtils.getSecondAccountDTO())).contentType(APPLICATION_JSON))
+						createdAccountId)
+						.content(asJson(testUtils.getSecondAccountDTO())).contentType(APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andReturn()
 				.getResponse();
@@ -140,6 +160,36 @@ class AccountControllerIT {
 		assertEquals(accountFromResponse.getAccountOpeningDate(),
 				testUtils.getSecondAccountDTO().getAccountOpeningDate());
 		assertNotNull(accountFromResponse.getCreatedAt());
+		assertNotNull(accountFromResponse.getUpdatedAt());
+	}
+
+	@Test
+	public void notValidUpdateAccountIT() throws Exception {
+		testUtils.createDefaultAccount();
+
+		Long createdAccountId = accountRepository.findByOrganisationWhereAccountOpened(
+				testUtils.getAccountDTO().getOrganisationWhereAccountOpened()).getId();
+		testUtils.perform(put("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH,
+				createdAccountId)
+				.content(asJson(testUtils.getNotValidAccountDTO()))
+				.contentType(APPLICATION_JSON));
+
+		assertEquals(accountRepository.findAll().get(0).getOrganisationWhereAccountOpened(),
+				testUtils.getAccountDTO().getOrganisationWhereAccountOpened());
+		assertEquals(accountRepository.findAll().get(0).getAccountNumber(),
+				testUtils.getAccountDTO().getAccountNumber());
+		assertEquals(accountRepository.findAll().get(0).getAccountOpeningDate(),
+				testUtils.getAccountDTO().getAccountOpeningDate());
+
+		testUtils.createDefaultSecondAccount();
+
+		Long createdSecondAccountId = accountRepository.findByOrganisationWhereAccountOpened(
+				testUtils.getSecondAccountDTO().getOrganisationWhereAccountOpened()).getId();
+		Assertions.assertThrows(ServletException.class,
+				() -> testUtils.perform(put("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH,
+						createdSecondAccountId)
+						.content(asJson(testUtils.getAccountDTO()))
+						.contentType(APPLICATION_JSON)));
 	}
 
 	@Test

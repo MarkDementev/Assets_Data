@@ -7,9 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fund.data.assets.dto.AccountDTO;
 import fund.data.assets.dto.FixedRateBondDTO;
 import fund.data.assets.repository.AccountRepository;
-
 import fund.data.assets.utils.enums.AssetCurrency;
-import jakarta.validation.constraints.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,8 +19,8 @@ import java.time.LocalDate;
 
 import static fund.data.assets.controller.AccountController.ACCOUNT_CONTROLLER_PATH;
 import static fund.data.assets.utils.FinancialAndAnotherConstants.STANDARD_BOND_PAR_VALUE;
-
 import static fund.data.assets.utils.FinancialAndAnotherConstants.STANDARD_BOND_PURCHASE_MARKET_PRICE;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
@@ -41,6 +40,18 @@ public class TestUtils {
     private final AccountDTO secondAccountDTO = new AccountDTO(
             "UPDATEDdefaultBank",
             "UPDATED1q2w3e4r5t",
+            LocalDate.now()
+    );
+
+    private final AccountDTO notValidAccountDTO = new AccountDTO(
+            " ",
+            " ",
+            null
+    );
+
+    private final AccountDTO anotherBankButSimilarAccountNumberAccountDTO = new AccountDTO(
+            "anotherBank",
+            "1q2w3e4r5t",
             LocalDate.now()
     );
 
@@ -71,12 +82,24 @@ public class TestUtils {
         return secondAccountDTO;
     }
 
+    public AccountDTO getNotValidAccountDTO() {
+        return notValidAccountDTO;
+    }
+
+    public AccountDTO getAnotherBankButSimilarAccountNumberAccountDTO() {
+        return anotherBankButSimilarAccountNumberAccountDTO;
+    }
+
     public FixedRateBondDTO getFixedRateBondDTO() {
         return fixedRateBondDTO;
     }
 
     public ResultActions createDefaultAccount() throws Exception {
         return createAccount(accountDTO);
+    }
+
+    public ResultActions createDefaultSecondAccount() throws Exception {
+        return createAccount(secondAccountDTO);
     }
 
     public ResultActions createAccount(final AccountDTO accountDTO) throws Exception {
