@@ -1,7 +1,9 @@
 package fund.data.assets.service.impl;
 
 import fund.data.assets.dto.TurnoverCommissionValueDTO;
+import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.model.financial_entities.TurnoverCommissionValue;
+import fund.data.assets.repository.AccountRepository;
 import fund.data.assets.repository.TurnoverCommissionValueRepository;
 import fund.data.assets.service.TurnoverCommissionValueService;
 
@@ -16,6 +18,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class TurnoverCommissionServiceValueImpl implements TurnoverCommissionValueService {
+    private final AccountRepository accountRepository;
     private final TurnoverCommissionValueRepository turnoverCommissionValueRepository;
 
     @Override
@@ -32,10 +35,12 @@ public class TurnoverCommissionServiceValueImpl implements TurnoverCommissionVal
     public TurnoverCommissionValue createTurnoverCommissionValue(
             TurnoverCommissionValueDTO TurnoverCommissionValueDTO) {
         TurnoverCommissionValue newTurnoverCommissionValue = new TurnoverCommissionValue();
+        Account account = accountRepository.findById(TurnoverCommissionValueDTO.getAccountID()).orElseThrow();
 
+        newTurnoverCommissionValue.setAccount(account);
         getFromDTOThenSetAll(newTurnoverCommissionValue, TurnoverCommissionValueDTO);
 
-        return newTurnoverCommissionValue;
+        return turnoverCommissionValueRepository.save(newTurnoverCommissionValue);
     }
 
     @Override
@@ -47,7 +52,7 @@ public class TurnoverCommissionServiceValueImpl implements TurnoverCommissionVal
 
         getFromDTOThenSetAll(turnoverCommissionValueToUpdate, turnoverCommissionValueDTO);
 
-        return turnoverCommissionValueToUpdate;
+        return turnoverCommissionValueRepository.save(turnoverCommissionValueToUpdate);
     }
 
     @Override
@@ -58,7 +63,6 @@ public class TurnoverCommissionServiceValueImpl implements TurnoverCommissionVal
     private void getFromDTOThenSetAll(TurnoverCommissionValue turnoverCommissionValueToWorkWith,
                                       TurnoverCommissionValueDTO turnoverCommissionValueDTO) {
         turnoverCommissionValueToWorkWith.setCommissionSystem(turnoverCommissionValueDTO.getCommissionSystem());
-        turnoverCommissionValueToWorkWith.setAccount(turnoverCommissionValueDTO.getAccount());
         turnoverCommissionValueToWorkWith.setAssetTypeName(turnoverCommissionValueDTO.getAssetTypeName());
         turnoverCommissionValueToWorkWith.setCommissionPercentValue(
                 turnoverCommissionValueDTO.getCommissionPercentValue());

@@ -1,6 +1,5 @@
 package fund.data.assets.dto;
 
-import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.utils.enums.CommissionSystem;
 
 import jakarta.validation.constraints.NotBlank;
@@ -17,7 +16,8 @@ public class TurnoverCommissionValueDTO {
     @NotNull
     private CommissionSystem commissionSystem;
 
-    private Account account;
+    @NotNull
+    private Long accountID;
 
     @NotBlank
     private String assetTypeName;

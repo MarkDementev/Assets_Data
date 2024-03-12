@@ -45,11 +45,11 @@ public class FixedRateBondController {
         return fixedRateBondService.getFixedRateBonds();
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public FixedRateBond createFixedRateBond(@RequestBody @Valid FixedRateBondDTO fixedRateBondDTO) {
-        return fixedRateBondService.createFixedRateBond(fixedRateBondDTO);
-    }
+//    @PostMapping
+//    @ResponseStatus(HttpStatus.CREATED)
+//    public FixedRateBond createFixedRateBond(@RequestBody @Valid FixedRateBondDTO fixedRateBondDTO) {
+//        return fixedRateBondService.createFixedRateBond(fixedRateBondDTO);
+//    }
 
     @DeleteMapping(ID_PATH)
     public void deleteFixedRateBond(@PathVariable Long id) {
