@@ -1,6 +1,7 @@
 package fund.data.assets.service.impl;
 
 import fund.data.assets.dto.FixedRateBondDTO;
+import fund.data.assets.model.Account;
 import fund.data.assets.model.assets.exchange.FixedRateBond;
 import fund.data.assets.repository.FixedRateBondRepository;
 import fund.data.assets.service.FixedRateBondService;
@@ -32,6 +33,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
 
     @Override
     public FixedRateBond createFixedRateBond(FixedRateBondDTO fixedRateBondDTO) {
+        Account account = fixedRateBondDTO.getAccount();
         String iSIN = fixedRateBondDTO.getISIN();
         String assetIssuerTitle = fixedRateBondDTO.getAssetIssuerTitle();
         LocalDate lastAssetBuyDate = fixedRateBondDTO.getLastAssetBuyDate();
@@ -45,9 +47,9 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         Integer expectedBondCouponPaymentsCount = fixedRateBondDTO.getExpectedBondCouponPaymentsCount();
         LocalDate bondMaturityDate = fixedRateBondDTO.getBondMaturityDate();
 
-        FixedRateBond newFixedRateBond = new FixedRateBond(iSIN, assetIssuerTitle, lastAssetBuyDate, assetCurrency,
-                assetTitle, assetCount, bondParValue, bondPurchaseMarketPrice, bondAccruedInterest, bondCouponValue,
-                expectedBondCouponPaymentsCount, bondMaturityDate);
+        FixedRateBond newFixedRateBond = new FixedRateBond(account, iSIN, assetIssuerTitle, lastAssetBuyDate,
+                assetCurrency, assetTitle, assetCount, bondParValue, bondPurchaseMarketPrice, bondAccruedInterest,
+                bondCouponValue, expectedBondCouponPaymentsCount, bondMaturityDate);
 
         return fixedRateBondRepository.save(newFixedRateBond);
     }

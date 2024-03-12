@@ -1,9 +1,10 @@
 package fund.data.assets.model.assets.exchange;
 
+import fund.data.assets.model.Account;
 import fund.data.assets.utils.AutoSelector;
 import fund.data.assets.utils.CommissionCalculator;
 import fund.data.assets.utils.enums.AssetCurrency;
-import fund.data.assets.utils.FinancialCalculationConstants;
+import fund.data.assets.utils.FinancialAndAnotherConstants;
 import fund.data.assets.utils.enums.CommissionSystem;
 import fund.data.assets.utils.enums.TaxSystem;
 
@@ -56,7 +57,8 @@ public class FixedRateBond extends ExchangeAsset {
 
     private Float markDementevYieldIndicator;
 
-    public FixedRateBond(String iSIN,
+    public FixedRateBond(Account bondAccount,
+                         String iSIN,
                          String assetIssuerTitle,
                          LocalDate lastAssetBuyDate,
                          AssetCurrency assetCurrency,
@@ -75,28 +77,26 @@ public class FixedRateBond extends ExchangeAsset {
         super.setAssetCount(assetCount);
         super.setAssetTaxSystem(AutoSelector.selectTaxSystem(getAssetCurrency(), getAssetTypeName()));
 //        super.setAssetCommissionSystem(AutoSelector.selectCommissionSystem(getAssetCurrency(), getAssetTypeName(),
-//                getAssetRelationship().getAccount().getOrganisationWhereAccountOpened()));
-        //Ниже - временная заглушка
-        super.setAssetCommissionSystem(CommissionSystem.TURNOVER);
+//                bondAccount.getOrganisationWhereAccountOpened()));
         this.bondParValue = bondParValue;
         this.bondPurchaseMarketPrice = bondPurchaseMarketPrice;
 
-        if (getAssetCommissionSystem() != null) {
-            super.setTotalCommissionForPurchase(CommissionCalculator.calculateCommission(
-                    getAssetCommissionSystem(),
-                    getAssetCount(),
-                    bondPurchaseMarketPrice,
-                    bondParValue));
-        } else {
-            super.setTotalCommissionForPurchase(0.00F);
-        }
-        super.setTotalAssetPurchasePriceWithCommission(calculateTotalAssetPurchasePriceWithCommission());
+//        if (getAssetCommissionSystem() != null) {
+//            super.setTotalCommissionForPurchase(CommissionCalculator.calculateCommission(
+//                    getAssetCommissionSystem(),
+//                    getAssetCount(),
+//                    bondPurchaseMarketPrice,
+//                    bondParValue));
+//        } else {
+//            super.setTotalCommissionForPurchase(0.00F);
+//        }
+//        super.setTotalAssetPurchasePriceWithCommission(calculateTotalAssetPurchasePriceWithCommission());
         this.bondAccruedInterest = bondAccruedInterest;
         this.bondCouponValue = bondCouponValue;
         this.expectedBondCouponPaymentsCount = expectedBondCouponPaymentsCount;
         this.bondMaturityDate = bondMaturityDate;
-        this.yieldToMaturity = calculateYieldToMaturity();
-        this.markDementevYieldIndicator = calculateMarkDementevYieldIndicator();
+//        this.yieldToMaturity = calculateYieldToMaturity();
+//        this.markDementevYieldIndicator = calculateMarkDementevYieldIndicator();
     }
 
     private Double calculateTotalAssetPurchasePriceWithCommission() {
@@ -110,7 +110,7 @@ public class FixedRateBond extends ExchangeAsset {
         return ((bondParValue - (bondParValue * bondPurchaseMarketPrice)
                 + (allExpectedCouponPaymentsValue - bondAccruedInterest))
                 / (bondParValue * bondPurchaseMarketPrice))
-                * FinancialCalculationConstants.YEAR_DAYS_COUNT
+                * FinancialAndAnotherConstants.YEAR_DAYS_COUNT
                 / daysBeforeMaturity;
     }
 
@@ -120,11 +120,7 @@ public class FixedRateBond extends ExchangeAsset {
         if (super.getAssetCurrency().getTitle().equals(AssetCurrency.RUSRUB.getTitle())
                 && super.getAssetTaxSystem().getTitle().equals(TaxSystem.EQUAL_COUPON_DIVIDEND_TRADE.getTitle())
                 && super.getAssetCommissionSystem().getTitle().equals(CommissionSystem.TURNOVER.getTitle())) {
-            incomeTaxCorrection = 0.87F;
-            /*
-            Корректировка incomeTaxCorrection с помощью запроса через контроллер для получения записи в БД
-            о размере НДФЛ. Конкретно здесь incomeTaxCorrection должно стать 0.87F, из-за размера РФ НДФЛ в 13%.
-             */
+            incomeTaxCorrection = FinancialAndAnotherConstants.RUSSIAN_FIXED_RATE_BONDS_TAX_SYSTEM_CORRECTION;
         } else {
             return null;
         }
@@ -140,12 +136,12 @@ public class FixedRateBond extends ExchangeAsset {
                     * incomeTaxCorrection)
                     / bondValueSummedWithCommission
                     / daysBeforeMaturity
-                    * FinancialCalculationConstants.YEAR_DAYS_COUNT;
+                    * FinancialAndAnotherConstants.YEAR_DAYS_COUNT;
         } else {
             yieldIndicator = ((allExpectedCouponPaymentsValue * incomeTaxCorrection)
                     / bondValueSummedWithCommission)
                     / daysBeforeMaturity
-                    * FinancialCalculationConstants.YEAR_DAYS_COUNT;
+                    * FinancialAndAnotherConstants.YEAR_DAYS_COUNT;
         }
         return yieldIndicator;
     }
@@ -153,9 +149,9 @@ public class FixedRateBond extends ExchangeAsset {
     private int calculateDaysBeforeMaturity() {
         long hoursBeforeMaturity = ChronoUnit.HOURS.between(getLastAssetBuyDate(), bondMaturityDate);
         int daysBeforeMaturity = Integer.parseInt(String.valueOf(hoursBeforeMaturity))
-                / FinancialCalculationConstants.DAY_HOURS_COUNT;
+                / FinancialAndAnotherConstants.DAY_HOURS_COUNT;
 
-        if (hoursBeforeMaturity % FinancialCalculationConstants.DAY_HOURS_COUNT != 0) {
+        if (hoursBeforeMaturity % FinancialAndAnotherConstants.DAY_HOURS_COUNT != 0) {
             daysBeforeMaturity++;
         }
         return daysBeforeMaturity;
