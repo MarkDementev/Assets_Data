@@ -12,11 +12,13 @@ import org.hibernate.cfg.Configuration;
 
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
 @Service
-//@Transactional
 @NoArgsConstructor
 public class AccountService {
     private final SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
@@ -43,36 +45,32 @@ public class AccountService {
         }
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = {Exception.class})
     public void updateAccount(Long id, AccountDTO accountDTO) {
         try (Session session = sessionFactory.openSession()) {
             Transaction transaction = session.getTransaction();
 
-            try {
-                transaction.begin();
+            transaction.begin();
 
-                Account accountToUpdate = getAccount(id);
-                getFromDTOThenSetAll(accountToUpdate, accountDTO);
-                session.merge(accountToUpdate);
+            Account accountToUpdate = getAccount(id);
+            getFromDTOThenSetAll(accountToUpdate, accountDTO);
+            session.merge(accountToUpdate);
 
-                transaction.commit();
-            } catch (Exception e) {
-                transaction.rollback();
-            }
+            transaction.commit();
         }
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = {Exception.class})
     public void deleteAccount(Long id) {
         try (Session session = sessionFactory.openSession()) {
             Transaction transaction = session.getTransaction();
 
-            try {
-                transaction.begin();
-                Account accountToRemove = getAccount(id);
-                session.remove(accountToRemove);
-                transaction.commit();
-            } catch (Exception e) {
-                transaction.rollback();
-            }
+            transaction.begin();
+
+            Account accountToRemove = getAccount(id);
+            session.remove(accountToRemove);
+
+            transaction.commit();
         }
     }
 
