@@ -11,6 +11,11 @@ import org.springframework.stereotype.Component;
 
 import static fund.data.assets.utils.enums.AssetCurrency.RUSRUB;
 
+/**
+ * Класс для автоматического подбора типа системы налогообложения актива и системы расчёта брокерской комиссии.
+ * @version 0.0.1-alpha
+ * @author MarkDementev a.k.a JavaMarkDem
+ */
 @Component
 @RequiredArgsConstructor
 public class AutoSelector {
@@ -23,6 +28,19 @@ public class AutoSelector {
     public static final String TAX_SYSTEM_CHOOSE = "TAX_SYSTEM";
     public static final String NO_TAX_SYSTEM_CHOOSE = "NO_TAX_SYSTEM";
 
+    //TODO Этот класс и этот метод - временные, до внедрения иных модулей для налогообложения и комиссий.
+    /**
+     * Автоматически подбирает тип системы налогообложения и системы расчёта брокерской комиссии.
+     * @param assetCurrency Валюта  актива.
+     * @param assetTypeName Тип актива.
+     * @param costSystemToChoose Техническое значение - указатель, какой тип системы возвращать, т.к. метод полиморфный.
+     * @return Возвращает либо CommissionSystem, либо TaxSystem.
+     * @throws RuntimeException Если в качестве аргумента costSystemToChoose не COMMISSION_SYSTEM_CHOOSE
+     * или TAX_SYSTEM_CHOOSE
+     * @throws IllegalArgumentException Если в качестве аргумента не поддерживаемые пока что системой фонда тип актива
+     * или валюта актива.
+     * @since 0.0.1-alpha
+     */
     public static Enum<? extends Enum<?>> selectAssetOperationsCostSystem(AssetCurrency assetCurrency,
                                                                           String assetTypeName,
                                                                           String costSystemToChoose) {

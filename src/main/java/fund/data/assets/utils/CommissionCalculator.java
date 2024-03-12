@@ -11,6 +11,11 @@ import org.springframework.stereotype.Component;
 
 import static fund.data.assets.utils.enums.CommissionSystem.TURNOVER;
 
+/**
+ * Класс для расчёта общего размера комиссии с оборота по активу при конкретной тразакции.
+ * @version 0.0.1-alpha
+ * @author MarkDementev a.k.a JavaMarkDem
+ */
 @Component
 @RequiredArgsConstructor
 public class CommissionCalculator {
@@ -19,6 +24,17 @@ public class CommissionCalculator {
     @Autowired
     private TurnoverCommissionValueRepository turnoverCommissionValueRepository;
 
+    /**
+     * Метод рассчитывает общий размер комиссии с оборота по активу при конкретной тразакции.
+     * @param commissionSystem Система комиссии, необходимо, чтобы была только CommissionSystem.TURNOVER.
+     * @param account Счёт, где проводится операция.
+     * @param assetTypeName Тип актива, с которым проводится операция.
+     * @param assetCount Количество единиц актива, с которым проводится операция.
+     * @param bondPurchaseMarketPrice % от номинала цены актива - рыночная цена покупки актива ("грязная" цена).
+     * @return Возвращает общий размер комиссии с оборота по активу - число с плавающей запятой.
+     * @throws IllegalArgumentException Если в качестве аргумента commissionSystem не CommissionSystem.TURNOVER.
+     * @since 0.0.1-alpha
+     */
     public Float calculateTotalCommissionForPurchase(CommissionSystem commissionSystem,
                                                             Account account, String assetTypeName,
                                                             Integer assetCount, Float bondPurchaseMarketPrice) {
@@ -31,6 +47,13 @@ public class CommissionCalculator {
         }
     }
 
+    /**
+     * Находит комиссию - размер процента с оборота.
+     * @param account Счёт, на котором проводится операция.
+     * @param assetTypeName Тип актива, с которым проводится операция.
+     * @return Возвращает процента с оборота - число с плавающей запятой.
+     * @since 0.0.1-alpha
+     */
     private Float findTurnoverCommissionValue(Account account, String assetTypeName) {
         return turnoverCommissionValueRepository.findByAccountAndAssetTypeName(account, assetTypeName)
                 .getCommissionPercentValue();
