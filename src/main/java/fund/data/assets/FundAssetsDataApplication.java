@@ -14,8 +14,4 @@ public class FundAssetsDataApplication {
     НАДО-БЫ ФАБРИКУ СОЗДАТЬ ДЛЯ УПРОЩЕНИЯ СОЗДАНИЯ СУЩНОСТЕЙ!?
     Видимо, сделать это надо на этапе написания Controller. Напиши единую фабрику для всех биржевых активов.
      */
-
-	/*
-	Перенеси ASSETS_CONTROLLER_PATH и EXCHANGE_ASSETS_CONTROLLER_PATH в другое/другие места
-	 */
 }
