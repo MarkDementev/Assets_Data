@@ -34,8 +34,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class AssetsOwner {
-//    public abstract class AssetsOwner {
+public abstract class AssetsOwner {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -47,8 +46,9 @@ public class AssetsOwner {
     private String surname;
 
     /**
-     * Обращаясь к AssetsOwner, с вероятностью в 95% нам важны не его иные параметры, а активы на балансе.
-     * Потому fetch - это сразу FetchType.EAGER, а не FetchType.LAZY.
+     * Обращаясь к AssetsOwner, с вероятностью в 95% нам важны не его иные параметры, а активы на балансе. Информацию
+     * о них можно получить через обращение к сущности AssetRelationship. Потому fetch - это сразу FetchType.EAGER,
+     * а не FetchType.LAZY.
      */
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "assetsOwner")
     private List<AssetRelationship> assetRelationships;
