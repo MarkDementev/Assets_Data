@@ -27,6 +27,13 @@ import java.time.Instant;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
+/**
+ * Размер комиссии с оборота для типа актива на счёте.
+ * Наиболее частая практика взимания брокерской комиссии в РФ - это % с оборота
+ * по торгам определёнными типами активов на конкретном счёте.
+ * @version 0.0.1-alpha
+ * @author MarkDementev a.k.a JavaMarkDem
+ */
 @Entity
 @Table(name = "turnover commission percent values on all accounts")
 @NoArgsConstructor
@@ -42,14 +49,23 @@ public class TurnoverCommissionValue {
     @Enumerated(EnumType.STRING)
     private CommissionSystem commissionSystem;
 
+    /**
+     * Комиссия обычно устанавливается для определённого счёта.
+     */
     @ManyToOne
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
+    /**
+     * Комиссия обычно устанавливается для определённого тип актива.
+     */
     @NotBlank
     @Column(unique = true)
     private String assetTypeName;
 
+    /**
+     * Размер комиссии - это % с оборота. Потому нужен Float, Double будет занимать лишнее место.
+     */
     @NotNull
     private Float commissionPercentValue;
 
