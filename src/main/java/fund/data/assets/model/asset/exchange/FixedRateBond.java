@@ -1,5 +1,6 @@
 package fund.data.assets.model.asset.exchange;
 
+import fund.data.assets.exception.UnrealAddingAssetsParameterException;
 import fund.data.assets.model.asset.user.AssetsOwner;
 import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.utils.AutoSelector;
@@ -203,14 +204,12 @@ public class FixedRateBond extends ExchangeAsset {
     /**
      * Позволяет подсчитать на момент покупки, сколько облигация будет существовать, если держать её до погашения.
      * @return Количество дней со дня покупки облигации до дня погашения.
-     //TODO Поправь тут ниже, когда создашь свой exception
-     * @throws IllegalArgumentException Если в систему вводится уже погашенный бонд.
+     * @throws UnrealAddingAssetsParameterException Если в систему вводится уже погашенный бонд.
      * @since 0.0.1-alpha
      */
     private int calculateDaysBeforeMaturity() {
         if (ChronoUnit.DAYS.between(getLastAssetBuyDate(), bondMaturityDate) < 0) {
-            //TODO Замени на собственный exception
-            throw new IllegalArgumentException(WRONG_DATE_BOND_ADDING_WARNING);
+            throw new UnrealAddingAssetsParameterException(WRONG_DATE_BOND_ADDING_WARNING);
         }
         return (int) ChronoUnit.DAYS.between(getLastAssetBuyDate(), bondMaturityDate);
     }
