@@ -9,6 +9,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.Column;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -16,6 +17,7 @@ import jakarta.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -29,25 +31,27 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Entity
 @Table(name = "in-fund and out-fund accounts")
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 public class Account {
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    private long id;
+    private Long id;
 
     @NotBlank
     private String organisationWhereAccountOpened;
 
     @NotBlank
+    @Column(unique = true)
     private String accountNumber;
 
     /*
-        check - does in work correctly! May be need to add timezone?
+        check - does JsonFormat work correctly! May be need to add timezone?
         check size validation to!
      */
     @NotNull
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "dd-MM-yyyy")
     @Size(min = 10, max = 10)
     private Instant accountOpeningDate;
 
@@ -61,5 +65,5 @@ public class Account {
     check - does cascade and fetch works correctly?
     */
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Asset> assets;
+    private Set<AssetRelationship> assetRelationships;
 }

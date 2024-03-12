@@ -1,16 +1,18 @@
 package fund.data.assets.model;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.CascadeType;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,23 +20,33 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
-import java.util.Map;
+import java.util.Currency;
 
-import static jakarta.persistence.GenerationType.IDENTITY;
-
-@Entity
-@Table(name = "assets on specific accounts")
+/*
+check - does I need AllArgsConstructor?
+*/
+@MappedSuperclass
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-public class Asset {
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    private Long id;
+public abstract class Asset {
+    /*
+    check - does fund.data.assets.Currency validation works correctly without any validation annotation?
+    */
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private Currency assetCurrency;
+
+    @NotBlank
+    private String assetTypeName;
+
+    @NotBlank
+    private String assetTitle;
 
     @NotNull
     @Size(min = 1)
-    private Double assetsCount;
+    private Integer assetCount;
 
     @CreationTimestamp
     private Instant createdAt;
@@ -42,13 +54,12 @@ public class Asset {
     @UpdateTimestamp
     private Instant updatedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "account_id", nullable = false)
-    private Account account;
-
-    @ManyToOne
-    @JoinColumn(name = "assetType_id", nullable = false)
-    private AssetType assetType;
-//
-//    private Map<Long, Float> ownersWithOwnershipPercentages;
+    @OneToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "assetRelationship_id", nullable = false)
+    private AssetRelationship assetRelationship;
+    /*
+    check - does cascade and fetch works correctly?
+    */
+//    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+//    private Set<Asset> assets;
 }
