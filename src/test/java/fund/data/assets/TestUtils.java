@@ -15,6 +15,10 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import java.time.Instant;
 
+import static fund.data.assets.controller.AccountController.ACCOUNT_CONTROLLER_PATH;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
 @Component
 public class TestUtils {
     private static final ObjectMapper MAPPER = new ObjectMapper().findAndRegisterModules();
@@ -28,12 +32,34 @@ public class TestUtils {
             Instant.now()
     );
 
+    private final AccountDTO secondAccountDTO = new AccountDTO(
+            "UPDATEDdefaultBank",
+            "UPDATED1q2w3e4r5t",
+            Instant.now()
+    );
+
+    public void tearDown() {
+        accountRepository.deleteAll();
+    }
+
     public AccountDTO getAccountDTO() {
         return accountDTO;
     }
 
-    public void tearDown() {
-        accountRepository.deleteAll();
+    public AccountDTO getSecondAccountDTO() {
+        return secondAccountDTO;
+    }
+
+    public ResultActions createDefaultAccount() throws Exception {
+        return createAccount(accountDTO);
+    }
+
+    public ResultActions createAccount(final AccountDTO accountDTO) throws Exception {
+        final var request = post("/data" + ACCOUNT_CONTROLLER_PATH)
+                .content(asJson(accountDTO))
+                .contentType(APPLICATION_JSON);
+
+        return perform(request);
     }
 
     public ResultActions perform(final MockHttpServletRequestBuilder request) throws Exception {

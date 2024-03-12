@@ -40,13 +40,13 @@ public class AccountController {
     }
 
     @PostMapping
-    public void createAccount(@RequestBody @Valid AccountDTO accountDTO) {
-        accountService.createAccount(accountDTO);
+    public Account createAccount(@RequestBody @Valid AccountDTO accountDTO) {
+        return accountService.createAccount(accountDTO);
     }
 
     @PutMapping(ID_PATH)
-    public void updateAccount(@PathVariable Long id, @RequestBody @Valid AccountDTO accountDTO) {
-        accountService.updateAccount(id, accountDTO);
+    public Account updateAccount(@PathVariable Long id, @RequestBody @Valid AccountDTO accountDTO) {
+        return accountService.updateAccount(id, accountDTO);
     }
 
     @DeleteMapping(ID_PATH)
