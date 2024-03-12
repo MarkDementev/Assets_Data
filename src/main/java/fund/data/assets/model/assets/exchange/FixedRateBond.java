@@ -2,7 +2,7 @@ package fund.data.assets.model.assets.exchange;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import fund.data.assets.utils.AssetsCurrency;
+import fund.data.assets.utils.enums.AssetsCurrency;
 import fund.data.assets.utils.FinancialCalculationConstants;
 
 import jakarta.persistence.Entity;

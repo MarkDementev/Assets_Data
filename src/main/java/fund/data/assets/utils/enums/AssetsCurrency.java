@@ -1,4 +1,4 @@
-package fund.data.assets.utils;
+package fund.data.assets.utils.enums;
 
 public enum AssetsCurrency {
     RUSRUB("Russian ruble");

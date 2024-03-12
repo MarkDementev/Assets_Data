@@ -1,7 +1,7 @@
 package fund.data.assets.model;
 
-import fund.data.assets.utils.AssetsCurrency;
-import fund.data.assets.utils.TaxSystem;
+import fund.data.assets.utils.enums.AssetsCurrency;
+import fund.data.assets.utils.enums.TaxSystem;
 
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
@@ -50,11 +50,8 @@ public abstract class Asset {
     @Size(min = 1)
     private Integer assetCount;
 
-//    @NotNull
-//    private Boolean isTaxableAsset;
-//
-//    @Enumerated(EnumType.STRING)
-//    private TaxSystem assetTaxSystem;
+    @Enumerated(EnumType.STRING)
+    private TaxSystem assetTaxSystem;
 
     @CreationTimestamp
     private Instant createdAt;
