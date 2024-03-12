@@ -7,6 +7,8 @@ import fund.data.assets.utils.CommissionCalculator;
 import fund.data.assets.utils.enums.AssetCurrency;
 import fund.data.assets.utils.FinancialCalculationConstants;
 
+import fund.data.assets.utils.enums.CommissionSystem;
+import fund.data.assets.utils.enums.TaxSystem;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -61,7 +63,6 @@ public class FixedRateBond extends ExchangeAsset {
     @NotNull
     private Float yieldToMaturity;
 
-    @NotNull
     private Float markDementevYieldIndicator;
 
     public FixedRateBond(String iSIN,
@@ -121,6 +122,19 @@ public class FixedRateBond extends ExchangeAsset {
     }
 
     private Float calculateMarkDementevYieldIndicator() {
+        Float incomeTaxCorrection;
+
+        if (super.getAssetCurrency().getTitle().equals(AssetCurrency.RUSRUB.getTitle())
+                && super.getAssetTaxSystem().getTitle().equals(TaxSystem.EQUAL_COUPON_DIVIDEND_TRADE.getTitle())
+                && super.getAssetCommissionSystem().getTitle().equals(CommissionSystem.TURNOVER.getTitle())) {
+//            incomeTaxCorrection = 0.87F;
+            /*
+            Корректировка incomeTaxCorrection с помощью запроса через контроллер для получения записи в БД
+            о размере НДФЛ. Конкретно здесь incomeTaxCorrection должно стать 0.87F, из-за размера РФ НДФЛ в 13%.
+             */
+        } else {
+            return null;
+        }
         float bondValueSummedWithCommission = (bondPurchaseMarketPrice * bondParValue)
                 + (getTotalCommissionForPurchase() / getAssetCount());
         float allExpectedCouponPaymentsValue = bondCouponValue * expectedBondCouponPaymentsCount;
@@ -128,14 +142,14 @@ public class FixedRateBond extends ExchangeAsset {
         float yieldIndicator;
 
         if (bondParValue > bondValueSummedWithCommission) {
-            yieldIndicator = ((allExpectedCouponPaymentsValue * FinancialCalculationConstants.PROFIT_SHARE_AFTER_NDFL)
+            yieldIndicator = ((allExpectedCouponPaymentsValue * incomeTaxCorrection)
                     + (bondParValue - bondValueSummedWithCommission)
-                    * FinancialCalculationConstants.PROFIT_SHARE_AFTER_NDFL)
+                    * incomeTaxCorrection)
                     / bondValueSummedWithCommission
                     / daysBeforeMaturity
                     * FinancialCalculationConstants.YEAR_DAYS_COUNT;
         } else {
-            yieldIndicator = ((allExpectedCouponPaymentsValue * FinancialCalculationConstants.PROFIT_SHARE_AFTER_NDFL)
+            yieldIndicator = ((allExpectedCouponPaymentsValue * incomeTaxCorrection)
                     / bondValueSummedWithCommission)
                     / daysBeforeMaturity
                     * FinancialCalculationConstants.YEAR_DAYS_COUNT;
