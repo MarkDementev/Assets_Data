@@ -70,7 +70,7 @@ public class FixedRateBond extends ExchangeAsset {
     private LocalDate bondMaturityDate;
 
     @NotNull
-    private Float yieldToMaturity;
+    private Float simpleYieldToMaturity;
 
     private Float markDementevYieldIndicator;
 
@@ -107,24 +107,31 @@ public class FixedRateBond extends ExchangeAsset {
         this.bondCouponValue = bondCouponValue;
         this.expectedBondCouponPaymentsCount = expectedBondCouponPaymentsCount;
         this.bondMaturityDate = bondMaturityDate;
+        this.simpleYieldToMaturity = calculateSimpleYieldToMaturity();
         //TODO Проверяй и рефактори код далее.
-        this.yieldToMaturity = calculateYieldToMaturity();
         this.markDementevYieldIndicator = calculateMarkDementevYieldIndicator();
     }
 
+    //Проверь. bondPurchaseMarketPrice и НКД, внутри он тут, или нет?!
     private Double calculateTotalAssetPurchasePriceWithCommission() {
         return (double) (getAssetCount() * bondParValue * bondPurchaseMarketPrice + totalCommissionForPurchase);
     }
 
-    private Float calculateYieldToMaturity() {
-        float allExpectedCouponPaymentsValue = bondCouponValue * expectedBondCouponPaymentsCount;
+    /**
+     * Возвращает простую доходность к погашению.
+     * Источник формулы - https://bcs-express.ru/novosti-i-analitika/dokhodnost-obligatsii-na-vse-sluchai-zhizni
+     * @return Простая доходность к погашению в % годовых, выраженная в десятичной форме. К примеру, 8% годовых = 0.08.
+     * @since 0.0.1-alpha
+     */
+    private Float calculateSimpleYieldToMaturity() {
+        float marketClearPriceInCurrency = bondPurchaseMarketPrice * bondParValue;
+        float allExpectedCouponPaymentsSum = bondCouponValue * expectedBondCouponPaymentsCount;
         int daysBeforeMaturity = calculateDaysBeforeMaturity();
 
-        return ((bondParValue - (bondParValue * bondPurchaseMarketPrice)
-                + (allExpectedCouponPaymentsValue - bondAccruedInterest))
-                / (bondParValue * bondPurchaseMarketPrice))
-                * FinancialAndAnotherConstants.YEAR_DAYS_COUNT
-                / daysBeforeMaturity;
+        return  (
+                (bondParValue - marketClearPriceInCurrency + (allExpectedCouponPaymentsSum - bondAccruedInterest))
+                / marketClearPriceInCurrency
+        ) * (FinancialAndAnotherConstants.YEAR_DAYS_COUNT / daysBeforeMaturity);
     }
 
     private Float calculateMarkDementevYieldIndicator() {
@@ -159,6 +166,7 @@ public class FixedRateBond extends ExchangeAsset {
         return yieldIndicator;
     }
 
+    //TODO ПРОВЕРЬ
     private int calculateDaysBeforeMaturity() {
         return (int) ChronoUnit.DAYS.between(getLastAssetBuyDate(), bondMaturityDate);
 //        long hoursBeforeMaturity = ChronoUnit.HOURS.between(getLastAssetBuyDate(), bondMaturityDate);
