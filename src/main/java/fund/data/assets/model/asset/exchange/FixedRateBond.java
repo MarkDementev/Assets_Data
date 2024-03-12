@@ -36,6 +36,9 @@ import java.time.temporal.ChronoUnit;
 @Getter
 @Setter
 public class FixedRateBond extends ExchangeAsset {
+    public static final String WRONG_DATE_BOND_ADDING_WARNING = "This is error - don't add into system already" +
+            " redeemed bond";
+
     /**
      * Номинальная стоимость облигации, определённая эмитентом. Обычно в РФ равна 1000 рублей.
      */
@@ -71,20 +74,39 @@ public class FixedRateBond extends ExchangeAsset {
     @PositiveOrZero
     private Double totalAssetPurchasePriceWithCommission;
 
+    /**
+     * Размер купонной выплаты в валюте.
+     */
     @NotNull
     @PositiveOrZero
     private Float bondCouponValue;
 
+    /**
+     * Ожидаемое количество купонных выплат на момент покупки до даты погашения облигации.
+     */
     @NotNull
     @PositiveOrZero
     private Integer expectedBondCouponPaymentsCount;
 
+    /**
+     * Дата погашения облигации.
+     */
     @NotNull
     private LocalDate bondMaturityDate;
 
+    /**
+     * Простая (без реинвестирования купонных выплат) доходность к погашению облигации.
+     */
     @NotNull
     private Float simpleYieldToMaturity;
 
+    /**
+     * Реальная доходность % в год. Является ожидаемой доходностью при инвестировании в облигацию после уплаты всех
+     * налогов и комиссий, приведённая к % годовых, чтобы можно было сравнивать облигации с разным периодом обращения.
+     * Для определения размера дохода учитывает не только купоны, но и возможный доход при погашении по более
+     * высокой цене, чем облигация была приобретена.
+     * Не учитывает возможный дополнительный доход от реинвестирования купонов.
+     */
     private Float markDementevYieldIndicator;
 
     public FixedRateBond(AssetCurrency assetCurrency, String assetTitle, Integer assetCount,
@@ -93,7 +115,6 @@ public class FixedRateBond extends ExchangeAsset {
                          Float purchaseBondParValuePercent,
                          Float bondAccruedInterest,
                          Account account,
-
                          Float bondCouponValue,
                          Integer expectedBondCouponPaymentsCount,
                          LocalDate bondMaturityDate) {
@@ -118,13 +139,16 @@ public class FixedRateBond extends ExchangeAsset {
             this.totalCommissionForPurchase = 0.00F;
         }
         this.totalAssetPurchasePriceWithCommission = calculateTotalAssetPurchasePriceWithCommission();
-
         this.bondCouponValue = bondCouponValue;
         this.expectedBondCouponPaymentsCount = expectedBondCouponPaymentsCount;
         this.bondMaturityDate = bondMaturityDate;
         this.simpleYieldToMaturity = calculateSimpleYieldToMaturity();
-        //TODO Проверяй и рефактори код далее.
-        this.markDementevYieldIndicator = calculateMarkDementevYieldIndicator();
+
+        if (getAssetCurrency().equals(AssetCurrency.RUSRUB)
+                && getAssetTaxSystem().equals(TaxSystem.EQUAL_COUPON_DIVIDEND_TRADE)
+                && getAssetCommissionSystem().equals(CommissionSystem.TURNOVER)) {
+            this.markDementevYieldIndicator = calculateMarkDementevYieldIndicator();
+        }
     }
 
     /**
@@ -155,48 +179,46 @@ public class FixedRateBond extends ExchangeAsset {
         ) * (FinancialAndAnotherConstants.YEAR_DAYS_COUNT / daysBeforeMaturity);
     }
 
+    /**
+     * Возвращает "неакадемический параметр" реальной доходности % в год - основной параметр Фонда
+     * для отбора облигаций с фиксированным купоном.
+     * @return Показатель реальной доходности по облигации в % годовых.
+     * @since 0.0.1-alpha
+     */
+    //TODO ЗАВЕРШИ ПРОВЕРКУ
     private Float calculateMarkDementevYieldIndicator() {
-        Float incomeTaxCorrection;
-
-        if (super.getAssetCurrency().getTitle().equals(AssetCurrency.RUSRUB.getTitle())
-                && super.getAssetTaxSystem().getTitle().equals(TaxSystem.EQUAL_COUPON_DIVIDEND_TRADE.getTitle())
-                && super.getAssetCommissionSystem().getTitle().equals(CommissionSystem.TURNOVER.getTitle())) {
-            incomeTaxCorrection = FinancialAndAnotherConstants.RUSSIAN_FIXED_RATE_BONDS_TAX_SYSTEM_CORRECTION;
-        } else {
-            return null;
-        }
-        float bondValueSummedWithCommission = (purchaseBondParValuePercent * bondParValue)
+        Float yieldIndicator;
+        float incomeTaxCorrection = FinancialAndAnotherConstants.RUSSIAN_TAX_SYSTEM_CORRECTION_VALUE;
+        float oneBondValueSummedWithHisCommission = (purchaseBondParValuePercent * bondParValue)
                 + (getTotalCommissionForPurchase() / getAssetCount());
-        float allExpectedCouponPaymentsValue = bondCouponValue * expectedBondCouponPaymentsCount;
+        float expectedBondCouponPaymentsSum = bondCouponValue * expectedBondCouponPaymentsCount;
         int daysBeforeMaturity = calculateDaysBeforeMaturity();
-        float yieldIndicator;
 
-        if (bondParValue > bondValueSummedWithCommission) {
-            yieldIndicator = ((allExpectedCouponPaymentsValue * incomeTaxCorrection)
-                    + (bondParValue - bondValueSummedWithCommission)
+        if (bondParValue > oneBondValueSummedWithHisCommission) {
+            yieldIndicator = ((expectedBondCouponPaymentsSum * incomeTaxCorrection)
+                    + (bondParValue - oneBondValueSummedWithHisCommission)
                     * incomeTaxCorrection)
-                    / bondValueSummedWithCommission
+                    / oneBondValueSummedWithHisCommission
                     / daysBeforeMaturity
                     * FinancialAndAnotherConstants.YEAR_DAYS_COUNT;
         } else {
-            yieldIndicator = ((allExpectedCouponPaymentsValue * incomeTaxCorrection)
-                    / bondValueSummedWithCommission)
+            yieldIndicator = ((expectedBondCouponPaymentsSum * incomeTaxCorrection)
+                    / oneBondValueSummedWithHisCommission)
                     / daysBeforeMaturity
                     * FinancialAndAnotherConstants.YEAR_DAYS_COUNT;
         }
         return yieldIndicator;
     }
 
-    //TODO ПРОВЕРЬ
+    /**
+     * Позволяет подсчитать на момент покупки, сколько облигация будет существовать, если держать её до погашения.
+     * @return Количество дней со дня покупки облигации до дня погашения.
+     * @since 0.0.1-alpha
+     */
     private int calculateDaysBeforeMaturity() {
+        if (ChronoUnit.DAYS.between(getLastAssetBuyDate(), bondMaturityDate) < 0) {
+            throw new IllegalArgumentException(WRONG_DATE_BOND_ADDING_WARNING);
+        }
         return (int) ChronoUnit.DAYS.between(getLastAssetBuyDate(), bondMaturityDate);
-//        long hoursBeforeMaturity = ChronoUnit.HOURS.between(getLastAssetBuyDate(), bondMaturityDate);
-//        int daysBeforeMaturity = Integer.parseInt(String.valueOf(hoursBeforeMaturity))
-//                / FinancialAndAnotherConstants.DAY_HOURS_COUNT;
-//
-//        if (hoursBeforeMaturity % FinancialAndAnotherConstants.DAY_HOURS_COUNT != 0) {
-//            daysBeforeMaturity++;
-//        }
-//        return daysBeforeMaturity;
     }
 }
