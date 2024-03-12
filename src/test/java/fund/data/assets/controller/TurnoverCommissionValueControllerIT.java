@@ -1,22 +1,17 @@
 package fund.data.assets.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+
 import fund.data.assets.TestUtils;
 import fund.data.assets.config.SpringConfigForTests;
-
 import fund.data.assets.dto.TurnoverCommissionValueDTO;
-import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.model.financial_entities.TurnoverCommissionValue;
 import fund.data.assets.repository.AccountRepository;
 import fund.data.assets.repository.TurnoverCommissionValueRepository;
 import fund.data.assets.utils.enums.CommissionSystem;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+
 import jakarta.servlet.ServletException;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,13 +25,21 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 
-import static fund.data.assets.TestUtils.*;
+import static fund.data.assets.TestUtils.fromJson;
+import static fund.data.assets.TestUtils.asJson;
+import static fund.data.assets.TestUtils.TEST_ASSET_TYPE_NAME;
+import static fund.data.assets.TestUtils.TEST_COMMISSION_PERCENT_VALUE;
 import static fund.data.assets.config.SpringConfigForTests.TEST_PROFILE;
-import static fund.data.assets.controller.AccountController.ACCOUNT_CONTROLLER_PATH;
 import static fund.data.assets.controller.AccountController.ID_PATH;
 import static fund.data.assets.controller.TurnoverCommissionValueController.TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -167,60 +170,62 @@ public class TurnoverCommissionValueControllerIT {
         assertThat(turnoverCommissionValueRepository.findAll()).hasSize(1);
     }
 
-//    @Test
-//    public void updateAccountIT() throws Exception {
-//        testUtils.createDefaultAccount();
-//
-//        Long createdAccountId = accountRepository.findByOrganisationWhereAccountOpened(
-//                testUtils.getAccountDTO().getOrganisationWhereAccountOpened()).getId();
-//        final var response = testUtils.perform(put("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH,
-//                        createdAccountId)
-//                        .content(asJson(testUtils.getSecondAccountDTO())).contentType(APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andReturn()
-//                .getResponse();
-//        final Account accountFromResponse = fromJson(response.getContentAsString(), new TypeReference<>() {
-//        });
-//
-//        assertEquals(accountFromResponse.getId(), createdAccountId);
-//        assertEquals(accountFromResponse.getOrganisationWhereAccountOpened(),
-//                testUtils.getSecondAccountDTO().getOrganisationWhereAccountOpened());
-//        assertEquals(accountFromResponse.getAccountNumber(),
-//                testUtils.getSecondAccountDTO().getAccountNumber());
-//        assertEquals(accountFromResponse.getAccountOpeningDate(),
-//                testUtils.getSecondAccountDTO().getAccountOpeningDate());
-//        assertNotNull(accountFromResponse.getCreatedAt());
-//        assertNotNull(accountFromResponse.getUpdatedAt());
-//    }
-//
-//    @Test
-//    public void notValidUpdateAccountIT() throws Exception {
-//        testUtils.createDefaultAccount();
-//
-//        Long createdAccountId = accountRepository.findByOrganisationWhereAccountOpened(
-//                testUtils.getAccountDTO().getOrganisationWhereAccountOpened()).getId();
-//        testUtils.perform(put("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH,
-//                createdAccountId)
-//                .content(asJson(testUtils.getNotValidAccountDTO()))
-//                .contentType(APPLICATION_JSON));
-//
-//        assertEquals(accountRepository.findAll().get(0).getOrganisationWhereAccountOpened(),
-//                testUtils.getAccountDTO().getOrganisationWhereAccountOpened());
-//        assertEquals(accountRepository.findAll().get(0).getAccountNumber(),
-//                testUtils.getAccountDTO().getAccountNumber());
-//        assertEquals(accountRepository.findAll().get(0).getAccountOpeningDate(),
-//                testUtils.getAccountDTO().getAccountOpeningDate());
-//
-//        testUtils.createDefaultSecondAccount();
-//
-//        Long createdSecondAccountId = accountRepository.findByOrganisationWhereAccountOpened(
-//                testUtils.getSecondAccountDTO().getOrganisationWhereAccountOpened()).getId();
-//        Assertions.assertThrows(ServletException.class,
-//                () -> testUtils.perform(put("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH,
-//                        createdSecondAccountId)
-//                        .content(asJson(testUtils.getAccountDTO()))
-//                        .contentType(APPLICATION_JSON)));
-//    }
+    @Test
+    public void updateTurnoverCommissionValueIT() throws Exception {
+        testUtils.createDefaultTurnoverCommissionValue();
+
+        Long createdTurnoverCommissionId = turnoverCommissionValueRepository.findAll().get(0).getId();
+        final TurnoverCommissionValueDTO turnoverCommissionValueSecondDTO = new TurnoverCommissionValueDTO(
+                CommissionSystem.TURNOVER,
+                accountRepository.findByOrganisationWhereAccountOpened(
+                        testUtils.getAccountDTO().getOrganisationWhereAccountOpened()
+                ).getId(),
+                TEST_ASSET_TYPE_NAME,
+                TEST_COMMISSION_PERCENT_VALUE + TEST_COMMISSION_PERCENT_VALUE
+        );
+        final var response = testUtils.perform(put("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH
+                                + ID_PATH, createdTurnoverCommissionId)
+                        .content(asJson(turnoverCommissionValueSecondDTO)).contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse();
+        final TurnoverCommissionValue turnoverCommissionValueFromResponse = fromJson(response.getContentAsString(),
+                new TypeReference<>() {});
+
+        assertNotNull(turnoverCommissionValueFromResponse.getId());
+        assertEquals(turnoverCommissionValueFromResponse.getCommissionSystem(),
+                turnoverCommissionValueSecondDTO.getCommissionSystem());
+        assertEquals(turnoverCommissionValueFromResponse.getAccount().getId(),
+                turnoverCommissionValueSecondDTO.getAccountID());
+        assertEquals(turnoverCommissionValueFromResponse.getAssetTypeName(),
+                turnoverCommissionValueSecondDTO.getAssetTypeName());
+        assertEquals(turnoverCommissionValueFromResponse.getCommissionPercentValue(),
+                turnoverCommissionValueSecondDTO.getCommissionPercentValue());
+        assertNotNull(turnoverCommissionValueFromResponse.getCreatedAt());
+        assertNotNull(turnoverCommissionValueFromResponse.getUpdatedAt());
+        assertNotEquals(turnoverCommissionValueFromResponse.getCreatedAt(),
+                turnoverCommissionValueFromResponse.getUpdatedAt());
+    }
+
+    @Test
+    public void notValidUpdateTurnoverCommissionValueIT() throws Exception {
+        testUtils.createDefaultTurnoverCommissionValue();
+
+        Long createdTurnoverCommissionId = turnoverCommissionValueRepository.findAll().get(0).getId();
+        testUtils.perform(put("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH + ID_PATH,
+                createdTurnoverCommissionId)
+                .content(asJson(testUtils.getNotValidTurnoverCommissionValueDTO()))
+                .contentType(APPLICATION_JSON));
+
+        assertNotEquals(turnoverCommissionValueRepository.findAll().get(0).getCommissionSystem(),
+                testUtils.getNotValidTurnoverCommissionValueDTO().getCommissionSystem());
+        assertNotEquals(turnoverCommissionValueRepository.findAll().get(0).getAccount().getId(),
+                testUtils.getNotValidTurnoverCommissionValueDTO().getAccountID());
+        assertNotEquals(turnoverCommissionValueRepository.findAll().get(0).getAssetTypeName(),
+                testUtils.getNotValidTurnoverCommissionValueDTO().getAssetTypeName());
+        assertNotEquals(turnoverCommissionValueRepository.findAll().get(0).getCommissionPercentValue(),
+                testUtils.getNotValidTurnoverCommissionValueDTO().getCommissionPercentValue());
+    }
 
     @Test
     public void deleteTurnoverCommissionValueIT() throws Exception {

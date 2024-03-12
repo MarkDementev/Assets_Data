@@ -31,6 +31,7 @@ import static fund.data.assets.controller.AccountController.ID_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -162,6 +163,7 @@ class AccountControllerIT {
 				testUtils.getSecondAccountDTO().getAccountOpeningDate());
 		assertNotNull(accountFromResponse.getCreatedAt());
 		assertNotNull(accountFromResponse.getUpdatedAt());
+		assertNotEquals(accountFromResponse.getCreatedAt(), accountFromResponse.getUpdatedAt());
 	}
 
 	@Test
