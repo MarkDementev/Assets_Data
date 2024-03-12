@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 
 import lombok.AllArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -29,6 +30,7 @@ import static fund.data.assets.controller.AccountController.ACCOUNT_CONTROLLER_P
 public class AccountController {
     public static final String ACCOUNT_CONTROLLER_PATH = "/accounts";
     public static final String ID_PATH = "/{id}";
+    @Autowired
     private final AccountServiceImpl accountService;
 
     @GetMapping(ID_PATH)

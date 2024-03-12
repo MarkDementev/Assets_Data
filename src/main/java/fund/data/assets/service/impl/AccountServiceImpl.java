@@ -7,11 +7,7 @@ import fund.data.assets.service.AccountService;
 
 import lombok.RequiredArgsConstructor;
 
-//import org.hibernate.Session;
-//import org.hibernate.Transaction;
-
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
