@@ -54,7 +54,7 @@ class AccountControllerIT {
 	private AccountRepository accountRepository;
 
 	@AfterEach
-	public void clear() {
+	public void clearRepositories() {
 		testUtils.tearDown();
 	}
 

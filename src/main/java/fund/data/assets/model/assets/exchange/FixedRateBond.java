@@ -80,7 +80,9 @@ public class FixedRateBond extends ExchangeAsset {
         this.bondPurchaseMarketPrice = bondPurchaseMarketPrice;
 
         if (getAssetCommissionSystem() != null) {
-            this.totalCommissionForPurchase = CommissionCalculator.calculateTotalCommissionForPurchase(
+            CommissionCalculator commissionCalculator = new CommissionCalculator();
+
+            this.totalCommissionForPurchase = commissionCalculator.calculateTotalCommissionForPurchase(
                     getAssetCommissionSystem(),
                     account,
                     FixedRateBond.class.getTypeName(),

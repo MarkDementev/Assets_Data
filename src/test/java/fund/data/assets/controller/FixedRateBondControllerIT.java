@@ -54,7 +54,7 @@ public class FixedRateBondControllerIT {
     private FixedRateBondRepository fixedRateBondRepository;
 
     @AfterEach
-    public void clear() {
+    public void clearRepositories() {
         testUtils.tearDown();
     }
 

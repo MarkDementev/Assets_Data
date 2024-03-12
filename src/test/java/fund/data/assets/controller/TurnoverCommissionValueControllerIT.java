@@ -58,7 +58,7 @@ public class TurnoverCommissionValueControllerIT {
     private TurnoverCommissionValueRepository turnoverCommissionValueRepository;
 
     @AfterEach
-    public void clear() {
+    public void clearRepositories() {
         testUtils.tearDown();
     }
 

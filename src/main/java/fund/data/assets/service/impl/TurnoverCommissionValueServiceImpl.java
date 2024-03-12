@@ -17,7 +17,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class TurnoverCommissionServiceValueImpl implements TurnoverCommissionValueService {
+public class TurnoverCommissionValueServiceImpl implements TurnoverCommissionValueService {
     private final AccountRepository accountRepository;
     private final TurnoverCommissionValueRepository turnoverCommissionValueRepository;
 

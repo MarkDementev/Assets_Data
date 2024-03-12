@@ -14,9 +14,9 @@ public class CommissionCalculator {
     public static final String NOT_IMPLEMENTED_COMMISSION_SYSTEM_TO_CALCULATE = "Sorry, this commission system" +
             " is not yet supported by the fund.";
     @Autowired
-    private static TurnoverCommissionValueRepository turnoverCommissionValueRepository;
+    private TurnoverCommissionValueRepository turnoverCommissionValueRepository;
 
-    public static Float calculateTotalCommissionForPurchase(CommissionSystem commissionSystem,
+    public Float calculateTotalCommissionForPurchase(CommissionSystem commissionSystem,
                                                             Account account, String assetTypeName,
                                                             Integer assetCount, Float bondPurchaseMarketPrice) {
         if (commissionSystem.equals(TURNOVER)) {
@@ -28,7 +28,7 @@ public class CommissionCalculator {
         }
     }
 
-    private static Float findTurnoverCommissionValue(Account account, String assetTypeName) {
+    private Float findTurnoverCommissionValue(Account account, String assetTypeName) {
         return turnoverCommissionValueRepository.findByAccountAndAssetTypeName(account, assetTypeName)
                 .getCommissionPercentValue();
     }
