@@ -1,6 +1,6 @@
 package fund.data.assets.model;
 
-import fund.data.assets.utils.enums.AssetsCurrency;
+import fund.data.assets.utils.enums.AssetCurrency;
 import fund.data.assets.utils.enums.TaxSystem;
 
 import jakarta.persistence.JoinColumn;
@@ -38,7 +38,7 @@ public abstract class Asset {
     */
     @NotNull
     @Enumerated(EnumType.STRING)
-    private AssetsCurrency assetCurrency;
+    private AssetCurrency assetCurrency;
 
     @NotBlank
     private String assetTypeName;

@@ -2,7 +2,9 @@ package fund.data.assets.model.assets.exchange;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import fund.data.assets.utils.enums.AssetsCurrency;
+import fund.data.assets.utils.AutoSelector;
+import fund.data.assets.utils.CommissionCalculator;
+import fund.data.assets.utils.enums.AssetCurrency;
 import fund.data.assets.utils.FinancialCalculationConstants;
 
 import jakarta.persistence.Entity;
@@ -65,7 +67,7 @@ public class FixedRateBond extends ExchangeAsset {
     public FixedRateBond(String iSIN,
                          String assetIssuerTitle,
                          Instant lastAssetBuyDate,
-                         AssetsCurrency assetCurrency,
+                         AssetCurrency assetCurrency,
                          String assetTitle,
                          Integer assetCount,
                          Integer bondParValue,
@@ -79,17 +81,32 @@ public class FixedRateBond extends ExchangeAsset {
         super.setAssetTypeName(FixedRateBond.class.getTypeName());
         super.setAssetTitle(assetTitle);
         super.setAssetCount(assetCount);
-
-
-
+        super.setAssetTaxSystem(AutoSelector.selectTaxSystem(getAssetCurrency(), getAssetTypeName()));
+        super.setAssetCommissionSystem(AutoSelector.selectCommissionSystem(getAssetCurrency(), getAssetTypeName(),
+                getAssetRelationship().getAccount().getOrganisationWhereAccountOpened()));
         this.bondParValue = bondParValue;
         this.bondPurchaseMarketPrice = bondPurchaseMarketPrice;
+
+        if (getAssetCommissionSystem() != null) {
+            super.setTotalCommissionForPurchase(CommissionCalculator.calculateCommission(
+                    getAssetCommissionSystem(),
+                    getAssetCount(),
+                    bondPurchaseMarketPrice,
+                    bondParValue));
+        } else {
+            super.setTotalCommissionForPurchase(0.00F);
+        }
+        super.setTotalAssetPurchasePriceWithCommission(calculateTotalAssetPurchasePriceWithCommission());
         this.bondAccruedInterest = bondAccruedInterest;
         this.bondCouponValue = bondCouponValue;
         this.expectedBondCouponPaymentsCount = expectedBondCouponPaymentsCount;
         this.bondMaturityDate = bondMaturityDate;
         this.yieldToMaturity = calculateYieldToMaturity();
         this.markDementevYieldIndicator = calculateMarkDementevYieldIndicator();
+    }
+
+    private Double calculateTotalAssetPurchasePriceWithCommission() {
+        return (double) (getAssetCount() * bondParValue * bondPurchaseMarketPrice + getTotalCommissionForPurchase());
     }
 
     private Float calculateYieldToMaturity() {
@@ -99,12 +116,13 @@ public class FixedRateBond extends ExchangeAsset {
         return ((bondParValue - (bondParValue * bondPurchaseMarketPrice)
                 + (allExpectedCouponPaymentsValue - bondAccruedInterest))
                 / (bondParValue * bondPurchaseMarketPrice))
-                * FinancialCalculationConstants.YEAR_DAYS_COUNT / daysBeforeMaturity;
+                * FinancialCalculationConstants.YEAR_DAYS_COUNT
+                / daysBeforeMaturity;
     }
 
     private Float calculateMarkDementevYieldIndicator() {
         float bondValueSummedWithCommission = (bondPurchaseMarketPrice * bondParValue)
-                + (bondPurchaseMarketPrice * bondParValue) * getOneAssetCommissionForPurchase();
+                + (getTotalCommissionForPurchase() / getAssetCount());
         float allExpectedCouponPaymentsValue = bondCouponValue * expectedBondCouponPaymentsCount;
         int daysBeforeMaturity = calculateDaysBeforeMaturity();
         float yieldIndicator;
@@ -114,7 +132,8 @@ public class FixedRateBond extends ExchangeAsset {
                     + (bondParValue - bondValueSummedWithCommission)
                     * FinancialCalculationConstants.PROFIT_SHARE_AFTER_NDFL)
                     / bondValueSummedWithCommission
-                    / daysBeforeMaturity * FinancialCalculationConstants.YEAR_DAYS_COUNT;
+                    / daysBeforeMaturity
+                    * FinancialCalculationConstants.YEAR_DAYS_COUNT;
         } else {
             yieldIndicator = ((allExpectedCouponPaymentsValue * FinancialCalculationConstants.PROFIT_SHARE_AFTER_NDFL)
                     / bondValueSummedWithCommission)
