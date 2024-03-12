@@ -54,6 +54,13 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+tasks.jacocoTestReport {
+	reports
+		{
+			xml.required.set(true)
+		}
+}
+
 test {
 	finalizedBy jacocoTestReport
 }
