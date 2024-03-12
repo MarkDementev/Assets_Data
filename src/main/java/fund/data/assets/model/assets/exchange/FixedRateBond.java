@@ -1,7 +1,5 @@
 package fund.data.assets.model.assets.exchange;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import fund.data.assets.utils.AutoSelector;
 import fund.data.assets.utils.CommissionCalculator;
 import fund.data.assets.utils.enums.AssetCurrency;
@@ -12,23 +10,20 @@ import fund.data.assets.utils.enums.TaxSystem;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Entity;
-//import jakarta.persistence.Table;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.Instant;
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-//@Table(name = "fixed rate bonds")
 @NoArgsConstructor
 @Getter
 @Setter
@@ -53,9 +48,8 @@ public class FixedRateBond extends ExchangeAsset {
     @PositiveOrZero
     private Integer expectedBondCouponPaymentsCount;
 
-    @JsonFormat(pattern = "dd-MM-yyyy")
-    @Size(min = 10, max = 10)
-    private Instant bondMaturityDate;
+    @NotNull
+    private LocalDate bondMaturityDate;
 
     @NotNull
     private Float yieldToMaturity;
@@ -64,7 +58,7 @@ public class FixedRateBond extends ExchangeAsset {
 
     public FixedRateBond(String iSIN,
                          String assetIssuerTitle,
-                         Instant lastAssetBuyDate,
+                         LocalDate lastAssetBuyDate,
                          AssetCurrency assetCurrency,
                          String assetTitle,
                          Integer assetCount,
@@ -73,15 +67,17 @@ public class FixedRateBond extends ExchangeAsset {
                          Float bondAccruedInterest,
                          Float bondCouponValue,
                          Integer expectedBondCouponPaymentsCount,
-                         Instant bondMaturityDate) {
+                         LocalDate bondMaturityDate) {
         super(iSIN, assetIssuerTitle, lastAssetBuyDate);
         super.setAssetCurrency(assetCurrency);
         super.setAssetTypeName(FixedRateBond.class.getTypeName());
         super.setAssetTitle(assetTitle);
         super.setAssetCount(assetCount);
         super.setAssetTaxSystem(AutoSelector.selectTaxSystem(getAssetCurrency(), getAssetTypeName()));
-        super.setAssetCommissionSystem(AutoSelector.selectCommissionSystem(getAssetCurrency(), getAssetTypeName(),
-                getAssetRelationship().getAccount().getOrganisationWhereAccountOpened()));
+//        super.setAssetCommissionSystem(AutoSelector.selectCommissionSystem(getAssetCurrency(), getAssetTypeName(),
+//                getAssetRelationship().getAccount().getOrganisationWhereAccountOpened()));
+        //Ниже - временная заглушка
+        super.setAssetCommissionSystem(CommissionSystem.TURNOVER);
         this.bondParValue = bondParValue;
         this.bondPurchaseMarketPrice = bondPurchaseMarketPrice;
 

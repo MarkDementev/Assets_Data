@@ -18,6 +18,10 @@ public class FundAssetsDataApplication {
      */
 
 	/*
+	Протестируй валидацию внутри сущностей!
+	 */
+
+	/*
 	Протестируй методы внутри FixedRateBond
 	 */
 

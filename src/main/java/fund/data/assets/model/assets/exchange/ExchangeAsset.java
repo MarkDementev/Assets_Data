@@ -3,8 +3,6 @@ package fund.data.assets.model.assets.exchange;
 import fund.data.assets.model.Asset;
 import fund.data.assets.utils.enums.CommissionSystem;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Entity;
@@ -22,11 +20,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.Instant;
+import java.time.LocalDate;
 
-/*
-check - do I need AllArgsConstructor?
-*/
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @AllArgsConstructor
@@ -43,9 +38,7 @@ public abstract class ExchangeAsset extends Asset {
     private String assetIssuerTitle;
 
     @NotNull
-    @JsonFormat(pattern = "dd-MM-yyyy")
-    @Size(min = 10, max = 10)
-    private Instant lastAssetBuyDate;
+    private LocalDate lastAssetBuyDate;
 
     @Enumerated(EnumType.STRING)
     private CommissionSystem assetCommissionSystem;
@@ -57,7 +50,7 @@ public abstract class ExchangeAsset extends Asset {
     @PositiveOrZero
     private Double totalAssetPurchasePriceWithCommission;
 
-    public ExchangeAsset(String iSIN, String assetIssuerTitle, Instant lastAssetBuyDate) {
+    public ExchangeAsset(String iSIN, String assetIssuerTitle, LocalDate lastAssetBuyDate) {
         this.iSIN = iSIN;
         this.assetIssuerTitle = assetIssuerTitle;
         this.lastAssetBuyDate = lastAssetBuyDate;

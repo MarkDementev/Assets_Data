@@ -3,11 +3,11 @@ package fund.data.assets.model;
 import fund.data.assets.utils.enums.AssetCurrency;
 import fund.data.assets.utils.enums.TaxSystem;
 
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+//import jakarta.persistence.JoinColumn;
+//import jakarta.persistence.OneToOne;
+//import jakarta.persistence.CascadeType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Entity;
@@ -30,9 +30,6 @@ import java.time.Instant;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
-/*
-check - do I need AllArgsConstructor?
-*/
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @AllArgsConstructor
@@ -60,6 +57,7 @@ public abstract class Asset {
     @Size(min = 1)
     private Integer assetCount;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private TaxSystem assetTaxSystem;
 
@@ -69,12 +67,13 @@ public abstract class Asset {
     @UpdateTimestamp
     private Instant updatedAt;
 
-    @OneToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "assetRelationship_id", nullable = false)
-    private AssetRelationship assetRelationship;
-    /*
-    check - does cascade and fetch works correctly?
-    */
+//    /*
+//     check - does cascade and fetch works correctly?
+//     */
+//    @OneToOne(cascade = CascadeType.MERGE)
+//    @JoinColumn(name = "assetRelationship_id", nullable = false)
+//    private AssetRelationship assetRelationship;
+
 //    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
 //    private Set<Asset> assets;
 }
