@@ -42,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles(TEST_PROFILE)
 @AutoConfigureMockMvc
-class FundAssetsDataApplicationTests {
+class AccountControllerIT {
 	@Autowired
 	private TestUtils testUtils;
 	@Autowired
