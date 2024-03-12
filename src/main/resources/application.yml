@@ -1,0 +1,6 @@
+base-url: /data
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
