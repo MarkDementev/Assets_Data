@@ -1,6 +1,6 @@
 package fund.data.assets.model.assets.exchange;
 
-import fund.data.assets.model.Asset;
+import fund.data.assets.model.assets.Asset;
 import fund.data.assets.utils.AutoSelector;
 import fund.data.assets.utils.enums.AssetCurrency;
 import fund.data.assets.utils.enums.CommissionSystem;

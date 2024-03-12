@@ -1,4 +1,4 @@
-package fund.data.assets.model;
+package fund.data.assets.model.financial_entities;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;

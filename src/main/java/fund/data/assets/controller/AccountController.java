@@ -1,7 +1,7 @@
 package fund.data.assets.controller;
 
 import fund.data.assets.dto.AccountDTO;
-import fund.data.assets.model.Account;
+import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.service.impl.AccountServiceImpl;
 
 import jakarta.validation.Valid;

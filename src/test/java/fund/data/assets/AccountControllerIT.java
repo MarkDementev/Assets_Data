@@ -3,7 +3,7 @@ package fund.data.assets;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import fund.data.assets.config.SpringConfigForTests;
-import fund.data.assets.model.Account;
+import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.repository.AccountRepository;
 
 import jakarta.servlet.ServletException;

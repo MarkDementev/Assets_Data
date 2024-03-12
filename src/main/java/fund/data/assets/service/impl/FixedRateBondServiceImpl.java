@@ -63,7 +63,6 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
 //    }
 
     @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = {Exception.class})
     public void deleteFixedRateBond(Long id) {
         fixedRateBondRepository.findById(id);
     }

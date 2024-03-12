@@ -1,6 +1,6 @@
 package fund.data.assets.repository;
 
-import fund.data.assets.model.Account;
+import fund.data.assets.model.financial_entities.Account;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
