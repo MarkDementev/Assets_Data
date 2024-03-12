@@ -57,8 +57,9 @@ public class AutoSelectorTest {
         };
 
         if (costSystemToChoose.equals(TEST_WRONG_CHOOSE)) {
-            Assertions.assertThrows(RuntimeException.class, () -> testMethodSupplier.get());
+            Assertions.assertThrows(IllegalArgumentException.class, () -> testMethodSupplier.get());
         } else if (assetTypeName.equals(TEST_WRONG_ASSET_TYPE) || assetCurrency.equals(TEST_WRONG_CURRENCY)) {
+            //TODO Замени на собственный exception
             Assertions.assertThrows(IllegalArgumentException.class, () -> testMethodSupplier.get());
         }
     }

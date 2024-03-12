@@ -28,15 +28,16 @@ public class AutoSelector {
     public static final String TAX_SYSTEM_CHOOSE = "TAX_SYSTEM";
     public static final String NO_TAX_SYSTEM_CHOOSE = "NO_TAX_SYSTEM";
 
-    //TODO Этот класс и этот метод - временные, до внедрения иных модулей для налогообложения и комиссий.
     /**
      * Автоматически подбирает тип системы налогообложения и системы расчёта брокерской комиссии.
+     * Этот класс и этот метод - временные, до внедрения иных модулей для налогообложения и комиссий.
      * @param assetCurrency Валюта  актива.
      * @param assetTypeName Тип актива.
      * @param costSystemToChoose Техническое значение - указатель, какой тип системы возвращать, т.к. метод полиморфный.
      * @return Возвращает либо CommissionSystem, либо TaxSystem.
-     * @throws RuntimeException Если в качестве аргумента costSystemToChoose не COMMISSION_SYSTEM_CHOOSE
+     * @throws IllegalArgumentException Если в качестве аргумента costSystemToChoose не COMMISSION_SYSTEM_CHOOSE
      * или TAX_SYSTEM_CHOOSE
+     //TODO Поправь тут ниже, когда создашь свой exception
      * @throws IllegalArgumentException Если в качестве аргумента не поддерживаемые пока что системой фонда тип актива
      * или валюта актива.
      * @since 0.0.1-alpha
@@ -54,11 +55,13 @@ public class AutoSelector {
                     case NO_TAX_SYSTEM_CHOOSE:
                         return TaxSystem.NO_TAX;
                     default:
-                        throw new RuntimeException(WRONG_COST_SYSTEM_TO_CHOOSE_WARNING);
+                        throw new IllegalArgumentException(WRONG_COST_SYSTEM_TO_CHOOSE_WARNING);
                 }
             }
+            //TODO Замени на собственный exception
             throw new IllegalArgumentException(NOT_IMPLEMENTED_ASSET_TYPE);
         }
+        //TODO Замени на собственный exception
         throw new IllegalArgumentException(NOT_IMPLEMENTED_CURRENCY);
     }
 }
