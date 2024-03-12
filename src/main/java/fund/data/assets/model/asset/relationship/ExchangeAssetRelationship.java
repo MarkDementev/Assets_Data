@@ -1,4 +1,4 @@
-package fund.data.assets.model.assets.relationship;
+package fund.data.assets.model.asset.relationship;
 
 import fund.data.assets.model.financial_entities.Account;
 

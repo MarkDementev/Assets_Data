@@ -1,6 +1,6 @@
-package fund.data.assets.model.assets;
+package fund.data.assets.model.asset;
 
-import fund.data.assets.model.assets.relationship.AssetRelationship;
+import fund.data.assets.model.asset.relationship.AssetRelationship;
 import fund.data.assets.utils.enums.AssetCurrency;
 import fund.data.assets.utils.enums.TaxSystem;
 

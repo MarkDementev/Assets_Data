@@ -1,7 +1,6 @@
-package fund.data.assets.model.assets.exchange;
+package fund.data.assets.model.asset.exchange;
 
 import fund.data.assets.model.financial_entities.Account;
-import fund.data.assets.utils.AutoSelector;
 import fund.data.assets.utils.CommissionCalculator;
 import fund.data.assets.utils.enums.AssetCurrency;
 import fund.data.assets.utils.FinancialAndAnotherConstants;
@@ -74,7 +73,7 @@ public class FixedRateBond extends ExchangeAsset {
                          Integer expectedBondCouponPaymentsCount,
                          LocalDate bondMaturityDate) {
         super(assetCurrency, FixedRateBond.class.getTypeName(), assetTitle, assetCount,
-                AutoSelector.selectTaxSystem(assetCurrency, FixedRateBond.class.getTypeName()),
+//                AutoSelector.selectTaxSystem(assetCurrency, FixedRateBond.class.getTypeName()),
                 iSIN, assetIssuerTitle, lastAssetBuyDate);
         this.bondParValue = bondParValue;
         this.bondPurchaseMarketPrice = bondPurchaseMarketPrice;
@@ -91,18 +90,13 @@ public class FixedRateBond extends ExchangeAsset {
         } else {
             this.totalCommissionForPurchase = 0.00F;
         }
-        //Проведи работу выше по полноценному хранению размера комиссии со всеми нужными доработками!
-        //ДОБАВИТЬ В КОНСТРУКТОР АККАУНТ, ЧТОБЫ СЧИТАТЬ КОМИССИЮ И ФОРМИРОВАТЬ В ПРОЦЕССЕ AssetRelationship?
-
-
-
-        this.totalAssetPurchasePriceWithCommission = calculateTotalAssetPurchasePriceWithCommission();
-        this.bondAccruedInterest = bondAccruedInterest;
-        this.bondCouponValue = bondCouponValue;
-        this.expectedBondCouponPaymentsCount = expectedBondCouponPaymentsCount;
-        this.bondMaturityDate = bondMaturityDate;
-        this.yieldToMaturity = calculateYieldToMaturity();
-        this.markDementevYieldIndicator = calculateMarkDementevYieldIndicator();
+//        this.totalAssetPurchasePriceWithCommission = calculateTotalAssetPurchasePriceWithCommission();
+//        this.bondAccruedInterest = bondAccruedInterest;
+//        this.bondCouponValue = bondCouponValue;
+//        this.expectedBondCouponPaymentsCount = expectedBondCouponPaymentsCount;
+//        this.bondMaturityDate = bondMaturityDate;
+//        this.yieldToMaturity = calculateYieldToMaturity();
+//        this.markDementevYieldIndicator = calculateMarkDementevYieldIndicator();
         //В самом конце - создай AssetRelationship и установи ссылку на него в Asset
     }
 

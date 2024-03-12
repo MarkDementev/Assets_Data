@@ -1,6 +1,6 @@
 package fund.data.assets.service;
 
-import fund.data.assets.model.assets.exchange.FixedRateBond;
+import fund.data.assets.model.asset.exchange.FixedRateBond;
 import fund.data.assets.dto.FixedRateBondDTO;
 
 import java.util.List;

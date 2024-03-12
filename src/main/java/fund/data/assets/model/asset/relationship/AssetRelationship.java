@@ -1,6 +1,6 @@
-package fund.data.assets.model.assets.relationship;
+package fund.data.assets.model.asset.relationship;
 
-import fund.data.assets.model.assets.Asset;
+import fund.data.assets.model.asset.Asset;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;

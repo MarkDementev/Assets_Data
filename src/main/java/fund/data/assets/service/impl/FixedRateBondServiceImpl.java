@@ -1,18 +1,12 @@
 package fund.data.assets.service.impl;
 
-import fund.data.assets.dto.FixedRateBondDTO;
-import fund.data.assets.model.assets.exchange.FixedRateBond;
+import fund.data.assets.model.asset.exchange.FixedRateBond;
 import fund.data.assets.repository.FixedRateBondRepository;
-import fund.data.assets.service.FixedRateBondService;
-import fund.data.assets.utils.enums.AssetCurrency;
 
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service

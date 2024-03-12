@@ -1,6 +1,6 @@
 package fund.data.assets.utils;
 
-import fund.data.assets.model.assets.exchange.FixedRateBond;
+import fund.data.assets.model.asset.exchange.FixedRateBond;
 import fund.data.assets.utils.enums.AssetCurrency;
 import fund.data.assets.utils.enums.CommissionSystem;
 import fund.data.assets.utils.enums.TaxSystem;

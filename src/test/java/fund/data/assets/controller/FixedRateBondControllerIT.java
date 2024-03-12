@@ -1,15 +1,9 @@
 package fund.data.assets.controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-
 import fund.data.assets.TestUtils;
 import fund.data.assets.config.SpringConfigForTests;
-import fund.data.assets.model.assets.exchange.FixedRateBond;
 import fund.data.assets.repository.FixedRateBondRepository;
 
-import fund.data.assets.utils.AutoSelector;
-import fund.data.assets.utils.enums.CommissionSystem;
-import fund.data.assets.utils.enums.TaxSystem;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,15 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.List;
-
-import static fund.data.assets.TestUtils.asJson;
-import static fund.data.assets.TestUtils.fromJson;
 import static fund.data.assets.config.SpringConfigForTests.TEST_PROFILE;
-import static fund.data.assets.controller.AccountController.ACCOUNT_CONTROLLER_PATH;
-import static fund.data.assets.controller.AccountController.ID_PATH;
 
-import static fund.data.assets.controller.FixedRateBondController.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,12 +23,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, classes = SpringConfigForTests.class)
 @ExtendWith(SpringExtension.class)

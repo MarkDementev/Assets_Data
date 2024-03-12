@@ -1,7 +1,6 @@
-package fund.data.assets.model.assets.exchange;
+package fund.data.assets.model.asset.exchange;
 
-import fund.data.assets.model.assets.Asset;
-import fund.data.assets.utils.AutoSelector;
+import fund.data.assets.model.asset.Asset;
 import fund.data.assets.utils.enums.AssetCurrency;
 import fund.data.assets.utils.enums.CommissionSystem;
 import fund.data.assets.utils.enums.TaxSystem;
@@ -49,6 +48,6 @@ public abstract class ExchangeAsset extends Asset {
         this.iSIN = iSIN;
         this.assetIssuerTitle = assetIssuerTitle;
         this.lastAssetBuyDate = lastAssetBuyDate;
-        this.assetCommissionSystem = AutoSelector.selectCommissionSystem(assetCurrency, assetTypeName);
+//        this.assetCommissionSystem = AutoSelector.selectCommissionSystem(assetCurrency, assetTypeName);
     }
 }
