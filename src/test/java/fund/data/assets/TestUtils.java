@@ -5,8 +5,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fund.data.assets.dto.AccountDTO;
+import fund.data.assets.dto.FixedRateBondDTO;
 import fund.data.assets.repository.AccountRepository;
 
+import fund.data.assets.utils.enums.AssetCurrency;
+import jakarta.validation.constraints.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
@@ -16,7 +19,9 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import java.time.LocalDate;
 
 import static fund.data.assets.controller.AccountController.ACCOUNT_CONTROLLER_PATH;
+import static fund.data.assets.utils.FinancialAndAnotherConstants.STANDARD_BOND_PAR_VALUE;
 
+import static fund.data.assets.utils.FinancialAndAnotherConstants.STANDARD_BOND_PURCHASE_MARKET_PRICE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
@@ -39,6 +44,21 @@ public class TestUtils {
             LocalDate.now()
     );
 
+    private final FixedRateBondDTO fixedRateBondDTO = new FixedRateBondDTO(
+            "qw1234567890",
+            "assetIssuerTitle",
+            LocalDate.MIN,
+            AssetCurrency.RUSRUB,
+            "assetTitle",
+            1,
+            STANDARD_BOND_PAR_VALUE,
+            STANDARD_BOND_PURCHASE_MARKET_PRICE,
+            0.00F,
+            1F,
+            1,
+            LocalDate.now()
+    );
+
     public void tearDown() {
         accountRepository.deleteAll();
     }
@@ -49,6 +69,10 @@ public class TestUtils {
 
     public AccountDTO getSecondAccountDTO() {
         return secondAccountDTO;
+    }
+
+    public FixedRateBondDTO getFixedRateBondDTO() {
+        return fixedRateBondDTO;
     }
 
     public ResultActions createDefaultAccount() throws Exception {

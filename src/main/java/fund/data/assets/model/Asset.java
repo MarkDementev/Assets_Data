@@ -16,7 +16,7 @@ import jakarta.persistence.GeneratedValue;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -54,7 +54,7 @@ public abstract class Asset {
     private String assetTitle;
 
     @NotNull
-    @Size(min = 1)
+    @PositiveOrZero
     private Integer assetCount;
 
     @NotNull

@@ -1,6 +1,5 @@
 package fund.data.assets.dto;
 
-import fund.data.assets.model.Account;
 import fund.data.assets.utils.enums.AssetCurrency;
 
 import jakarta.validation.constraints.NotNull;
@@ -21,9 +20,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class FixedRateBondDTO {
     @NotNull
-    private Account account;
-
-    @NotNull
     @Size(min = 12, max = 12)
     @Pattern(regexp = "[a-z]{2}[0-9]{10}")
     private String iSIN;
@@ -41,7 +37,7 @@ public class FixedRateBondDTO {
     private String assetTitle;
 
     @NotNull
-    @Size(min = 1)
+    @PositiveOrZero
     private Integer assetCount;
 
     @NotNull
