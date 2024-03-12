@@ -1,7 +1,8 @@
 package fund.data.assets.utils.enums;
 
 public enum CommissionSystem {
-    TURNOVER("Commission charged on turnover"), NOT_IMPLEMENTED("Not implemented commission for tests use");
+    NOT_IMPLEMENTED("Not implemented commission - for tests use only for now"),
+    TURNOVER("Commission charged on turnover");
 
     private final String title;
 

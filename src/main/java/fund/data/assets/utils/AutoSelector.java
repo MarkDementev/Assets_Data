@@ -21,6 +21,7 @@ public class AutoSelector {
             " only COMMISSION_SYSTEM_CHOOSE and TAX_SYSTEM_CHOOSE by costSystemToChoose variable!";
     public static final String COMMISSION_SYSTEM_CHOOSE = "COMMISSION_SYSTEM";
     public static final String TAX_SYSTEM_CHOOSE = "TAX_SYSTEM";
+    public static final String NO_TAX_SYSTEM_CHOOSE = "NO_TAX_SYSTEM";
 
     public static Enum<? extends Enum<?>> selectAssetOperationsCostSystem(AssetCurrency assetCurrency,
                                                                           String assetTypeName,
@@ -32,6 +33,8 @@ public class AutoSelector {
                         return CommissionSystem.TURNOVER;
                     case TAX_SYSTEM_CHOOSE:
                         return TaxSystem.EQUAL_COUPON_DIVIDEND_TRADE;
+                    case NO_TAX_SYSTEM_CHOOSE:
+                        return TaxSystem.NO_TAX;
                     default:
                         throw new RuntimeException(WRONG_COST_SYSTEM_TO_CHOOSE_WARNING);
                 }

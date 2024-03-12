@@ -74,7 +74,7 @@ public class CommissionCalculatorTest {
 
         if (commissionSystem.equals(CommissionSystem.TURNOVER)) {
             Assertions.assertDoesNotThrow(() -> calculation.get());
-        } else {
+        } else if (commissionSystem.equals(CommissionSystem.NOT_IMPLEMENTED)) {
             Assertions.assertThrows(IllegalArgumentException.class, () -> calculation.get());
         }
     }
