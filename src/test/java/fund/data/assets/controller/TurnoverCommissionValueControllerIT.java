@@ -1,6 +1,7 @@
-package fund.data.assets;
+package fund.data.assets.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import fund.data.assets.TestUtils;
 import fund.data.assets.config.SpringConfigForTests;
 
 import fund.data.assets.dto.TurnoverCommissionValueDTO;
