@@ -35,11 +35,9 @@ public class AutoSelector {
      * @param assetTypeName Тип актива.
      * @param costSystemToChoose Техническое значение - указатель, какой тип системы возвращать, т.к. метод полиморфный.
      * @return Возвращает либо CommissionSystem, либо TaxSystem.
-     * @throws IllegalArgumentException Если в качестве аргумента costSystemToChoose не COMMISSION_SYSTEM_CHOOSE
-     * или TAX_SYSTEM_CHOOSE
-     //TODO Поправь тут ниже, когда создашь свой exception
-     * @throws IllegalArgumentException Если в качестве аргумента не поддерживаемые пока что системой фонда тип актива
-     * или валюта актива.
+     * @throws IllegalArgumentException Если в качестве аргументов assetCurrency/assetTypeName не поддерживаемые
+     * пока что системой фонда валюта актива/тип актива. Либо если в качестве аргумента costSystemToChoose не
+     * COMMISSION_SYSTEM_CHOOSE или TAX_SYSTEM_CHOOSE.
      * @since 0.0.1-alpha
      */
     public static Enum<? extends Enum<?>> selectAssetOperationsCostSystem(AssetCurrency assetCurrency,
@@ -58,10 +56,8 @@ public class AutoSelector {
                         throw new IllegalArgumentException(WRONG_COST_SYSTEM_TO_CHOOSE_WARNING);
                 }
             }
-            //TODO Замени на собственный exception
             throw new IllegalArgumentException(NOT_IMPLEMENTED_ASSET_TYPE);
         }
-        //TODO Замени на собственный exception
         throw new IllegalArgumentException(NOT_IMPLEMENTED_CURRENCY);
     }
 }
