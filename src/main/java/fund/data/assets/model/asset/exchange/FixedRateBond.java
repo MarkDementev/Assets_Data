@@ -72,7 +72,7 @@ public class FixedRateBond extends ExchangeAsset {
      */
     @NotNull
     @PositiveOrZero
-    private Double totalAssetPurchasePriceWithCommission;
+    private Float totalAssetPurchasePriceWithCommission;
 
     /**
      * Размер купонной выплаты в валюте.
@@ -157,9 +157,9 @@ public class FixedRateBond extends ExchangeAsset {
      * @return Сколько надо конкретно заплатить за облигации в реальности в валюте.
      * @since 0.0.1-alpha
      */
-    private Double calculateTotalAssetPurchasePriceWithCommission() {
-        return (double) (getAssetCount() * (purchaseBondParValuePercent * bondParValue + bondAccruedInterest)
-                        + totalCommissionForPurchase);
+    private Float calculateTotalAssetPurchasePriceWithCommission() {
+        return getAssetCount() * (purchaseBondParValuePercent * bondParValue + bondAccruedInterest)
+                + totalCommissionForPurchase;
     }
 
     /**
@@ -173,10 +173,8 @@ public class FixedRateBond extends ExchangeAsset {
         float allExpectedCouponPaymentsSum = bondCouponValue * expectedBondCouponPaymentsCount;
         int daysBeforeMaturity = calculateDaysBeforeMaturity();
 
-        return  (
-                (bondParValue - marketClearPriceInCurrency + (allExpectedCouponPaymentsSum - bondAccruedInterest))
-                / marketClearPriceInCurrency
-        ) * (FinancialAndAnotherConstants.YEAR_DAYS_COUNT / daysBeforeMaturity);
+        return  ((bondParValue - marketClearPriceInCurrency + (allExpectedCouponPaymentsSum - bondAccruedInterest))
+                / marketClearPriceInCurrency) * (FinancialAndAnotherConstants.YEAR_DAYS_COUNT / daysBeforeMaturity);
     }
 
     /**
@@ -185,29 +183,19 @@ public class FixedRateBond extends ExchangeAsset {
      * @return Показатель реальной доходности по облигации в % годовых.
      * @since 0.0.1-alpha
      */
-    //TODO ЗАВЕРШИ ПРОВЕРКУ
     private Float calculateMarkDementevYieldIndicator() {
-        Float yieldIndicator;
-        float incomeTaxCorrection = FinancialAndAnotherConstants.RUSSIAN_TAX_SYSTEM_CORRECTION_VALUE;
-        float oneBondValueSummedWithHisCommission = (purchaseBondParValuePercent * bondParValue)
-                + (getTotalCommissionForPurchase() / getAssetCount());
         float expectedBondCouponPaymentsSum = bondCouponValue * expectedBondCouponPaymentsCount;
+        float incomeTaxCorrection = FinancialAndAnotherConstants.RUSSIAN_TAX_SYSTEM_CORRECTION_VALUE;
+        float oneBondValueSummedWithHisCommission = (totalAssetPurchasePriceWithCommission / getAssetCount());
+        float taxValueOfMaturityIncome = 0.00F;
         int daysBeforeMaturity = calculateDaysBeforeMaturity();
 
         if (bondParValue > oneBondValueSummedWithHisCommission) {
-            yieldIndicator = ((expectedBondCouponPaymentsSum * incomeTaxCorrection)
-                    + (bondParValue - oneBondValueSummedWithHisCommission)
-                    * incomeTaxCorrection)
-                    / oneBondValueSummedWithHisCommission
-                    / daysBeforeMaturity
-                    * FinancialAndAnotherConstants.YEAR_DAYS_COUNT;
-        } else {
-            yieldIndicator = ((expectedBondCouponPaymentsSum * incomeTaxCorrection)
-                    / oneBondValueSummedWithHisCommission)
-                    / daysBeforeMaturity
-                    * FinancialAndAnotherConstants.YEAR_DAYS_COUNT;
+            taxValueOfMaturityIncome = incomeTaxCorrection * (bondParValue - oneBondValueSummedWithHisCommission);
         }
-        return yieldIndicator;
+        return ((expectedBondCouponPaymentsSum * incomeTaxCorrection + bondParValue + taxValueOfMaturityIncome)
+                / oneBondValueSummedWithHisCommission - 1)
+                / (daysBeforeMaturity / FinancialAndAnotherConstants.YEAR_DAYS_COUNT);
     }
 
     /**
