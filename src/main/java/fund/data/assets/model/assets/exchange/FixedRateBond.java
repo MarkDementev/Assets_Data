@@ -2,6 +2,9 @@ package fund.data.assets.model.assets.exchange;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import fund.data.assets.utils.AssetsCurrency;
+import fund.data.assets.utils.FinancialCalculationConstants;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -17,7 +20,6 @@ import lombok.Setter;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Currency;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
@@ -62,25 +64,24 @@ public class FixedRateBond extends ExchangeAsset {
 
     public FixedRateBond(String iSIN,
                          String assetIssuerTitle,
-                         Currency assetCurrency,
+                         Instant lastAssetBuyDate,
+                         AssetsCurrency assetCurrency,
                          String assetTitle,
                          Integer assetCount,
-//                         Instant lastAssetBuyDate,
                          Integer bondParValue,
                          Float bondPurchaseMarketPrice,
                          Float bondAccruedInterest,
                          Float bondCouponValue,
                          Integer expectedBondCouponPaymentsCount,
                          Instant bondMaturityDate) {
-        super(iSIN, assetIssuerTitle);
+        super(iSIN, assetIssuerTitle, lastAssetBuyDate);
         super.setAssetCurrency(assetCurrency);
         super.setAssetTypeName(FixedRateBond.class.getTypeName());
         super.setAssetTitle(assetTitle);
         super.setAssetCount(assetCount);
-//        super.setLastAssetBuyDate(lastAssetBuyDate);
-//        super.setTotalAssetMarketPurchasePriceAsCurrency(getAssetCount() * getBondPurchaseMarketPrice() * bondParValue);
-//        super.setTotalCommissionForPurchase(calculateCommission(getTotalAssetMarketPurchasePriceAsCurrency(),
-//                getAssetTypeName()));
+
+
+
         this.bondParValue = bondParValue;
         this.bondPurchaseMarketPrice = bondPurchaseMarketPrice;
         this.bondAccruedInterest = bondAccruedInterest;
@@ -92,31 +93,45 @@ public class FixedRateBond extends ExchangeAsset {
     }
 
     private Float calculateYieldToMaturity() {
-        float expectedCouponPaymentsValuesCount = expectedCouponPaymentsCount * bondCouponValueInCurrency;
-        long hoursBeforeMaturity = ChronoUnit.HOURS.between(getLastAssetBuyDate(), bondMaturityDate);
-        int daysBeforeMaturity = Integer.parseInt(String.valueOf(hoursBeforeMaturity)) / 24;
+        float allExpectedCouponPaymentsValue = bondCouponValue * expectedBondCouponPaymentsCount;
+        int daysBeforeMaturity = calculateDaysBeforeMaturity();
 
-        if (hoursBeforeMaturity % 24 != 0) {
-            daysBeforeMaturity++;
-        }
-
-        return ((bondParValue
-                - (bondParValue * bondPurchaseMarketPrice)
-                + (expectedCouponPaymentsValuesCount - accumulatedBondCouponIncome))
-                / (bondParValue * bondPurchaseMarketPrice)) * 365 / daysBeforeMaturity;
+        return ((bondParValue - (bondParValue * bondPurchaseMarketPrice)
+                + (allExpectedCouponPaymentsValue - bondAccruedInterest))
+                / (bondParValue * bondPurchaseMarketPrice))
+                * FinancialCalculationConstants.YEAR_DAYS_COUNT / daysBeforeMaturity;
     }
 
     private Float calculateMarkDementevYieldIndicator() {
-        Float bondValueWithCommissionInCurrency = (bondPurchaseMarketPrice * bondParValue)
-                + (bondPurchaseMarketPrice * bondParValue)
-        Float yieldIndicator;
+        float bondValueSummedWithCommission = (bondPurchaseMarketPrice * bondParValue)
+                + (bondPurchaseMarketPrice * bondParValue) * getOneAssetCommissionForPurchase();
+        float allExpectedCouponPaymentsValue = bondCouponValue * expectedBondCouponPaymentsCount;
+        int daysBeforeMaturity = calculateDaysBeforeMaturity();
+        float yieldIndicator;
 
-        //ситуация, когда будет налог
-        if (bondParValue > bondValueWithCommissionInCurrency) {
-            yieldIndicator =;
+        if (bondParValue > bondValueSummedWithCommission) {
+            yieldIndicator = ((allExpectedCouponPaymentsValue * FinancialCalculationConstants.PROFIT_SHARE_AFTER_NDFL)
+                    + (bondParValue - bondValueSummedWithCommission)
+                    * FinancialCalculationConstants.PROFIT_SHARE_AFTER_NDFL)
+                    / bondValueSummedWithCommission
+                    / daysBeforeMaturity * FinancialCalculationConstants.YEAR_DAYS_COUNT;
         } else {
-            yieldIndicator =;
+            yieldIndicator = ((allExpectedCouponPaymentsValue * FinancialCalculationConstants.PROFIT_SHARE_AFTER_NDFL)
+                    / bondValueSummedWithCommission)
+                    / daysBeforeMaturity
+                    * FinancialCalculationConstants.YEAR_DAYS_COUNT;
         }
         return yieldIndicator;
+    }
+
+    private int calculateDaysBeforeMaturity() {
+        long hoursBeforeMaturity = ChronoUnit.HOURS.between(getLastAssetBuyDate(), bondMaturityDate);
+        int daysBeforeMaturity = Integer.parseInt(String.valueOf(hoursBeforeMaturity))
+                / FinancialCalculationConstants.DAY_HOURS_COUNT;
+
+        if (hoursBeforeMaturity % FinancialCalculationConstants.DAY_HOURS_COUNT != 0) {
+            daysBeforeMaturity++;
+        }
+        return daysBeforeMaturity;
     }
 }

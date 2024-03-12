@@ -1,11 +1,11 @@
-package fund.data.assets;
+package fund.data.assets.utils;
 
-public enum Currency {
+public enum AssetsCurrency {
     RUSRUB("Russian ruble");
 
     private final String title;
 
-    Currency(String title) {
+    AssetsCurrency(String title) {
         this.title = title;
     }
 

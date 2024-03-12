@@ -1,5 +1,8 @@
 package fund.data.assets.model;
 
+import fund.data.assets.utils.AssetsCurrency;
+import fund.data.assets.utils.TaxSystem;
+
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.MappedSuperclass;
@@ -20,10 +23,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
-import java.util.Currency;
 
 /*
-check - does I need AllArgsConstructor?
+check - do I need AllArgsConstructor?
 */
 @MappedSuperclass
 @AllArgsConstructor
@@ -32,11 +34,11 @@ check - does I need AllArgsConstructor?
 @Setter
 public abstract class Asset {
     /*
-    check - does fund.data.assets.Currency validation works correctly without any validation annotation?
+    check - does fund.data.assets.utils.Currency validation works correctly without any validation annotation?
     */
     @NotNull
     @Enumerated(EnumType.STRING)
-    private Currency assetCurrency;
+    private AssetsCurrency assetCurrency;
 
     @NotBlank
     private String assetTypeName;
@@ -47,6 +49,12 @@ public abstract class Asset {
     @NotNull
     @Size(min = 1)
     private Integer assetCount;
+
+//    @NotNull
+//    private Boolean isTaxableAsset;
+//
+//    @Enumerated(EnumType.STRING)
+//    private TaxSystem assetTaxSystem;
 
     @CreationTimestamp
     private Instant createdAt;
