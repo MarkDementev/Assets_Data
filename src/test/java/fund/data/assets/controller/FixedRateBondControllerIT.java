@@ -28,8 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
-@SpringBootTest(webEnvironment = RANDOM_PORT, classes = SpringConfigForTests.class)
-@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = SpringConfigForTests.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles(TEST_PROFILE)
 @AutoConfigureMockMvc
 public class FixedRateBondControllerIT {

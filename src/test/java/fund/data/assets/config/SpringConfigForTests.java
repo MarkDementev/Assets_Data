@@ -2,7 +2,6 @@ package fund.data.assets.config;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 
@@ -10,7 +9,6 @@ import static fund.data.assets.config.SpringConfigForTests.TEST_PROFILE;
 
 @Configuration
 @Profile(TEST_PROFILE)
-@EnableAspectJAutoProxy
 @ComponentScan(basePackages = "fund.data.assets")
 @PropertySource(value = "classpath:/test_config/application.yml")
 public class SpringConfigForTests {

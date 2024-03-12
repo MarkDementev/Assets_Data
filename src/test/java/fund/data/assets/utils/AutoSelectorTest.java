@@ -7,7 +7,6 @@ import fund.data.assets.utils.enums.CommissionSystem;
 import fund.data.assets.utils.enums.TaxSystem;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -17,7 +16,6 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -29,8 +27,7 @@ import static fund.data.assets.utils.AutoSelector.NO_TAX_SYSTEM_CHOOSE;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@SpringBootTest(webEnvironment = RANDOM_PORT, classes = SpringConfigForTests.class)
-@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = SpringConfigForTests.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles(TEST_PROFILE)
 @AutoConfigureMockMvc
 public class AutoSelectorTest {
