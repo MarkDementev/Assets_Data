@@ -47,16 +47,6 @@ public class FixedRateBondServiceImpl {
 //    }
 
 //    @Override
-//    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = {Exception.class})
-//    public FixedRateBond updateFixedRateBond(Long id, FixedRateBondDTO fixedRateBondDTO) {
-//        final FixedRateBond fixedRateBondToUpdate = fixedRateBondRepository.findById(id).orElseThrow();
-//
-//        getFromDTOThenSetAll(fixedRateBondToUpdate, fixedRateBondDTO);
-//
-//        return fixedRateBondRepository.save(fixedRateBondToUpdate);
-//    }
-
-//    @Override
     public void deleteFixedRateBond(Long id) {
         fixedRateBondRepository.findById(id);
     }

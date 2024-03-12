@@ -32,6 +32,7 @@ public class TurnoverCommissionValueServiceImpl implements TurnoverCommissionVal
     }
 
     @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = {Exception.class})
     public TurnoverCommissionValue createTurnoverCommissionValue(
             TurnoverCommissionValueDTO TurnoverCommissionValueDTO) {
         TurnoverCommissionValue newTurnoverCommissionValue = new TurnoverCommissionValue();
@@ -44,7 +45,7 @@ public class TurnoverCommissionValueServiceImpl implements TurnoverCommissionVal
     }
 
     @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = {Exception.class})
+    @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = {Exception.class})
     public TurnoverCommissionValue updateTurnoverCommissionValue(Long id,
                                                           TurnoverCommissionValueDTO turnoverCommissionValueDTO) {
         TurnoverCommissionValue turnoverCommissionValueToUpdate = turnoverCommissionValueRepository.findById(id)

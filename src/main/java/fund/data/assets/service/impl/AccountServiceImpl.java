@@ -38,7 +38,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = {Exception.class})
+    @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = {Exception.class})
     public Account updateAccount(Long id, AccountDTO accountDTO) {
         final Account accountToUpdate = accountRepository.findById(id).orElseThrow();
 
