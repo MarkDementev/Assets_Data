@@ -49,7 +49,7 @@ public abstract class AssetRelationship {
     private Asset asset;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assets_owner_id", nullable = false)
+    @JoinColumn(name = "assetsOwner_id", nullable = false)
     private AssetsOwner assetsOwner;
 
     @CreationTimestamp

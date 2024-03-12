@@ -13,7 +13,6 @@ import jakarta.persistence.FetchType;
 
 import jakarta.validation.constraints.NotBlank;
 
-import lombok.RequiredArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,11 +31,11 @@ import java.util.List;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@RequiredArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public abstract class AssetsOwner {
+public class AssetsOwner {
+//    public abstract class AssetsOwner {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -51,12 +50,18 @@ public abstract class AssetsOwner {
      * Обращаясь к AssetsOwner, с вероятностью в 95% нам важны не его иные параметры, а активы на балансе.
      * Потому fetch - это сразу FetchType.EAGER, а не FetchType.LAZY.
      */
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "asset_relationship")
-    private List<AssetRelationship> ownersAssetRelationships;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "assetsOwner")
+    private List<AssetRelationship> assetRelationships;
 
     @CreationTimestamp
     private Instant createdAt;
 
     @UpdateTimestamp
     private Instant updatedAt;
+
+    public AssetsOwner(String name, String surname, List<AssetRelationship> assetRelationships) {
+        this.name = name;
+        this.surname = surname;
+        this.assetRelationships = assetRelationships;
+    }
 }
