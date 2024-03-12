@@ -33,6 +33,12 @@ import java.time.Instant;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
+/**
+ * Актив с учётом своего количества.
+ * Абстрактный класс - отец всех типов и вариантов активов.
+ * @version 0.0.1-alpha
+ * @author MarkDementev a.k.a JavaMarkDem
+ */
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @NoArgsConstructor
@@ -43,24 +49,46 @@ public abstract class Asset {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
+    /**
+     * Валюта актива определяется валютой его покупки.
+     */
     @NotNull
     @Enumerated(EnumType.STRING)
     private AssetCurrency assetCurrency;
 
+    /**
+     * Тип актива. Например, облигация с фиксированным купоном - FixedRateBond.
+     */
     @NotBlank
     private String assetTypeName;
 
+    /**
+     * Название конкретного актива. Например, облигация может называться так - МТС-Банк, 001Р-02.
+     * Название биржевого актива нужно брать из брокерского приложения, где актив был куплен.
+     * Вклады имеют собственное название, данное банком. С иными типами активов - именовать, исходя из их сути.
+     */
     @NotBlank
     private String assetTitle;
 
+    /**
+     * Количество единиц актива на учёте инвестиционного фонда.
+     */
     @NotNull
     @PositiveOrZero
     private Integer assetCount;
 
+    /**
+     * Тип налоговой системы для налогообложения операций и доходов по активу.
+     */
     @NotNull
     @Enumerated(EnumType.STRING)
     private TaxSystem assetTaxSystem;
 
+    /**
+     * Это поле - связующее между активом, собственниками актива, и иными сущностями, характерными для
+     * конкретного типа актива. Как и Asset, AssetRelationship - это абстрактный класс.
+     * Поле инициализируется после заполнения полей актива, но до инициализации полей его наследников.
+     */
     @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @JoinColumn(name = "assetRelationship_id")
     private AssetRelationship assetRelationship;

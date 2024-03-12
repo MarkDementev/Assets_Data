@@ -24,23 +24,45 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
+/**
+ * Биржевой актив - сущность для начала конкретизации сути актива.
+ * Абстрактный класс -  наследник абстрактного Asset.
+ * @version 0.0.1-alpha
+ * @author MarkDementev a.k.a JavaMarkDem
+ */
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @NoArgsConstructor
 @Getter
 @Setter
 public abstract class ExchangeAsset extends Asset {
+    /**
+     * Условия валидации поля соответствуют международному стандарту для ISIN.
+     * Источник о стандарте - https://ru.wikipedia.org/wiki/Международный_идентификационный_код_ценной_бумаги
+     */
     @NotNull
     @Size(min = 12, max = 12)
     @Pattern(regexp = "^[A-Z]{2}[A-Z0-9]{9}[0-9]$")
     private String iSIN;
 
+    /**
+     * Любой биржевой актив имеет эмитента - организацию, его выпустившую. Данное поле содержит его наименование
+     * в свободной форме.
+     */
     @NotBlank
     private String assetIssuerTitle;
 
+    /**
+     * В определении состояния актива на учёте фонда важна дата его последнего приобретения.
+     * Её достаточно знать в формате ГГГГ-ММ-ДД.
+     */
     @NotNull
     private LocalDate lastAssetBuyDate;
 
+    /**
+     * Тип системы сбора комиссии за брокерское и иное обслуживание по активу. Не содержит в себе числовые значения,
+     * они находятся в отдельных сущностях. Пока что тип выбирается и инициализируется в конструкторе при создании.
+     */
     @Enumerated(EnumType.STRING)
     private CommissionSystem assetCommissionSystem;
 

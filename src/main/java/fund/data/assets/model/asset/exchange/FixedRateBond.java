@@ -1,6 +1,5 @@
 package fund.data.assets.model.asset.exchange;
 
-import fund.data.assets.model.asset.relationship.FinancialAssetRelationship;
 import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.utils.AutoSelector;
 import fund.data.assets.utils.CommissionCalculator;
@@ -24,6 +23,14 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
+/**
+ * Облигация с фиксированным купоном.
+ * Класс - наследник абстрактного ExchangeAsset.
+ * Один из вариантов финализации сути Asset.
+ * TODO Класс не закончен, не протестирован. По окончании этих задач - добавь документацию всему связанному с ним коду!
+ * @version 0.0.1-alpha
+ * @author MarkDementev a.k.a JavaMarkDem
+ */
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @NoArgsConstructor
@@ -98,7 +105,7 @@ public class FixedRateBond extends ExchangeAsset {
         this.bondCouponValue = bondCouponValue;
         this.expectedBondCouponPaymentsCount = expectedBondCouponPaymentsCount;
         this.bondMaturityDate = bondMaturityDate;
-        //Проверил посюда
+        //TODO Проверяй и рефактори код далее.
         this.yieldToMaturity = calculateYieldToMaturity();
         this.markDementevYieldIndicator = calculateMarkDementevYieldIndicator();
     }

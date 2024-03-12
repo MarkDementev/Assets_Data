@@ -23,6 +23,13 @@ import java.time.Instant;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
+/**
+ * Сущность - связующее между активом, собственниками актива, и иными сущностями, характерными для
+ * конкретного типа актива.
+ * Абстрактный класс - отец взаимосвязей для всех типов активов.
+ * @version 0.0.1-alpha
+ * @author MarkDementev a.k.a JavaMarkDem
+ */
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "asset ownerships with account placement")
@@ -39,7 +46,7 @@ public abstract class AssetRelationship {
     private Asset asset;
 
     /*
-    Добавь как-то список собственников... Или одного собственника...
+    TODO Добавь как-то список собственников... Или одного собственника...
      */
 
     @CreationTimestamp
