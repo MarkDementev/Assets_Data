@@ -5,9 +5,11 @@ import fund.data.assets.utils.enums.CommissionSystem;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import jakarta.persistence.EnumType;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.EnumType;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotBlank;
@@ -25,7 +27,8 @@ import java.time.Instant;
 /*
 check - do I need AllArgsConstructor?
 */
-@MappedSuperclass
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

@@ -5,10 +5,14 @@ import fund.data.assets.utils.enums.TaxSystem;
 
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -24,15 +28,21 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 
+import static jakarta.persistence.GenerationType.IDENTITY;
+
 /*
 check - do I need AllArgsConstructor?
 */
-@MappedSuperclass
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 public abstract class Asset {
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    private Long id;
     /*
     check - does fund.data.assets.utils.Currency validation works correctly without any validation annotation?
     */

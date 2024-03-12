@@ -2,13 +2,12 @@ package fund.data.assets.controller;
 
 import fund.data.assets.dto.AccountDTO;
 import fund.data.assets.model.Account;
-import fund.data.assets.service.AccountService;
+import fund.data.assets.service.impl.AccountServiceImpl;
 
 import jakarta.validation.Valid;
 
 import lombok.AllArgsConstructor;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,8 +27,7 @@ import static fund.data.assets.controller.AccountController.ACCOUNT_CONTROLLER_P
 public class AccountController {
     public static final String ACCOUNT_CONTROLLER_PATH = "/accounts";
     public static final String ID_PATH = "/{id}";
-    @Autowired
-    private final AccountService accountService;
+    private final AccountServiceImpl accountService;
 
     @GetMapping(ID_PATH)
     public Account getAccount(@PathVariable Long id) {

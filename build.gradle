@@ -1,4 +1,5 @@
 plugins {
+	id 'application'
 	id 'java'
 	id 'org.springframework.boot' version '3.1.5'
 	id 'io.spring.dependency-management' version '1.1.3'
@@ -6,6 +7,10 @@ plugins {
 
 group = 'fund.data'
 version = '0.0.1-SNAPSHOT'
+
+application {
+	mainClass = 'fund.data.assets.FundAssetsDataApplication'
+}
 
 java {
 	sourceCompatibility = '17'
@@ -22,20 +27,25 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
-	implementation 'org.liquibase:liquibase-core'
-
 	compileOnly 'org.projectlombok:lombok'
+
 	annotationProcessor 'org.projectlombok:lombok'
 
-	runtimeOnly 'com.h2database:h2'
+	implementation(
+			'org.springframework.boot:spring-boot-starter-data-jpa',
+			'org.springframework.boot:spring-boot-starter-web',
+			'org.springframework.boot:spring-boot-starter-validation'
+	)
 
-	runtimeOnly 'org.postgresql:postgresql'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	runtimeOnly(
+			'com.h2database:h2',
+			'org.postgresql:postgresql'
+	)
+
+	//	implementation 'org.liquibase:liquibase-core'
 }
 
 tasks.named('test') {

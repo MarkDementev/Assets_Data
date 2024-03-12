@@ -9,10 +9,10 @@ import fund.data.assets.utils.FinancialCalculationConstants;
 import fund.data.assets.utils.enums.CommissionSystem;
 import fund.data.assets.utils.enums.TaxSystem;
 
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+//import jakarta.persistence.Table;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -20,22 +20,19 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import static jakarta.persistence.GenerationType.IDENTITY;
-
 @Entity
-@Table(name = "fixed rate bonds")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+//@Table(name = "fixed rate bonds")
+@NoArgsConstructor
 @Getter
 @Setter
 public class FixedRateBond extends ExchangeAsset {
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    private Long id;
-
     @NotNull
     @Positive
     private Integer bondParValue;
@@ -127,7 +124,7 @@ public class FixedRateBond extends ExchangeAsset {
         if (super.getAssetCurrency().getTitle().equals(AssetCurrency.RUSRUB.getTitle())
                 && super.getAssetTaxSystem().getTitle().equals(TaxSystem.EQUAL_COUPON_DIVIDEND_TRADE.getTitle())
                 && super.getAssetCommissionSystem().getTitle().equals(CommissionSystem.TURNOVER.getTitle())) {
-//            incomeTaxCorrection = 0.87F;
+            incomeTaxCorrection = 0.87F;
             /*
             Корректировка incomeTaxCorrection с помощью запроса через контроллер для получения записи в БД
             о размере НДФЛ. Конкретно здесь incomeTaxCorrection должно стать 0.87F, из-за размера РФ НДФЛ в 13%.

@@ -1,19 +1,19 @@
 package fund.data.assets.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+//import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.FetchType;
+//import jakarta.persistence.OneToMany;
+//import jakarta.persistence.CascadeType;
+//import jakarta.persistence.FetchType;
 import jakarta.persistence.Column;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+//import jakarta.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,7 +24,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
-import java.util.Set;
+//import java.util.Set;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
@@ -51,8 +51,8 @@ public class Account {
         check size validation to!
      */
     @NotNull
-    @JsonFormat(pattern = "dd-MM-yyyy")
-    @Size(min = 10, max = 10)
+//    @JsonFormat(pattern = "dd-MM-yyyy")
+//    @Size(min = 10, max = 10)
     private Instant accountOpeningDate;
 
     @CreationTimestamp
@@ -64,6 +64,6 @@ public class Account {
     /*
     check - does cascade and fetch works correctly?
     */
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<AssetRelationship> assetRelationships;
+//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private Set<AssetRelationship> assetRelationships;
 }

@@ -7,6 +7,6 @@ public class CommissionCalculator {
                                             Integer assetCount,
                                             Float bondPurchaseMarketPrice,
                                             Integer bondParValue) {
-
+        return 0F;
     }
 }
