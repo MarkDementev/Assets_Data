@@ -133,7 +133,7 @@ class AccountControllerIT {
 
 		Assertions.assertThrows(ServletException.class,
 				() -> testUtils.perform(post("/data" + ACCOUNT_CONTROLLER_PATH)
-						.content(asJson(testUtils.getAnotherBankButSimilarAccountNumberAccountDTO()))
+						.content(asJson(testUtils.getAnotherBankButSameAccountNumberAccountDTO()))
 						.contentType(APPLICATION_JSON)));
 		assertThat(accountRepository.findAll()).hasSize(1);
 	}
