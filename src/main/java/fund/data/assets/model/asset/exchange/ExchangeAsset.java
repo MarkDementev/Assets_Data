@@ -32,7 +32,7 @@ import java.time.LocalDate;
 public abstract class ExchangeAsset extends Asset {
     @NotNull
     @Size(min = 12, max = 12)
-    @Pattern(regexp = "[a-z]{2}[0-9]{10}")
+    @Pattern(regexp = "^[A-Z]{2}[A-Z0-9]{9}[0-9]$")
     private String iSIN;
 
     @NotBlank
