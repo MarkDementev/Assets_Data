@@ -34,7 +34,8 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public abstract class AssetsOwner {
+//public abstract class AssetsOwner {
+public class AssetsOwner {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
