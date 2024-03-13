@@ -23,6 +23,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -47,6 +48,10 @@ public abstract class AssetsOwner {
     @NotBlank
     private String surname;
 
+    //TODO - В Localdate порядок данных не как в паспорте РФ. Потому надо будет преобразовывать исходя из типа оунера.
+    @NotBlank
+    private LocalDate birthDate;
+
     /**
      * Для написания regexp использован стандарт RFC5322 - https://www.rfc-editor.org/info/rfc5322
      */
@@ -70,9 +75,11 @@ public abstract class AssetsOwner {
     @UpdateTimestamp
     private Instant updatedAt;
 
-    public AssetsOwner(String name, String surname, String email, List<AssetRelationship> assetRelationships) {
+    public AssetsOwner(String name, String surname, LocalDate birthDate, String email,
+                       List<AssetRelationship> assetRelationships) {
         this.name = name;
         this.surname = surname;
+        this.birthDate = birthDate;
         this.email = email;
         this.assetRelationships = assetRelationships;
     }
