@@ -35,5 +35,7 @@ public class FinancialAssetRelationship extends AssetRelationship {
         super(asset, assetOwner);
 
         this.account = account;
+
+        getAssetsOwner().getAssetRelationships().add(this);
     }
 }

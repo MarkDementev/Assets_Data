@@ -9,48 +9,97 @@ import jakarta.persistence.Table;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import org.springframework.context.annotation.Primary;
 
+import java.time.LocalDate;
+
 /**
  * Сущность - собственник активов - гражданин РФ. Для идентификации используются данные из паспорта гражданина РФ.
- * Класс -  наследник абстрактного AssetsOwner. Используется по дефолту (@Primary).
+ * Класс - наследник абстрактного AssetsOwner. Используется по дефолту (@Primary).
  * @since 0.0.1-alpha
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Primary
 @Entity
 @Table(name = "Asset owners with Russia Federation citizenship")
-@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 public class RussianAssetsOwner extends AssetsOwner {
     @NotBlank
-    private String Patronymic;
+    private String patronymic;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private RussianSexEnum Sex;
+    private RussianSexEnum sex;
 
-    //    номер телефона
+    //TODO Пропиши валидацию в сервисе, с использованием библиотеки libphonenumber. Не получится - пропиши тут аннотац.
+    //TODO Зашифруй
+    /**
+     * Тип переменной - String, а не числовой, т.к. можно ввести номер не только из цифр, но и со спец-символами,
+     * например, (+7...).
+     */
+    @NotNull
+    private String phoneNumber;
 
-    //    private String passportSeries;
+    //TODO Зашифруй
+    /**
+     * Можно вводить как с пробелом между 2-й и 3-й цифрами (как напечатано в паспорте), так и подряд все 4 цифры.
+     */
+    @NotNull
+    @Pattern(regexp = "[0-9]{2}\\s?[0-9]{2}")
+    private String passportSeries;
 
-    //    private String passportNumber;
+    //TODO Зашифруй
+    @NotNull
+    @Pattern(regexp = "[0-9]{6}")
+    private String passportNumber;
 
-    //место рождения
+    @NotBlank
+    private String placeOfBirth;
 
-    //паспорт выдан
+    @NotBlank
+    private String placeOfPassportGiven;
 
-    //дата выдачи
+    //TODO В LocalDate порядок данных не как в паспорте РФ. Потому надо будет преобразовывать, исходя из типа оунера.
+    @NotBlank
+    private LocalDate issueDate;
 
-    //код подразделения
+    @NotNull
+    @Pattern(regexp = "[0-9]{3}-[0-9]{3}")
+    private String issuerOrganisationCode;
 
-    //конструктор
+    public RussianAssetsOwner(String name, String surname, LocalDate birthDate, String email, String patronymic,
+                              RussianSexEnum sex, String phoneNumber, String passportSeries, String passportNumber,
+                              String placeOfBirth, String placeOfPassportGiven) {
+        super(name, surname, birthDate, email);
+
+        this.patronymic = patronymic;
+        this.sex = sex;
+        this.phoneNumber = phoneNumber;
+        this.passportSeries = passportSeries;
+        this.passportNumber = passportNumber;
+        this.placeOfBirth = placeOfBirth;
+        this.placeOfPassportGiven = placeOfPassportGiven;
+    }
+
+    public RussianAssetsOwner(String name, String surname, LocalDate birthDate, String patronymic,
+                              RussianSexEnum sex, String phoneNumber, String passportSeries, String passportNumber,
+                              String placeOfBirth, String placeOfPassportGiven) {
+        super(name, surname, birthDate);
+
+        this.patronymic = patronymic;
+        this.sex = sex;
+        this.phoneNumber = phoneNumber;
+        this.passportSeries = passportSeries;
+        this.passportNumber = passportNumber;
+        this.placeOfBirth = placeOfBirth;
+        this.placeOfPassportGiven = placeOfPassportGiven;
+    }
 }
