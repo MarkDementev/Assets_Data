@@ -48,7 +48,7 @@ public abstract class AssetsOwner {
     @NotBlank
     private String surname;
 
-    //TODO - В Localdate порядок данных не как в паспорте РФ. Потому надо будет преобразовывать исходя из типа оунера.
+    //TODO В Localdate порядок данных не как в паспорте РФ. Потому надо будет преобразовывать исходя из типа оунера.
     @NotBlank
     private LocalDate birthDate;
 

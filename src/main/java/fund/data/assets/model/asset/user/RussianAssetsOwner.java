@@ -1,5 +1,7 @@
 package fund.data.assets.model.asset.user;
 
+import fund.data.assets.utils.enums.RussianSexEnum;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -36,9 +38,11 @@ public class RussianAssetsOwner extends AssetsOwner {
     @Enumerated(EnumType.STRING)
     private RussianSexEnum Sex;
 
+    //    номер телефона
+
     //    private String passportSeries;
 
-//    private String passportNumber;
+    //    private String passportNumber;
 
     //место рождения
 
@@ -48,7 +52,5 @@ public class RussianAssetsOwner extends AssetsOwner {
 
     //код подразделения
 
-//    номер телефона
-
-
+    //конструктор
 }
