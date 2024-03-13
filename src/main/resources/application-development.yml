@@ -12,3 +12,8 @@ spring:
   output:
     ansi:
       enabled: true
+
+  jasypt:
+    encryptor:
+      algorithm: PBEWithMD5AndDES
+      password: mySecretKeys
