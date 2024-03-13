@@ -10,7 +10,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.Column;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 import lombok.Getter;
@@ -34,8 +36,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-//public abstract class AssetsOwner {
-public class AssetsOwner {
+public abstract class AssetsOwner {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -45,6 +46,15 @@ public class AssetsOwner {
 
     @NotBlank
     private String surname;
+
+    /**
+     * Для написания regexp использован стандарт RFC5322 - https://www.rfc-editor.org/info/rfc5322
+     */
+    @Column(unique = true)
+    @NotBlank
+    @Email(regexp = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
+    //TODO Зашифруй
+    private String email;
 
     /**
      * Обращаясь к AssetsOwner, с вероятностью в 95% нам важны не его иные параметры, а активы на балансе. Информацию
@@ -60,9 +70,10 @@ public class AssetsOwner {
     @UpdateTimestamp
     private Instant updatedAt;
 
-    public AssetsOwner(String name, String surname, List<AssetRelationship> assetRelationships) {
+    public AssetsOwner(String name, String surname, String email, List<AssetRelationship> assetRelationships) {
         this.name = name;
         this.surname = surname;
+        this.email = email;
         this.assetRelationships = assetRelationships;
     }
 }
