@@ -1,6 +1,7 @@
 package fund.data.assets.model.asset.user;
 
 import fund.data.assets.model.asset.relationship.AssetRelationship;
+import fund.data.assets.utils.converter.StringCryptoConverter;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Inheritance;
@@ -11,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -54,13 +56,13 @@ public abstract class AssetsOwner {
     @NotBlank
     private LocalDate birthDate;
 
-    //TODO Зашифруй
     /**
      * Для написания regexp использован стандарт RFC5322 - https://www.rfc-editor.org/info/rfc5322
      * Почты может и не быть, потому не ставлю ограничение в виде @NotBlank.
      */
     @Column(unique = true)
     @Email(regexp = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
+    @Convert(converter = StringCryptoConverter.class)
     private String email;
 
     /**

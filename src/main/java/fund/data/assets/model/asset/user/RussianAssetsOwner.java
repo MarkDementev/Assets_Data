@@ -1,11 +1,13 @@
 package fund.data.assets.model.asset.user;
 
+import fund.data.assets.utils.converter.StringCryptoConverter;
 import fund.data.assets.utils.enums.RussianSexEnum;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import jakarta.persistence.Convert;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -40,25 +42,25 @@ public class RussianAssetsOwner extends AssetsOwner {
     private RussianSexEnum sex;
 
     //TODO Пропиши валидацию в сервисе, с использованием библиотеки libphonenumber. Не получится - пропиши тут аннотац.
-    //TODO Зашифруй
     /**
      * Тип переменной - String, а не числовой, т.к. можно ввести номер не только из цифр, но и со спец-символами,
      * например, (+7...).
      */
     @NotNull
+    @Convert(converter = StringCryptoConverter.class)
     private String phoneNumber;
 
-    //TODO Зашифруй
     /**
      * Можно вводить как с пробелом между 2-й и 3-й цифрами (как напечатано в паспорте), так и подряд все 4 цифры.
      */
     @NotNull
     @Pattern(regexp = "[0-9]{2}\\s?[0-9]{2}")
+    @Convert(converter = StringCryptoConverter.class)
     private String passportSeries;
 
-    //TODO Зашифруй
     @NotNull
     @Pattern(regexp = "[0-9]{6}")
+    @Convert(converter = StringCryptoConverter.class)
     private String passportNumber;
 
     @NotBlank
