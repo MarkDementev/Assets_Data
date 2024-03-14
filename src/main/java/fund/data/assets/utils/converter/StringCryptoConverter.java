@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Converter
 public class StringCryptoConverter implements AttributeConverter<String, String> {
+    //TODO - Ближе к деплою, придумай, как хранить пароль и алгоритм ВНЕ кода проекта, и как его получать оттуда.
     private final String password = "password";
     private final String algorithm = "PBEWithMD5AndDES";
     private StandardPBEStringEncryptor encryptor;
