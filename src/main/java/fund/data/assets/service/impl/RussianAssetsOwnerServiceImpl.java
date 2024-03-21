@@ -1,5 +1,6 @@
 package fund.data.assets.service.impl;
 
+import fund.data.assets.dto.NewRussianAssetsOwnerDTO;
 import fund.data.assets.model.asset.user.RussianAssetsOwner;
 import fund.data.assets.repository.RussianAssetsOwnerRepository;
 import fund.data.assets.service.RussianAssetsOwnerService;
@@ -33,7 +34,7 @@ public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService 
 
     @Override
     public RussianAssetsOwner createRussianAssetsOwner(NewRussianAssetsOwnerDTO newRussianAssetsOwnerDTO) {
-        return null;
+        return ;
     }
 
     @Override
