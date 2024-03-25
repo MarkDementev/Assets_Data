@@ -81,7 +81,8 @@ public class RussianAssetsOwner extends AssetsOwner {
 
     public RussianAssetsOwner(String name, String surname, LocalDate birthDate, String email, String patronymic,
                               RussianSexEnum sex, String mobilePhoneNumber, String passportSeries, String passportNumber,
-                              String placeOfBirth, String placeOfPassportGiven) {
+                              String placeOfBirth, String placeOfPassportGiven, LocalDate issueDate,
+                              String issuerOrganisationCode) {
         super(name, surname, birthDate, email);
 
         this.patronymic = patronymic;
@@ -91,19 +92,7 @@ public class RussianAssetsOwner extends AssetsOwner {
         this.passportNumber = passportNumber;
         this.placeOfBirth = placeOfBirth;
         this.placeOfPassportGiven = placeOfPassportGiven;
-    }
-
-    public RussianAssetsOwner(String name, String surname, LocalDate birthDate, String patronymic,
-                              RussianSexEnum sex, String mobilePhoneNumber, String passportSeries, String passportNumber,
-                              String placeOfBirth, String placeOfPassportGiven) {
-        super(name, surname, birthDate);
-
-        this.patronymic = patronymic;
-        this.sex = sex;
-        this.mobilePhoneNumber = mobilePhoneNumber;
-        this.passportSeries = passportSeries;
-        this.passportNumber = passportNumber;
-        this.placeOfBirth = placeOfBirth;
-        this.placeOfPassportGiven = placeOfPassportGiven;
+        this.issueDate = issueDate;
+        this.issuerOrganisationCode = issuerOrganisationCode;
     }
 }

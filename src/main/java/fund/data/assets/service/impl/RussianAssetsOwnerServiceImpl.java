@@ -6,6 +6,9 @@ import fund.data.assets.repository.RussianAssetsOwnerRepository;
 import fund.data.assets.service.RussianAssetsOwnerService;
 import fund.data.assets.utils.enums.RussianSexEnum;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
@@ -45,12 +48,15 @@ public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService 
         String patronymic = newRussianAssetsOwnerDTO.getPatronymic();
         RussianSexEnum sex = newRussianAssetsOwnerDTO.getSex();
         String mobilePhoneNumber = addRussianNumberPrefixPhoneNumber(newRussianAssetsOwnerDTO.getMobilePhoneNumber());
-        this.passportSeries = passportSeries;
-        this.passportNumber = passportNumber;
-        this.placeOfBirth = placeOfBirth;
-        this.placeOfPassportGiven = placeOfPassportGiven;
+        String passportSeries = newRussianAssetsOwnerDTO.getPassportSeries();
+        String passportNumber = newRussianAssetsOwnerDTO.getPassportNumber();
+        String placeOfBirth = newRussianAssetsOwnerDTO.getPlaceOfBirth();
+        String placeOfPassportGiven = newRussianAssetsOwnerDTO.getPlaceOfPassportGiven();
+//        private LocalDate issueDate;
+//        private String issuerOrganisationCode;
         RussianAssetsOwner russianAssetsOwner = new RussianAssetsOwner(name, surname, birthDate, email, patronymic,
-                sex, mobilePhoneNumber, passportSeries, passportNumber, placeOfBirth, placeOfPassportGiven);
+                sex, mobilePhoneNumber, passportSeries, passportNumber, placeOfBirth, placeOfPassportGiven, issueDate,
+                issuerOrganisationCode);
 
         return russianAssetsOwnerRepository.save(russianAssetsOwner);
     }

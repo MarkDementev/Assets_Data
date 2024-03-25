@@ -82,22 +82,15 @@ public abstract class AssetsOwner {
     @UpdateTimestamp
     private Instant updatedAt;
 
+    /**
+     * У кого-то может не быть электронной почты, но это не препятствие для взаимодействия с фондом. Всё равно
+     * можно создать свой аккаунт в системе фонда. Email приходит через DTO, где он может быть null.
+     */
     public AssetsOwner(String name, String surname, LocalDate birthDate, String email) {
         this.name = name;
         this.surname = surname;
         this.birthDate = birthDate;
         this.email = email;
-        this.assetRelationships = new ArrayList<>();
-    }
-
-    /**
-     * У кого-то может не быть электронной почты, но это не препятствие для взаимодействия с фондом. Всё равно
-     * можно создать свой аккаунт в системе фонда.
-     */
-    public AssetsOwner(String name, String surname, LocalDate birthDate) {
-        this.name = name;
-        this.surname = surname;
-        this.birthDate = birthDate;
         this.assetRelationships = new ArrayList<>();
     }
 }
