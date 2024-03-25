@@ -41,14 +41,14 @@ public class RussianAssetsOwner extends AssetsOwner {
     @Enumerated(EnumType.STRING)
     private RussianSexEnum sex;
 
-    //TODO Пропиши валидацию в сервисе, с использованием библиотеки libphonenumber. Не получится - пропиши тут аннотац.
     /**
-     * Тип переменной - String, а не числовой, т.к. можно ввести номер не только из цифр, но и со спец-символами,
-     * например, (+7...).
+     * Номер мобильного телефона в формате ХХХ-ХХХ-ХХ-ХХ без +7. +7 добавляет сервис при операциях с полем.
      */
+    //TODO Проверь - возможно, регексп надо оставить только в ДТО, т.к. здесь идёт шифрование
     @NotNull
+    @Pattern(regexp = "9[0-9]{9}")
     @Convert(converter = StringCryptoConverter.class)
-    private String phoneNumber;
+    private String mobilePhoneNumber;
 
     /**
      * Можно вводить как с пробелом между 2-й и 3-й цифрами (как напечатано в паспорте), так и подряд все 4 цифры.
@@ -80,13 +80,13 @@ public class RussianAssetsOwner extends AssetsOwner {
     private String issuerOrganisationCode;
 
     public RussianAssetsOwner(String name, String surname, LocalDate birthDate, String email, String patronymic,
-                              RussianSexEnum sex, String phoneNumber, String passportSeries, String passportNumber,
+                              RussianSexEnum sex, String mobilePhoneNumber, String passportSeries, String passportNumber,
                               String placeOfBirth, String placeOfPassportGiven) {
         super(name, surname, birthDate, email);
 
         this.patronymic = patronymic;
         this.sex = sex;
-        this.phoneNumber = phoneNumber;
+        this.mobilePhoneNumber = mobilePhoneNumber;
         this.passportSeries = passportSeries;
         this.passportNumber = passportNumber;
         this.placeOfBirth = placeOfBirth;
@@ -94,13 +94,13 @@ public class RussianAssetsOwner extends AssetsOwner {
     }
 
     public RussianAssetsOwner(String name, String surname, LocalDate birthDate, String patronymic,
-                              RussianSexEnum sex, String phoneNumber, String passportSeries, String passportNumber,
+                              RussianSexEnum sex, String mobilePhoneNumber, String passportSeries, String passportNumber,
                               String placeOfBirth, String placeOfPassportGiven) {
         super(name, surname, birthDate);
 
         this.patronymic = patronymic;
         this.sex = sex;
-        this.phoneNumber = phoneNumber;
+        this.mobilePhoneNumber = mobilePhoneNumber;
         this.passportSeries = passportSeries;
         this.passportNumber = passportNumber;
         this.placeOfBirth = placeOfBirth;

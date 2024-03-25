@@ -23,6 +23,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService {
+    public final String RUSSIAN_MOBILE_PHONE_PREFIX = "+7";
     private final RussianAssetsOwnerRepository russianAssetsOwnerRepository;
 
     @Override
@@ -43,28 +44,15 @@ public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService 
         String email = newRussianAssetsOwnerDTO.getEmail();
         String patronymic = newRussianAssetsOwnerDTO.getPatronymic();
         RussianSexEnum sex = newRussianAssetsOwnerDTO.getSex();
-        this.phoneNumber = phoneNumber;
+        String mobilePhoneNumber = addRussianNumberPrefixPhoneNumber(newRussianAssetsOwnerDTO.getMobilePhoneNumber());
         this.passportSeries = passportSeries;
         this.passportNumber = passportNumber;
         this.placeOfBirth = placeOfBirth;
         this.placeOfPassportGiven = placeOfPassportGiven;
-
-        RussianAssetsOwner russianAssetsOwner = new RussianAssetsOwner();
+        RussianAssetsOwner russianAssetsOwner = new RussianAssetsOwner(name, surname, birthDate, email, patronymic,
+                sex, mobilePhoneNumber, passportSeries, passportNumber, placeOfBirth, placeOfPassportGiven);
 
         return russianAssetsOwnerRepository.save(russianAssetsOwner);
-
-//       public RussianAssetsOwner(String name, String surname, LocalDate birthDate, String email, String patronymic,
-//            RussianSexEnum sex, String phoneNumber, String passportSeries, String passportNumber,
-//            String placeOfBirth, String placeOfPassportGiven) {
-//            super(name, surname, birthDate, email);
-//
-//            this.patronymic = patronymic;
-//            this.sex = sex;
-//            this.phoneNumber = phoneNumber;
-//            this.passportSeries = passportSeries;
-//            this.passportNumber = passportNumber;
-//            this.placeOfBirth = placeOfBirth;
-//            this.placeOfPassportGiven = placeOfPassportGiven;
     }
 
 //    @Override
@@ -95,5 +83,16 @@ public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService 
         DateTimeFormatter fromRFPassportFormatToLocalDate = DateTimeFormatter.ofPattern("dd.MM.-yyyy");
 
         return LocalDate.parse(stringDate, fromRFPassportFormatToLocalDate);
+    }
+
+    /**
+     * Чтобы не вводить префикс и не проводить сложную валидацию на фронте, номер вводится в формате ХХХ-ХХХ-ХХ-ХХ
+     *  без +7 и приходит через DTO как String. Данный метод собирает его, добавляя префикс +7.
+     * @param mobilePhoneNumber
+     * @return номер мобильного телефона РФ с добавлением префикса +7.
+     * @since 0.0.1-alpha
+     */
+    private String addRussianNumberPrefixPhoneNumber(String mobilePhoneNumber) {
+        return RUSSIAN_MOBILE_PHONE_PREFIX + mobilePhoneNumber;
     }
 }

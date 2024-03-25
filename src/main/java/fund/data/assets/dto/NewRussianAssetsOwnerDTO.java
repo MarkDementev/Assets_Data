@@ -43,9 +43,9 @@ public class NewRussianAssetsOwnerDTO {
     @NotNull
     private RussianSexEnum sex;
 
-    //TODO Пропиши валидацию в сервисе с использованием библиотеки libphonenumber. Не получится - пропиши через аннотац.
     @NotNull
-    private String phoneNumber;
+    @Pattern(regexp = "9[0-9]{9}")
+    private String mobilePhoneNumber;
 
     @NotNull
     @Pattern(regexp = "[0-9]{2}\\s?[0-9]{2}")
