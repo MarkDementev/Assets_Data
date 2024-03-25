@@ -30,11 +30,11 @@ public class NewRussianAssetsOwnerDTO {
     @NotBlank
     private String surname;
 
-    //TODO В LocalDate порядок данных не как в паспорте РФ. Потому надо будет преобразовывать, исходя из типа оунера.
     @NotBlank
-    private LocalDate birthDate;
+    //Важно! Можно 01 для дня, но нельзя 00
+    @Pattern(regexp = "^(0?[1-9]|1[0-2])/([0-2]?[1-9]|[1-3][01])/\\d{4}$")
+    private String birthDate;
 
-    //TODO Проверь шифрацию.
     @Email(regexp = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
     private String email;
 
