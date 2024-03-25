@@ -11,8 +11,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
 /**
  * DTO для обслуживания создания владельца активов с гражданством РФ.
  * Обслуживаемая сущность - {@link fund.data.assets.model.asset.user.RussianAssetsOwner}.
@@ -61,9 +59,9 @@ public class NewRussianAssetsOwnerDTO {
     @NotBlank
     private String placeOfPassportGiven;
 
-    //TODO В LocalDate порядок данных не как в паспорте РФ. Потому надо будет преобразовывать, исходя из типа оунера.
     @NotBlank
-    private LocalDate issueDate;
+    @Pattern(regexp = "(0[1-9]|[12][0-9]|3[01])\\.(0[1-9]|1[012])\\.((19|20)\\d\\d)")
+    private String issueDate;
 
     @NotNull
     @Pattern(regexp = "[0-9]{3}-[0-9]{3}")

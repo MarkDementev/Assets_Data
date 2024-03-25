@@ -71,8 +71,8 @@ public class RussianAssetsOwner extends AssetsOwner {
     @NotBlank
     private String placeOfPassportGiven;
 
-    //TODO В LocalDate порядок данных не как в паспорте РФ. Потому надо будет преобразовывать, исходя из типа оунера.
     @NotBlank
+    @Pattern(regexp = "(0[1-9]|[12][0-9]|3[01])\\.(0[1-9]|1[012])\\.((19|20)\\d\\d)")
     private LocalDate issueDate;
 
     @NotNull

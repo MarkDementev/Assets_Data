@@ -6,15 +6,13 @@ import fund.data.assets.repository.RussianAssetsOwnerRepository;
 import fund.data.assets.service.RussianAssetsOwnerService;
 import fund.data.assets.utils.enums.RussianSexEnum;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 /**
@@ -26,7 +24,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService {
-    public final String RUSSIAN_MOBILE_PHONE_PREFIX = "+7";
+    public static final String RUSSIAN_MOBILE_PHONE_PREFIX = "+7";
+    public static final String WRONG_DATES_WARNING = "This is error - issueDate doesn't before birthDate!";
     private final RussianAssetsOwnerRepository russianAssetsOwnerRepository;
 
     @Override
@@ -43,7 +42,7 @@ public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService 
     public RussianAssetsOwner createRussianAssetsOwner(NewRussianAssetsOwnerDTO newRussianAssetsOwnerDTO) {
         String name = newRussianAssetsOwnerDTO.getName();
         String surname = newRussianAssetsOwnerDTO.getSurname();
-        LocalDate birthDate = parseBirthDate(newRussianAssetsOwnerDTO.getBirthDate());
+        LocalDate birthDate = parseDatePassportFormatIntoLocalDate(newRussianAssetsOwnerDTO.getBirthDate());
         String email = newRussianAssetsOwnerDTO.getEmail();
         String patronymic = newRussianAssetsOwnerDTO.getPatronymic();
         RussianSexEnum sex = newRussianAssetsOwnerDTO.getSex();
@@ -52,8 +51,13 @@ public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService 
         String passportNumber = newRussianAssetsOwnerDTO.getPassportNumber();
         String placeOfBirth = newRussianAssetsOwnerDTO.getPlaceOfBirth();
         String placeOfPassportGiven = newRussianAssetsOwnerDTO.getPlaceOfPassportGiven();
-//        private LocalDate issueDate;
-//        private String issuerOrganisationCode;
+        LocalDate issueDate = parseDatePassportFormatIntoLocalDate(newRussianAssetsOwnerDTO.getIssueDate());
+        String issuerOrganisationCode = newRussianAssetsOwnerDTO.getIssuerOrganisationCode();
+
+        if (ChronoUnit.DAYS.between(birthDate, issueDate) < 0) {
+            throw new IllegalArgumentException(WRONG_DATES_WARNING);
+        }
+
         RussianAssetsOwner russianAssetsOwner = new RussianAssetsOwner(name, surname, birthDate, email, patronymic,
                 sex, mobilePhoneNumber, passportSeries, passportNumber, placeOfBirth, placeOfPassportGiven, issueDate,
                 issuerOrganisationCode);
@@ -85,10 +89,10 @@ public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService 
      * @return дату в формате LocalDate.
      * @since 0.0.1-alpha
      */
-    private LocalDate parseBirthDate(String stringDate) {
-        DateTimeFormatter fromRFPassportFormatToLocalDate = DateTimeFormatter.ofPattern("dd.MM.-yyyy");
+    private LocalDate parseDatePassportFormatIntoLocalDate(String stringDate) {
+        DateTimeFormatter fromRFPassportFormatToLocalDateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-        return LocalDate.parse(stringDate, fromRFPassportFormatToLocalDate);
+        return LocalDate.parse(stringDate, fromRFPassportFormatToLocalDateFormatter);
     }
 
     /**
