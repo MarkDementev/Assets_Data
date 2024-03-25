@@ -17,6 +17,7 @@ import jakarta.persistence.Convert;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -53,12 +54,14 @@ public abstract class AssetsOwner {
     private String surname;
 
     @NotBlank
+    @Pattern(regexp = "(0[1-9]|[12][0-9]|3[01])\\.(0[1-9]|1[012])\\.((19|20)\\d\\d)")
     private LocalDate birthDate;
 
     /**
      * Для написания regexp использован стандарт RFC5322 - https://www.rfc-editor.org/info/rfc5322
      * Почты может и не быть, потому не ставлю ограничение в виде @NotBlank.
      */
+    //TODO Проверь - возможно, регексп надо оставить только в ДТО, т.к. здесь идёт шифрование
     @Column(unique = true)
     @Email(regexp = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
     @Convert(converter = StringCryptoConverter.class)

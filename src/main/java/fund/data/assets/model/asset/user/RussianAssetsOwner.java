@@ -53,11 +53,13 @@ public class RussianAssetsOwner extends AssetsOwner {
     /**
      * Можно вводить как с пробелом между 2-й и 3-й цифрами (как напечатано в паспорте), так и подряд все 4 цифры.
      */
+    //TODO Проверь - возможно, регексп надо оставить только в ДТО, т.к. здесь идёт шифрование
     @NotNull
     @Pattern(regexp = "[0-9]{2}\\s?[0-9]{2}")
     @Convert(converter = StringCryptoConverter.class)
     private String passportSeries;
 
+    //TODO Проверь - возможно, регексп надо оставить только в ДТО, т.к. здесь идёт шифрование
     @NotNull
     @Pattern(regexp = "[0-9]{6}")
     @Convert(converter = StringCryptoConverter.class)
