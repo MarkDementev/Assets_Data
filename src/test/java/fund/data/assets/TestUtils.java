@@ -8,7 +8,6 @@ import fund.data.assets.dto.AccountDTO;
 import fund.data.assets.dto.TurnoverCommissionValueDTO;
 import fund.data.assets.repository.AccountRepository;
 import fund.data.assets.repository.TurnoverCommissionValueRepository;
-import fund.data.assets.utils.enums.CommissionSystem;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -61,14 +60,12 @@ public class TestUtils {
     );
 
     private final TurnoverCommissionValueDTO turnoverCommissionValueDTO = new TurnoverCommissionValueDTO(
-            CommissionSystem.TURNOVER,
             null,
             TEST_ASSET_TYPE_NAME,
             TEST_COMMISSION_PERCENT_VALUE
     );
 
     private final TurnoverCommissionValueDTO notValidTurnoverCommissionValueDTO = new TurnoverCommissionValueDTO(
-            null,
             null,
             " ",
             null

@@ -8,6 +8,7 @@ import fund.data.assets.dto.TurnoverCommissionValueDTO;
 import fund.data.assets.model.financial_entities.TurnoverCommissionValue;
 import fund.data.assets.repository.AccountRepository;
 import fund.data.assets.repository.TurnoverCommissionValueRepository;
+import fund.data.assets.utils.enums.CommissionSystem;
 
 import jakarta.servlet.ServletException;
 
@@ -125,7 +126,7 @@ public class TurnoverCommissionValueControllerIT {
 
         assertNotNull(turnoverCommissionValueFromResponse.getId());
         assertEquals(turnoverCommissionValueFromResponse.getCommissionSystem(),
-                newTurnoverCommissionValueDTO.getCommissionSystem());
+                CommissionSystem.TURNOVER);
         assertEquals(turnoverCommissionValueFromResponse.getAccount().getId(),
                 newTurnoverCommissionValueDTO.getAccountID());
         assertEquals(turnoverCommissionValueFromResponse.getAssetTypeName(),
@@ -182,7 +183,7 @@ public class TurnoverCommissionValueControllerIT {
 
         assertNotNull(turnoverCommissionValueFromResponse.getId());
         assertEquals(turnoverCommissionValueFromResponse.getCommissionSystem(),
-                turnoverCommissionValueSecondDTO.getCommissionSystem());
+                CommissionSystem.TURNOVER);
         assertEquals(turnoverCommissionValueFromResponse.getAccount().getId(),
                 turnoverCommissionValueSecondDTO.getAccountID());
         assertEquals(turnoverCommissionValueFromResponse.getAssetTypeName(),
@@ -205,8 +206,6 @@ public class TurnoverCommissionValueControllerIT {
                 .content(asJson(testUtils.getNotValidTurnoverCommissionValueDTO()))
                 .contentType(APPLICATION_JSON));
 
-        assertNotEquals(turnoverCommissionValueRepository.findAll().get(0).getCommissionSystem(),
-                testUtils.getNotValidTurnoverCommissionValueDTO().getCommissionSystem());
         assertNotEquals(turnoverCommissionValueRepository.findAll().get(0).getAccount().getId(),
                 testUtils.getNotValidTurnoverCommissionValueDTO().getAccountID());
         assertNotEquals(turnoverCommissionValueRepository.findAll().get(0).getAssetTypeName(),

@@ -1,7 +1,5 @@
 package fund.data.assets.dto;
 
-import fund.data.assets.utils.enums.CommissionSystem;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -20,9 +18,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TurnoverCommissionValueDTO {
-    @NotNull
-    private CommissionSystem commissionSystem;
-
     @NotNull
     private Long accountID;
 

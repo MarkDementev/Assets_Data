@@ -6,6 +6,7 @@ import fund.data.assets.model.financial_entities.TurnoverCommissionValue;
 import fund.data.assets.repository.AccountRepository;
 import fund.data.assets.repository.TurnoverCommissionValueRepository;
 import fund.data.assets.service.TurnoverCommissionValueService;
+import fund.data.assets.utils.enums.CommissionSystem;
 
 import lombok.RequiredArgsConstructor;
 
@@ -45,6 +46,7 @@ public class TurnoverCommissionValueServiceImpl implements TurnoverCommissionVal
         Account account = accountRepository.findById(TurnoverCommissionValueDTO.getAccountID()).orElseThrow();
 
         newTurnoverCommissionValue.setAccount(account);
+        newTurnoverCommissionValue.setCommissionSystem(CommissionSystem.TURNOVER);
         getFromDTOThenSetAll(newTurnoverCommissionValue, TurnoverCommissionValueDTO);
 
         return turnoverCommissionValueRepository.save(newTurnoverCommissionValue);
@@ -69,7 +71,6 @@ public class TurnoverCommissionValueServiceImpl implements TurnoverCommissionVal
 
     private void getFromDTOThenSetAll(TurnoverCommissionValue turnoverCommissionValueToWorkWith,
                                       TurnoverCommissionValueDTO turnoverCommissionValueDTO) {
-        turnoverCommissionValueToWorkWith.setCommissionSystem(turnoverCommissionValueDTO.getCommissionSystem());
         turnoverCommissionValueToWorkWith.setAssetTypeName(turnoverCommissionValueDTO.getAssetTypeName());
         turnoverCommissionValueToWorkWith.setCommissionPercentValue(
                 turnoverCommissionValueDTO.getCommissionPercentValue());

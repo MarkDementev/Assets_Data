@@ -70,12 +70,15 @@ public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService 
 //            Long id, PersonalDataRussianAssetsOwnerDTO personalDataRussianAssetsOwnerDTO) {
 //        return null;
 //    }
-//
+
 //    @Override
 //    public RussianAssetsOwner addNewAssetToRussianAssetsOwner(
 //            Long id, NewAssetDataRussianAssetsOwnerDTO russianAssetsOwnerDTO) {
+//        //Приходит DTO только с новым Asset
 //        return null;
 //    }
+
+    //Возможно, нужен метод для удаления AssetRelationship!?
 
     @Override
     public void deleteRussianAssetsOwner(Long id) {
