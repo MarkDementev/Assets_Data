@@ -1,5 +1,6 @@
 package fund.data.assets.service.impl;
 
+import fund.data.assets.dto.common.PercentFloatValueDTO;
 import fund.data.assets.dto.TurnoverCommissionValueDTO;
 import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.model.financial_entities.TurnoverCommissionValue;
@@ -41,25 +42,25 @@ public class TurnoverCommissionValueServiceImpl implements TurnoverCommissionVal
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = {Exception.class})
     public TurnoverCommissionValue createTurnoverCommissionValue(
-            TurnoverCommissionValueDTO TurnoverCommissionValueDTO) {
+            TurnoverCommissionValueDTO turnoverCommissionValueDTO) {
         TurnoverCommissionValue newTurnoverCommissionValue = new TurnoverCommissionValue();
-        Account account = accountRepository.findById(TurnoverCommissionValueDTO.getAccountID()).orElseThrow();
+        Account account = accountRepository.findById(turnoverCommissionValueDTO.getAccountID()).orElseThrow();
 
         newTurnoverCommissionValue.setAccount(account);
         newTurnoverCommissionValue.setCommissionSystem(CommissionSystem.TURNOVER);
-        getFromDTOThenSetAll(newTurnoverCommissionValue, TurnoverCommissionValueDTO);
+        newTurnoverCommissionValue.setAssetTypeName(turnoverCommissionValueDTO.getAssetTypeName());
+        newTurnoverCommissionValue.setCommissionPercentValue(turnoverCommissionValueDTO.getCommissionPercentValue());
 
         return turnoverCommissionValueRepository.save(newTurnoverCommissionValue);
     }
 
     @Override
     @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = {Exception.class})
-    public TurnoverCommissionValue updateTurnoverCommissionValue(Long id,
-                                                          TurnoverCommissionValueDTO turnoverCommissionValueDTO) {
+    public TurnoverCommissionValue updateTurnoverCommissionValue(Long id, PercentFloatValueDTO percentFloatValueDTO) {
         TurnoverCommissionValue turnoverCommissionValueToUpdate = turnoverCommissionValueRepository.findById(id)
                 .orElseThrow();
 
-        getFromDTOThenSetAll(turnoverCommissionValueToUpdate, turnoverCommissionValueDTO);
+        turnoverCommissionValueToUpdate.setCommissionPercentValue(percentFloatValueDTO.getPercentValue());
 
         return turnoverCommissionValueRepository.save(turnoverCommissionValueToUpdate);
     }
@@ -67,12 +68,5 @@ public class TurnoverCommissionValueServiceImpl implements TurnoverCommissionVal
     @Override
     public void deleteTurnoverCommissionValue(Long id) {
         turnoverCommissionValueRepository.deleteById(id);
-    }
-
-    private void getFromDTOThenSetAll(TurnoverCommissionValue turnoverCommissionValueToWorkWith,
-                                      TurnoverCommissionValueDTO turnoverCommissionValueDTO) {
-        turnoverCommissionValueToWorkWith.setAssetTypeName(turnoverCommissionValueDTO.getAssetTypeName());
-        turnoverCommissionValueToWorkWith.setCommissionPercentValue(
-                turnoverCommissionValueDTO.getCommissionPercentValue());
     }
 }

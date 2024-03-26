@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fund.data.assets.dto.AccountDTO;
 import fund.data.assets.dto.TurnoverCommissionValueDTO;
+import fund.data.assets.dto.common.PercentFloatValueDTO;
 import fund.data.assets.repository.AccountRepository;
 import fund.data.assets.repository.TurnoverCommissionValueRepository;
 
@@ -27,6 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 public class TestUtils {
     public static final Float TEST_COMMISSION_PERCENT_VALUE = 0.01F;
     public static final String TEST_ASSET_TYPE_NAME = "assetTypeName";
+    public static final String TEST_STRING_FORMAT_PERCENT_VALUE = "20";
     private static final ObjectMapper MAPPER = new ObjectMapper().findAndRegisterModules();
     @Autowired
     private MockMvc mockMvc;
@@ -71,6 +73,10 @@ public class TestUtils {
             null
     );
 
+    private final PercentFloatValueDTO percentFloatValueDTO = new PercentFloatValueDTO(
+            TEST_STRING_FORMAT_PERCENT_VALUE
+    );
+
     public void tearDown() {
         turnoverCommissionValueRepository.deleteAll();
         accountRepository.deleteAll();
@@ -98,6 +104,10 @@ public class TestUtils {
 
     public TurnoverCommissionValueDTO getNotValidTurnoverCommissionValueDTO() {
         return notValidTurnoverCommissionValueDTO;
+    }
+
+    public PercentFloatValueDTO getPercentFloatValueDTO() {
+        return percentFloatValueDTO;
     }
 
     public ResultActions createDefaultAccount() throws Exception {

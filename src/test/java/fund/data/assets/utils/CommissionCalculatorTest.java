@@ -2,7 +2,7 @@ package fund.data.assets.utils;
 
 import fund.data.assets.TestUtils;
 import fund.data.assets.config.SpringConfigForTests;
-import fund.data.assets.dto.TurnoverCommissionValueDTO;
+import fund.data.assets.dto.common.PercentFloatValueDTO;
 import fund.data.assets.service.impl.AccountServiceImpl;
 import fund.data.assets.service.impl.TurnoverCommissionValueServiceImpl;
 import fund.data.assets.utils.enums.CommissionSystem;
@@ -81,12 +81,11 @@ public class CommissionCalculatorTest {
     public void testCalculateTotalCommissionForPurchase(Float commissionPercentValue, Float inputCorrectResult) {
         Long turnoverCommissionValueIDToUpdate = turnoverCommissionValueService
                 .getTurnoverCommissionValues().get(0).getId();
-        final TurnoverCommissionValueDTO turnoverCommissionValueDTOToUpdate = testUtils.getTurnoverCommissionValueDTO();
 
-        turnoverCommissionValueDTOToUpdate.setAccountID(turnoverCommissionValueIDToUpdate);
-        turnoverCommissionValueDTOToUpdate.setCommissionPercentValue(commissionPercentValue);
+        final PercentFloatValueDTO percentFloatValueDTO = testUtils.getPercentFloatValueDTO();
+        percentFloatValueDTO.setPercentValue(commissionPercentValue);
         turnoverCommissionValueService.updateTurnoverCommissionValue(turnoverCommissionValueIDToUpdate,
-                turnoverCommissionValueDTOToUpdate);
+                percentFloatValueDTO);
 
         Assertions.assertEquals(commissionCalculator.calculateTotalCommissionForPurchase(
                 CommissionSystem.TURNOVER,

@@ -1,5 +1,6 @@
 package fund.data.assets.controller;
 
+import fund.data.assets.dto.common.PercentFloatValueDTO;
 import fund.data.assets.dto.TurnoverCommissionValueDTO;
 import fund.data.assets.model.financial_entities.TurnoverCommissionValue;
 import fund.data.assets.service.TurnoverCommissionValueService;
@@ -70,13 +71,13 @@ public class TurnoverCommissionValueController {
         return turnoverCommissionValueService.createTurnoverCommissionValue(turnoverCommissionValueDTO);
     }
 
-    @Operation(summary = "Update turnover commission value")
+    @Operation(summary = "Update turnover commission value commission percent value")
     @ApiResponse(responseCode = "200", description = "Turnover commission value updated")
     @PutMapping(ID_PATH)
-    public TurnoverCommissionValue updateTurnoverCommissionValue(@PathVariable Long id, @RequestBody @Valid
-                                                                 TurnoverCommissionValueDTO turnoverCommissionValueDTO)
+    public TurnoverCommissionValue updateTurnoverCommissionValue(@PathVariable Long id,
+                                                                 @RequestBody @Valid PercentFloatValueDTO percentFloatValueDTO)
     {
-        return turnoverCommissionValueService.updateTurnoverCommissionValue(id, turnoverCommissionValueDTO);
+        return turnoverCommissionValueService.updateTurnoverCommissionValue(id, percentFloatValueDTO);
     }
 
     @Operation(summary = "Delete turnover commission value")

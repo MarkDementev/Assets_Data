@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import fund.data.assets.TestUtils;
 import fund.data.assets.config.SpringConfigForTests;
 import fund.data.assets.dto.TurnoverCommissionValueDTO;
+import fund.data.assets.dto.common.PercentFloatValueDTO;
 import fund.data.assets.model.financial_entities.TurnoverCommissionValue;
 import fund.data.assets.repository.AccountRepository;
 import fund.data.assets.repository.TurnoverCommissionValueRepository;
@@ -165,16 +166,11 @@ public class TurnoverCommissionValueControllerIT {
         testUtils.createDefaultTurnoverCommissionValue();
 
         Long createdTurnoverCommissionId = turnoverCommissionValueRepository.findAll().get(0).getId();
-        final TurnoverCommissionValueDTO turnoverCommissionValueSecondDTO = testUtils.getTurnoverCommissionValueDTO();
-
-        turnoverCommissionValueSecondDTO.setAccountID(accountRepository.findByOrganisationWhereAccountOpened(
-                testUtils.getAccountDTO().getOrganisationWhereAccountOpened()).getId());
-        turnoverCommissionValueSecondDTO.setCommissionPercentValue(TEST_COMMISSION_PERCENT_VALUE
-                + TEST_COMMISSION_PERCENT_VALUE);
+        final PercentFloatValueDTO percentFloatValueDTO = testUtils.getPercentFloatValueDTO();
 
         final var response = testUtils.perform(put("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH
-                                + ID_PATH, createdTurnoverCommissionId)
-                        .content(asJson(turnoverCommissionValueSecondDTO)).contentType(APPLICATION_JSON))
+                        + ID_PATH, createdTurnoverCommissionId)
+                        .content(asJson(percentFloatValueDTO)).contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
@@ -185,11 +181,11 @@ public class TurnoverCommissionValueControllerIT {
         assertEquals(turnoverCommissionValueFromResponse.getCommissionSystem(),
                 CommissionSystem.TURNOVER);
         assertEquals(turnoverCommissionValueFromResponse.getAccount().getId(),
-                turnoverCommissionValueSecondDTO.getAccountID());
+                testUtils.getTurnoverCommissionValueDTO().getAccountID());
         assertEquals(turnoverCommissionValueFromResponse.getAssetTypeName(),
-                turnoverCommissionValueSecondDTO.getAssetTypeName());
+                testUtils.getTurnoverCommissionValueDTO().getAssetTypeName());
         assertEquals(turnoverCommissionValueFromResponse.getCommissionPercentValue(),
-                turnoverCommissionValueSecondDTO.getCommissionPercentValue());
+                percentFloatValueDTO.getPercentValue());
         assertNotNull(turnoverCommissionValueFromResponse.getCreatedAt());
         assertNotNull(turnoverCommissionValueFromResponse.getUpdatedAt());
         assertNotEquals(turnoverCommissionValueFromResponse.getCreatedAt(),
