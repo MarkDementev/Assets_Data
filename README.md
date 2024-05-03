@@ -3,4 +3,4 @@
 
 ## Overview
 
-Service for storing data of fund assets. This is a core service of W.I.P. neo-invest fund group of services to provide data to all of them.
+Service for storing data of fund assets. This is a core service of W.I.P. neo-investment fund group of services to provide data to all of them.
