@@ -8,7 +8,7 @@ plugins {
 }
 
 group = 'fund.data'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1-alpha'
 
 application {
 	mainClass = 'fund.data.assets.FundAssetsDataApplication'
@@ -45,10 +45,7 @@ dependencies {
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-	runtimeOnly(
-			'com.h2database:h2',
-			'org.postgresql:postgresql'
-	)
+	runtimeOnly 'com.h2database:h2'
 }
 
 tasks.named('test') {
