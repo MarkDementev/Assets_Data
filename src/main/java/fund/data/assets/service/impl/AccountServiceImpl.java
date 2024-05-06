@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Реализация сервиса для обслуживания банковских счетов.
@@ -35,22 +36,25 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = {Exception.class})
     public Account createAccount(AccountDTO accountDTO) {
-        Account newAccount = new Account();
+        AtomicReference<Account> atomicNewAccount = new AtomicReference<>(new Account());
 
-        getFromDTOThenSetAll(newAccount, accountDTO);
+        getFromDTOThenSetAll(atomicNewAccount, accountDTO);
 
-        return accountRepository.save(newAccount);
+        return accountRepository.save(atomicNewAccount.get());
     }
 
     @Override
     @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = {Exception.class})
     public Account updateAccount(Long id, AccountDTO accountDTO) {
-        final Account accountToUpdate = accountRepository.findById(id).orElseThrow();
+        AtomicReference<Account> atomicAccountToUpdate = new AtomicReference<>(
+                accountRepository.findById(id).orElseThrow()
+        );
 
-        getFromDTOThenSetAll(accountToUpdate, accountDTO);
+        getFromDTOThenSetAll(atomicAccountToUpdate, accountDTO);
 
-        return accountRepository.save(accountToUpdate);
+        return accountRepository.save(atomicAccountToUpdate.get());
     }
 
     @Override
@@ -58,9 +62,9 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.deleteById(id);
     }
 
-    private void getFromDTOThenSetAll(Account accountToWorkWith, AccountDTO accountDTO) {
-        accountToWorkWith.setOrganisationWhereAccountOpened(accountDTO.getOrganisationWhereAccountOpened());
-        accountToWorkWith.setAccountNumber(accountDTO.getAccountNumber());
-        accountToWorkWith.setAccountOpeningDate(accountDTO.getAccountOpeningDate());
+    private void getFromDTOThenSetAll(AtomicReference<Account> accountToWorkWith, AccountDTO accountDTO) {
+        accountToWorkWith.get().setOrganisationWhereAccountOpened(accountDTO.getOrganisationWhereAccountOpened());
+        accountToWorkWith.get().setAccountNumber(accountDTO.getAccountNumber());
+        accountToWorkWith.get().setAccountOpeningDate(accountDTO.getAccountOpeningDate());
     }
 }
