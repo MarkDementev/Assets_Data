@@ -129,7 +129,6 @@ public class TestUtils {
         return createTurnoverCommissionValue(newTurnoverCommissionValueDTO);
     }
 
-    //TODO
     public ResultActions createAccount(final AccountDTO accountDTO) throws Exception {
         final var request = post("/data" + ACCOUNT_CONTROLLER_PATH)
                 .content(asJson(accountDTO))
