@@ -63,7 +63,7 @@ public class TestUtils {
             LocalDate.of(2024, 2, 22)
     );
 
-    private final TurnoverCommissionValueDTO turnoverCommissionValueDTO = new TurnoverCommissionValueDTO(
+    private TurnoverCommissionValueDTO turnoverCommissionValueDTO = new TurnoverCommissionValueDTO(
             null,
             TEST_ASSET_TYPE_NAME,
             TEST_COMMISSION_PERCENT_VALUE
@@ -123,11 +123,12 @@ public class TestUtils {
     public ResultActions createDefaultTurnoverCommissionValue() throws Exception {
         createDefaultAccount();
 
-        TurnoverCommissionValueDTO newTurnoverCommissionValueDTO = getTurnoverCommissionValueDTO();
-
-        newTurnoverCommissionValueDTO.setAccountID(accountRepository.findByOrganisationWhereAccountOpened(
-                getAccountDTO().getOrganisationWhereAccountOpened()).getId());
-
+        TurnoverCommissionValueDTO newTurnoverCommissionValueDTO = new TurnoverCommissionValueDTO(
+                accountRepository.findByOrganisationWhereAccountOpened(
+                        getAccountDTO().getOrganisationWhereAccountOpened()).getId(),
+                TEST_ASSET_TYPE_NAME,
+                TEST_COMMISSION_PERCENT_VALUE
+        );
         return createTurnoverCommissionValue(newTurnoverCommissionValueDTO);
     }
 
