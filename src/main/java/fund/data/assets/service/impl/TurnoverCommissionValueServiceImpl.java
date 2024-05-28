@@ -7,6 +7,7 @@ import fund.data.assets.model.financial_entities.TurnoverCommissionValue;
 import fund.data.assets.repository.AccountRepository;
 import fund.data.assets.repository.TurnoverCommissionValueRepository;
 import fund.data.assets.service.TurnoverCommissionValueService;
+import fund.data.assets.utils.InputPercentValueStringsFormatter;
 import fund.data.assets.utils.enums.CommissionSystem;
 
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Реализация сервиса для обслуживания размера комиссии с оборота для типа актива на счёте.
@@ -40,29 +42,33 @@ public class TurnoverCommissionValueServiceImpl implements TurnoverCommissionVal
     }
 
     @Override
-    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = {Exception.class})
+    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = {Exception.class})
     public TurnoverCommissionValue createTurnoverCommissionValue(
             TurnoverCommissionValueDTO turnoverCommissionValueDTO) {
-        TurnoverCommissionValue newTurnoverCommissionValue = new TurnoverCommissionValue();
+        AtomicReference<TurnoverCommissionValue> atomicTurnoverCommissionValue = new AtomicReference<>(
+                new TurnoverCommissionValue());
         Account account = accountRepository.findById(turnoverCommissionValueDTO.getAccountID()).orElseThrow();
 
-        newTurnoverCommissionValue.setAccount(account);
-        newTurnoverCommissionValue.setCommissionSystem(CommissionSystem.TURNOVER);
-        newTurnoverCommissionValue.setAssetTypeName(turnoverCommissionValueDTO.getAssetTypeName());
-        newTurnoverCommissionValue.setCommissionPercentValue(turnoverCommissionValueDTO.getCommissionPercentValue());
+        atomicTurnoverCommissionValue.get().setAccount(account);
+        atomicTurnoverCommissionValue.get().setCommissionSystem(CommissionSystem.TURNOVER);
+        atomicTurnoverCommissionValue.get().setAssetTypeName(turnoverCommissionValueDTO.getAssetTypeName());
+        atomicTurnoverCommissionValue.get().setCommissionPercentValue(InputPercentValueStringsFormatter
+                .getCheckedAndFormatted(turnoverCommissionValueDTO.getCommissionPercentValue()));
 
-        return turnoverCommissionValueRepository.save(newTurnoverCommissionValue);
+        return turnoverCommissionValueRepository.save(atomicTurnoverCommissionValue.get());
     }
 
     @Override
     @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = {Exception.class})
     public TurnoverCommissionValue updateTurnoverCommissionValue(Long id, PercentFloatValueDTO percentFloatValueDTO) {
-        TurnoverCommissionValue turnoverCommissionValueToUpdate = turnoverCommissionValueRepository.findById(id)
-                .orElseThrow();
+        AtomicReference<TurnoverCommissionValue> atomicTurnoverCommissionValueToUpdate = new AtomicReference<>(
+                turnoverCommissionValueRepository.findById(id).orElseThrow()
+        );
 
-        turnoverCommissionValueToUpdate.setCommissionPercentValue(percentFloatValueDTO.getPercentValue());
+        atomicTurnoverCommissionValueToUpdate.get().setCommissionPercentValue(InputPercentValueStringsFormatter
+                .getCheckedAndFormatted(percentFloatValueDTO.getPercentValue()));
 
-        return turnoverCommissionValueRepository.save(turnoverCommissionValueToUpdate);
+        return turnoverCommissionValueRepository.save(atomicTurnoverCommissionValueToUpdate.get());
     }
 
     @Override

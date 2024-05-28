@@ -15,12 +15,11 @@ import jakarta.validation.Valid;
 
 import lombok.AllArgsConstructor;
 
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,8 +48,8 @@ public class TurnoverCommissionValueController {
             schema = @Schema(implementation = TurnoverCommissionValue.class))
     )
     @GetMapping(ID_PATH)
-    public TurnoverCommissionValue getTurnoverCommissionValue(@PathVariable Long id) {
-        return turnoverCommissionValueService.getTurnoverCommissionValue(id);
+    public ResponseEntity<TurnoverCommissionValue> getTurnoverCommissionValue(@PathVariable Long id) {
+        return ResponseEntity.ok().body(turnoverCommissionValueService.getTurnoverCommissionValue(id));
     }
 
     @Operation(summary = "Get all turnover commission values")
@@ -58,26 +57,27 @@ public class TurnoverCommissionValueController {
             schema = @Schema(implementation = TurnoverCommissionValue.class)))
     )
     @GetMapping
-    public List<TurnoverCommissionValue> getTurnoverCommissionValues() {
-        return turnoverCommissionValueService.getTurnoverCommissionValues();
+    public ResponseEntity<List<TurnoverCommissionValue>> getTurnoverCommissionValues() {
+        return ResponseEntity.ok().body(turnoverCommissionValueService.getTurnoverCommissionValues());
     }
 
     @Operation(summary = "Create new turnover commission value")
     @ApiResponse(responseCode = "201", description = "Turnover commission value created")
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public TurnoverCommissionValue createTurnoverCommissionValue(
+    public ResponseEntity<TurnoverCommissionValue> createTurnoverCommissionValue(
             @RequestBody @Valid TurnoverCommissionValueDTO turnoverCommissionValueDTO) {
-        return turnoverCommissionValueService.createTurnoverCommissionValue(turnoverCommissionValueDTO);
+        return ResponseEntity.created(null)
+                .body(turnoverCommissionValueService.createTurnoverCommissionValue(turnoverCommissionValueDTO));
     }
 
     @Operation(summary = "Update turnover commission value commission percent value")
     @ApiResponse(responseCode = "200", description = "Turnover commission value updated")
     @PutMapping(ID_PATH)
-    public TurnoverCommissionValue updateTurnoverCommissionValue(@PathVariable Long id,
-                                                                 @RequestBody @Valid PercentFloatValueDTO percentFloatValueDTO)
-    {
-        return turnoverCommissionValueService.updateTurnoverCommissionValue(id, percentFloatValueDTO);
+    public ResponseEntity<TurnoverCommissionValue> updateTurnoverCommissionValue(@PathVariable Long id,
+                                                                 @RequestBody
+                                                                 @Valid PercentFloatValueDTO percentFloatValueDTO) {
+        return ResponseEntity.ok().body(turnoverCommissionValueService.updateTurnoverCommissionValue(
+                id, percentFloatValueDTO));
     }
 
     @Operation(summary = "Delete turnover commission value")

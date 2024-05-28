@@ -25,5 +25,5 @@ public class TurnoverCommissionValueDTO {
     private String assetTypeName;
 
     @NotNull
-    private Float commissionPercentValue;
+    private String commissionPercentValue;
 }

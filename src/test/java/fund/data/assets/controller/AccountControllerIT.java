@@ -59,14 +59,14 @@ class AccountControllerIT {
 	public void getAccountIT() throws Exception {
 		testUtils.createDefaultAccount();
 
-		final Account expectedAccount = accountRepository.findByOrganisationWhereAccountOpened(
+		Account expectedAccount = accountRepository.findByOrganisationWhereAccountOpened(
 				testUtils.getAccountDTO().getOrganisationWhereAccountOpened());
-		final var response = testUtils.perform(
+		var response = testUtils.perform(
 						get("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH, expectedAccount.getId())
 				).andExpect(status().isOk())
 				.andReturn()
 				.getResponse();
-		final Account accountFromResponse = fromJson(response.getContentAsString(), new TypeReference<>() {
+		Account accountFromResponse = fromJson(response.getContentAsString(), new TypeReference<>() {
 		});
 
 		assertEquals(expectedAccount.getId(), accountFromResponse.getId());
@@ -83,14 +83,14 @@ class AccountControllerIT {
 	public void getAccountsIT() throws Exception {
 		testUtils.createDefaultAccount();
 
-		final var response = testUtils.perform(
+		var response = testUtils.perform(
 						get("/data" + ACCOUNT_CONTROLLER_PATH)
 				)
 				.andExpect(status().isOk())
 				.andReturn()
 				.getResponse();
 
-		final List<Account> allAccounts = fromJson(response.getContentAsString(), new TypeReference<>() {
+		List<Account> allAccounts = fromJson(response.getContentAsString(), new TypeReference<>() {
 		});
 
 		assertThat(allAccounts).hasSize(1);
@@ -98,7 +98,7 @@ class AccountControllerIT {
 
 	@Test
 	public void createAccountIT() throws Exception {
-		final var response = testUtils.perform(
+		var response = testUtils.perform(
 						post("/data" + ACCOUNT_CONTROLLER_PATH)
 								.content(asJson(testUtils.getAccountDTO()))
 								.contentType(APPLICATION_JSON)
@@ -106,7 +106,7 @@ class AccountControllerIT {
 				.andExpect(status().isCreated())
 				.andReturn()
 				.getResponse();
-		final Account accountFromResponse = fromJson(response.getContentAsString(), new TypeReference<>() {
+		Account accountFromResponse = fromJson(response.getContentAsString(), new TypeReference<>() {
 		});
 
 		assertNotNull(accountFromResponse.getId());
@@ -142,13 +142,13 @@ class AccountControllerIT {
 
 		Long createdAccountId = accountRepository.findByOrganisationWhereAccountOpened(
 				testUtils.getAccountDTO().getOrganisationWhereAccountOpened()).getId();
-		final var response = testUtils.perform(put("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH,
+		var response = testUtils.perform(put("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH,
 						createdAccountId)
 						.content(asJson(testUtils.getSecondAccountDTO())).contentType(APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andReturn()
 				.getResponse();
-		final Account accountFromResponse = fromJson(response.getContentAsString(), new TypeReference<>() {
+		Account accountFromResponse = fromJson(response.getContentAsString(), new TypeReference<>() {
 		});
 
 		assertEquals(accountFromResponse.getId(), createdAccountId);

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import static fund.data.assets.utils.enums.CommissionSystem.TURNOVER;
 
 /**
- * Класс для расчёта общего размера комиссии с оборота по активу при конкретной тразакции.
+ * Класс для расчёта общего размера комиссии с оборота по активу при конкретной транзакции.
  * @version 0.0.1-alpha
  * @author MarkDementev a.k.a JavaMarkDem
  */

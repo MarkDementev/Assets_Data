@@ -26,9 +26,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @Component
 public class TestUtils {
-    public static final Float TEST_COMMISSION_PERCENT_VALUE = 0.01F;
+    public static final String TEST_COMMISSION_PERCENT_VALUE = "1";
     public static final String TEST_ASSET_TYPE_NAME = "assetTypeName";
-    public static final String TEST_STRING_FORMAT_PERCENT_VALUE = "20";
+    public static final String TEST_STRING_FORMAT_PERCENT_VALUE = "20,1234";
+    public static final Float TEST_FORMATTED_PERCENT_VALUE_FLOAT = 0.201234F;
+    public static final Float TEST_COMMISSION_PERCENT_VALUE_FLOAT = 0.01F;
     private static final ObjectMapper MAPPER = new ObjectMapper().findAndRegisterModules();
     @Autowired
     private MockMvc mockMvc;
@@ -121,7 +123,7 @@ public class TestUtils {
     public ResultActions createDefaultTurnoverCommissionValue() throws Exception {
         createDefaultAccount();
 
-        final TurnoverCommissionValueDTO newTurnoverCommissionValueDTO  = turnoverCommissionValueDTO;
+        TurnoverCommissionValueDTO newTurnoverCommissionValueDTO = getTurnoverCommissionValueDTO();
 
         newTurnoverCommissionValueDTO.setAccountID(accountRepository.findByOrganisationWhereAccountOpened(
                 getAccountDTO().getOrganisationWhereAccountOpened()).getId());
@@ -137,7 +139,6 @@ public class TestUtils {
         return perform(request);
     }
 
-    //TODO
     public ResultActions createTurnoverCommissionValue(final TurnoverCommissionValueDTO turnoverCommissionValueDTO)
             throws Exception {
         final var request = post("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH)

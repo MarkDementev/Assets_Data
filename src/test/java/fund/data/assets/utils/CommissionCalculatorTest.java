@@ -32,8 +32,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 public class CommissionCalculatorTest {
     public static final Integer TEST_ASSET_COUNT = 10;
     public static final Float TEST_DIRTY_BOND_PRICE_IN_CURRENCY = 1000.0F;
-    public static final String CSV_SOURCE_TEST_VALUE_FIRST = "0.02F, 200.0F";
-    public static final String CSV_SOURCE_TEST_VALUE_SECOND = "0.2F, 2000.0F";
+    public static final String CSV_SOURCE_TEST_VALUE_FIRST = "2, 200.0F";
+    public static final String CSV_SOURCE_TEST_VALUE_SECOND = "20, 2000.0F";
     @Autowired
     private TestUtils testUtils;
     @Autowired
@@ -78,7 +78,7 @@ public class CommissionCalculatorTest {
 
     @ParameterizedTest
     @CsvSource(value = {CSV_SOURCE_TEST_VALUE_FIRST, CSV_SOURCE_TEST_VALUE_SECOND})
-    public void testCalculateTotalCommissionForPurchase(Float commissionPercentValue, Float inputCorrectResult) {
+    public void testCalculateTotalCommissionForPurchase(String commissionPercentValue, Float inputCorrectResult) {
         Long turnoverCommissionValueIDToUpdate = turnoverCommissionValueService
                 .getTurnoverCommissionValues().get(0).getId();
 
