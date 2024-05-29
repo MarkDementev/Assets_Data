@@ -1,7 +1,7 @@
 package fund.data.assets.model.asset.relationship;
 
 import fund.data.assets.model.asset.Asset;
-import fund.data.assets.model.asset.user.AssetsOwner;
+import fund.data.assets.model.asset.owner.AssetsOwner;
 import fund.data.assets.model.financial_entities.Account;
 
 import jakarta.persistence.Entity;

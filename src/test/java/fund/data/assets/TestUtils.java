@@ -7,7 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fund.data.assets.dto.AccountDTO;
 import fund.data.assets.dto.TurnoverCommissionValueDTO;
 import fund.data.assets.dto.common.PercentFloatValueDTO;
+import fund.data.assets.dto.owner.NewRussianAssetsOwnerDTO;
 import fund.data.assets.repository.AccountRepository;
+import fund.data.assets.repository.RussianAssetsOwnerRepository;
 import fund.data.assets.repository.TurnoverCommissionValueRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +21,9 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import java.time.LocalDate;
 
 import static fund.data.assets.controller.AccountController.ACCOUNT_CONTROLLER_PATH;
+import static fund.data.assets.controller.RussianAssetsOwnerController.RUSSIAN_OWNERS_CONTROLLER_PATH;
 import static fund.data.assets.controller.TurnoverCommissionValueController.TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH;
+import static fund.data.assets.utils.enums.RussianSexEnum.MAN;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -38,6 +42,8 @@ public class TestUtils {
     private AccountRepository accountRepository;
     @Autowired
     private TurnoverCommissionValueRepository turnoverCommissionValueRepository;
+    @Autowired
+    private RussianAssetsOwnerRepository russianAssetsOwnerRepository;
 
     private final AccountDTO accountDTO = new AccountDTO(
             "defaultBank",
@@ -79,7 +85,14 @@ public class TestUtils {
             TEST_STRING_FORMAT_PERCENT_VALUE
     );
 
+    private final NewRussianAssetsOwnerDTO russianAssetsOwnerDTO = new NewRussianAssetsOwnerDTO(
+        "name", "surname", "25.05.1995", "Email_sur@mail.ru", "patronymic", MAN,
+            "88888888888", "2424", "111111", "placeOfBirth",
+            "placeOfPassportGiven", "24.08.2021", "377-777"
+    );
+
     public void tearDown() {
+        russianAssetsOwnerRepository.deleteAll();
         turnoverCommissionValueRepository.deleteAll();
         accountRepository.deleteAll();
     }
@@ -132,6 +145,10 @@ public class TestUtils {
         return createTurnoverCommissionValue(newTurnoverCommissionValueDTO);
     }
 
+    public ResultActions createDefaultRussianAssetsOwner() throws Exception {
+        return createRussianAssetsOwner(russianAssetsOwnerDTO);
+    }
+
     public ResultActions createAccount(final AccountDTO accountDTO) throws Exception {
         final var request = post("/data" + ACCOUNT_CONTROLLER_PATH)
                 .content(asJson(accountDTO))
@@ -144,6 +161,15 @@ public class TestUtils {
             throws Exception {
         final var request = post("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH)
                 .content(asJson(turnoverCommissionValueDTO))
+                .contentType(APPLICATION_JSON);
+
+        return perform(request);
+    }
+
+    public ResultActions createRussianAssetsOwner(final NewRussianAssetsOwnerDTO russianAssetsOwnerDTO)
+            throws Exception {
+        final var request = post("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH)
+                .content(asJson(russianAssetsOwnerDTO))
                 .contentType(APPLICATION_JSON);
 
         return perform(request);

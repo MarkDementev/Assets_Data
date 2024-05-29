@@ -1,7 +1,9 @@
 package fund.data.assets.service.impl;
 
-import fund.data.assets.dto.NewRussianAssetsOwnerDTO;
-import fund.data.assets.model.asset.user.RussianAssetsOwner;
+import fund.data.assets.dto.owner.ContactDataRussianAssetsOwnerDTO;
+import fund.data.assets.dto.owner.PersonalDataRussianAssetsOwnerDTO;
+import fund.data.assets.dto.owner.NewRussianAssetsOwnerDTO;
+import fund.data.assets.model.asset.owner.RussianAssetsOwner;
 import fund.data.assets.repository.RussianAssetsOwnerRepository;
 import fund.data.assets.service.RussianAssetsOwnerService;
 import fund.data.assets.utils.enums.RussianSexEnum;
@@ -9,15 +11,19 @@ import fund.data.assets.utils.enums.RussianSexEnum;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Реализация сервиса для обслуживания владельца активов с гражданством РФ.
- * Обслуживаемая сущность - {@link fund.data.assets.model.asset.user.RussianAssetsOwner}.
+ * Обслуживаемая сущность - {@link fund.data.assets.model.asset.owner.RussianAssetsOwner}.
  * @version 0.0.1-alpha
  * @author MarkDementev a.k.a JavaMarkDem
  */
@@ -39,6 +45,7 @@ public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService 
     }
 
     @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = {Exception.class})
     public RussianAssetsOwner createRussianAssetsOwner(NewRussianAssetsOwnerDTO newRussianAssetsOwnerDTO) {
         String name = newRussianAssetsOwnerDTO.getName();
         String surname = newRussianAssetsOwnerDTO.getSurname();
@@ -57,28 +64,52 @@ public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService 
         if (ChronoUnit.DAYS.between(birthDate, issueDate) < 0) {
             throw new IllegalArgumentException(WRONG_DATES_WARNING);
         }
+        AtomicReference<RussianAssetsOwner> atomicRussianAssetsOwner = new AtomicReference<>(new RussianAssetsOwner(
+                name, surname, birthDate, email, patronymic, sex, mobilePhoneNumber, passportSeries, passportNumber,
+                placeOfBirth, placeOfPassportGiven, issueDate, issuerOrganisationCode));
 
-        RussianAssetsOwner russianAssetsOwner = new RussianAssetsOwner(name, surname, birthDate, email, patronymic,
-                sex, mobilePhoneNumber, passportSeries, passportNumber, placeOfBirth, placeOfPassportGiven, issueDate,
-                issuerOrganisationCode);
-
-        return russianAssetsOwnerRepository.save(russianAssetsOwner);
+        return russianAssetsOwnerRepository.save(atomicRussianAssetsOwner.get());
     }
 
-//    @Override
-//    public RussianAssetsOwner updatePersonalDataOfRussianAssetsOwner(
-//            Long id, PersonalDataRussianAssetsOwnerDTO personalDataRussianAssetsOwnerDTO) {
-//        return null;
-//    }
+    @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = {Exception.class})
+    public RussianAssetsOwner updateRussianAssetsOwnerPersonalData(Long id, PersonalDataRussianAssetsOwnerDTO
+            personalDataRussianAssetsOwnerDTO) {
+        AtomicReference<RussianAssetsOwner> atomicRussianAssetsOwnerToUpdate = new AtomicReference<>(
+                russianAssetsOwnerRepository.findById(id).orElseThrow()
+        );
 
-//    @Override
-//    public RussianAssetsOwner addNewAssetToRussianAssetsOwner(
-//            Long id, NewAssetDataRussianAssetsOwnerDTO russianAssetsOwnerDTO) {
-//        //Приходит DTO только с новым Asset
-//        return null;
-//    }
+        atomicRussianAssetsOwnerToUpdate.get().setName(personalDataRussianAssetsOwnerDTO.getName().get());
+        atomicRussianAssetsOwnerToUpdate.get().setSurname(personalDataRussianAssetsOwnerDTO.getSurname().get());
+        atomicRussianAssetsOwnerToUpdate.get().setPatronymic(personalDataRussianAssetsOwnerDTO.getPatronymic().get());
+        atomicRussianAssetsOwnerToUpdate.get().setPassportSeries(personalDataRussianAssetsOwnerDTO
+                .getPassportSeries().get());
+        atomicRussianAssetsOwnerToUpdate.get().setPassportNumber(personalDataRussianAssetsOwnerDTO
+                .getPassportNumber().get());
+        atomicRussianAssetsOwnerToUpdate.get().setPlaceOfPassportGiven(personalDataRussianAssetsOwnerDTO
+                .getPlaceOfPassportGiven().get());
+        atomicRussianAssetsOwnerToUpdate.get().setIssueDate(parseDatePassportFormatIntoLocalDate(
+                personalDataRussianAssetsOwnerDTO.getIssueDate().get()));
+        atomicRussianAssetsOwnerToUpdate.get().setIssuerOrganisationCode(personalDataRussianAssetsOwnerDTO
+                .getIssuerOrganisationCode().get());
 
-    //Возможно, нужен метод для удаления AssetRelationship!?
+        return russianAssetsOwnerRepository.save(atomicRussianAssetsOwnerToUpdate.get());
+    }
+
+    @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = {Exception.class})
+    public RussianAssetsOwner updateRussianAssetsOwnerContactData(Long id, ContactDataRussianAssetsOwnerDTO
+            contactDataRussianAssetsOwnerDTO) {
+        AtomicReference<RussianAssetsOwner> atomicRussianAssetsOwnerToUpdate = new AtomicReference<>(
+                russianAssetsOwnerRepository.findById(id).orElseThrow()
+        );
+
+        atomicRussianAssetsOwnerToUpdate.get().setEmail(contactDataRussianAssetsOwnerDTO.getEmail().get());
+        atomicRussianAssetsOwnerToUpdate.get().setMobilePhoneNumber(contactDataRussianAssetsOwnerDTO
+                .getMobilePhoneNumber().get());
+
+        return russianAssetsOwnerRepository.save(atomicRussianAssetsOwnerToUpdate.get());
+    }
 
     @Override
     public void deleteRussianAssetsOwner(Long id) {
@@ -86,9 +117,9 @@ public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService 
     }
 
     /**
-     * В паспорте дата рождения оунера записывается в ином, чем в LocalDate, формате. Поэтому эта дата должна
+     * В паспорте даты записываются в ином, чем в LocalDate, формате. Поэтому эта дата должна
      * быть преобразована в нужный формат для последующего хранения.
-     * @param stringDate дата рождения оунера, записанная, как в паспорте РФ.
+     * @param stringDate дата, записанная, как в паспорте РФ.
      * @return дату в формате LocalDate.
      * @since 0.0.1-alpha
      */

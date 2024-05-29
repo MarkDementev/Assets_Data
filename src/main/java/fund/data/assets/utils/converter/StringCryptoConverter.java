@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 /**
  * Конвертер строк для ряда полей в классах AssetsOwner и RussianAssetsOwner.
  * Позволяет зашифровать важную информацию с помощью jasypt.
- * AssetsOwner - {@link fund.data.assets.model.asset.user.AssetsOwner}.
- * RussianAssetsOwner - {@link fund.data.assets.model.asset.user.RussianAssetsOwner}.
+ * AssetsOwner - {@link fund.data.assets.model.asset.owner.AssetsOwner}.
+ * RussianAssetsOwner - {@link fund.data.assets.model.asset.owner.RussianAssetsOwner}.
  * @since 0.0.1-alpha
  * @author MarkDementev a.k.a JavaMarkDem
  */

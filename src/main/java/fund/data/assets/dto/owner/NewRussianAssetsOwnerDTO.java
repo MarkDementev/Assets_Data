@@ -1,4 +1,4 @@
-package fund.data.assets.dto;
+package fund.data.assets.dto.owner;
 
 import fund.data.assets.utils.enums.RussianSexEnum;
 
@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * DTO для обслуживания создания владельца активов с гражданством РФ.
- * Обслуживаемая сущность - {@link fund.data.assets.model.asset.user.RussianAssetsOwner}.
+ * Обслуживаемая сущность - {@link fund.data.assets.model.asset.owner.RussianAssetsOwner}.
  * Сервис сущности - {@link fund.data.assets.service.impl.RussianAssetsOwnerServiceImpl}.
  * @version 0.0.1-alpha
  * @author MarkDementev a.k.a JavaMarkDem
@@ -42,7 +42,7 @@ public class NewRussianAssetsOwnerDTO {
     private RussianSexEnum sex;
 
     @NotNull
-    @Pattern(regexp = "9[0-9]{9}")
+    @Pattern(regexp = "^9[0-9]{9}$")
     private String mobilePhoneNumber;
 
     @NotNull

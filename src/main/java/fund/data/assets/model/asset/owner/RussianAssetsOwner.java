@@ -1,4 +1,4 @@
-package fund.data.assets.model.asset.user;
+package fund.data.assets.model.asset.owner;
 
 import fund.data.assets.utils.converter.StringCryptoConverter;
 import fund.data.assets.utils.enums.RussianSexEnum;
@@ -46,7 +46,7 @@ public class RussianAssetsOwner extends AssetsOwner {
      */
     //TODO Проверь - возможно, регексп надо оставить только в ДТО, т.к. здесь идёт шифрование
     @NotNull
-    @Pattern(regexp = "9[0-9]{9}")
+    @Pattern(regexp = "^9[0-9]{9}$")
     @Convert(converter = StringCryptoConverter.class)
     private String mobilePhoneNumber;
 

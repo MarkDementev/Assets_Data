@@ -1,7 +1,7 @@
 package fund.data.assets.model.asset.exchange;
 
 import fund.data.assets.model.asset.Asset;
-import fund.data.assets.model.asset.user.AssetsOwner;
+import fund.data.assets.model.asset.owner.AssetsOwner;
 import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.utils.AutoSelector;
 import fund.data.assets.utils.enums.AssetCurrency;
