@@ -32,6 +32,10 @@ public class NewRussianAssetsOwnerDTO {
     @Pattern(regexp = "(0[1-9]|[12][0-9]|3[01])\\.(0[1-9]|1[012])\\.((19|20)\\d\\d)")
     private String birthDate;
 
+    /**
+     * Для написания regexp использован стандарт RFC5322 - https://www.rfc-editor.org/info/rfc5322
+     * Почты может и не быть, потому не ставлю ограничение в виде @NotBlank.
+     */
     @Email(regexp = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
     private String email;
 
@@ -41,16 +45,22 @@ public class NewRussianAssetsOwnerDTO {
     @NotNull
     private RussianSexEnum sex;
 
+    /**
+     * Номер мобильного телефона в формате ХХХ-ХХХ-ХХ-ХХ без +7. +7 добавляет сервис при операциях с полем.
+     */
     @NotNull
     @Pattern(regexp = "^9[0-9]{9}$")
     private String mobilePhoneNumber;
 
+    /**
+     * Можно вводить как с пробелом между 2-й и 3-й цифрами (как напечатано в паспорте), так и подряд все 4 цифры.
+     */
     @NotNull
-    @Pattern(regexp = "[0-9]{2}\\s?[0-9]{2}")
+    @Pattern(regexp = "^[0-9]{2}\\s?[0-9]{2}$")
     private String passportSeries;
 
     @NotNull
-    @Pattern(regexp = "[0-9]{6}")
+    @Pattern(regexp = "^[0-9]{6}$")
     private String passportNumber;
 
     @NotBlank
@@ -60,10 +70,10 @@ public class NewRussianAssetsOwnerDTO {
     private String placeOfPassportGiven;
 
     @NotBlank
-    @Pattern(regexp = "(0[1-9]|[12][0-9]|3[01])\\.(0[1-9]|1[012])\\.((19|20)\\d\\d)")
+    @Pattern(regexp = "^(0[1-9]|[12][0-9]|3[01])\\.(0[1-9]|1[012])\\.((19|20)\\d\\d)$")
     private String issueDate;
 
     @NotNull
-    @Pattern(regexp = "[0-9]{3}-[0-9]{3}")
+    @Pattern(regexp = "^[0-9]{3}-[0-9]{3}$")
     private String issuerOrganisationCode;
 }

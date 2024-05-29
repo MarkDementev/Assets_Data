@@ -44,24 +44,18 @@ public class RussianAssetsOwner extends AssetsOwner {
     /**
      * Номер мобильного телефона в формате ХХХ-ХХХ-ХХ-ХХ без +7. +7 добавляет сервис при операциях с полем.
      */
-    //TODO Проверь - возможно, регексп надо оставить только в ДТО, т.к. здесь идёт шифрование
     @NotNull
-    @Pattern(regexp = "^9[0-9]{9}$")
     @Convert(converter = StringCryptoConverter.class)
     private String mobilePhoneNumber;
 
     /**
      * Можно вводить как с пробелом между 2-й и 3-й цифрами (как напечатано в паспорте), так и подряд все 4 цифры.
      */
-    //TODO Проверь - возможно, регексп надо оставить только в ДТО, т.к. здесь идёт шифрование
     @NotNull
-    @Pattern(regexp = "[0-9]{2}\\s?[0-9]{2}")
     @Convert(converter = StringCryptoConverter.class)
     private String passportSeries;
 
-    //TODO Проверь - возможно, регексп надо оставить только в ДТО, т.к. здесь идёт шифрование
     @NotNull
-    @Pattern(regexp = "[0-9]{6}")
     @Convert(converter = StringCryptoConverter.class)
     private String passportNumber;
 
@@ -71,12 +65,10 @@ public class RussianAssetsOwner extends AssetsOwner {
     @NotBlank
     private String placeOfPassportGiven;
 
-    @NotBlank
-    @Pattern(regexp = "(0[1-9]|[12][0-9]|3[01])\\.(0[1-9]|1[012])\\.((19|20)\\d\\d)")
     private LocalDate issueDate;
 
     @NotNull
-    @Pattern(regexp = "[0-9]{3}-[0-9]{3}")
+    @Pattern(regexp = "^[0-9]{3}-[0-9]{3}$")
     private String issuerOrganisationCode;
 
     public RussianAssetsOwner(String name, String surname, LocalDate birthDate, String email, String patronymic,

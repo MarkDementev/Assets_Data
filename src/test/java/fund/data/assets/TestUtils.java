@@ -87,7 +87,7 @@ public class TestUtils {
 
     private final NewRussianAssetsOwnerDTO russianAssetsOwnerDTO = new NewRussianAssetsOwnerDTO(
         "name", "surname", "25.05.1995", "Email_sur@mail.ru", "patronymic", MAN,
-            "88888888888", "2424", "111111", "placeOfBirth",
+            "9888888888", "2424", "111111", "placeOfBirth",
             "placeOfPassportGiven", "24.08.2021", "377-777"
     );
 
