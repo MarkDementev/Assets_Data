@@ -117,6 +117,7 @@ class AccountControllerIT {
 		assertEquals(accountFromResponse.getAccountOpeningDate(),
 				testUtils.getAccountDTO().getAccountOpeningDate());
 		assertNotNull(accountFromResponse.getCreatedAt());
+		assertNotNull(accountFromResponse.getUpdatedAt());
 	}
 
 	@Test

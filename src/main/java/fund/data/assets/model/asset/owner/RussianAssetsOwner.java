@@ -4,13 +4,15 @@ import fund.data.assets.utils.converter.StringCryptoConverter;
 import fund.data.assets.utils.enums.RussianSexEnum;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.Convert;
+import jakarta.persistence.Column;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,6 +33,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Getter
 @Setter
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"passport_series", "passport_number", "place_of_birth",
+        "place_of_passport_given", "issue_date", "issuer_organisation_code"})})
 public class RussianAssetsOwner extends AssetsOwner {
     @NotBlank
     private String patronymic;
@@ -42,19 +46,23 @@ public class RussianAssetsOwner extends AssetsOwner {
     /**
      * Номер мобильного телефона в формате ХХХ-ХХХ-ХХ-ХХ без +7. +7 добавляет сервис при операциях с полем.
      */
+    //TODO Учти одновременность юниг и шифровки
     @NotNull
-    @Convert(converter = StringCryptoConverter.class)
+//    @Convert(converter = StringCryptoConverter.class)
+    @Column(unique = true)
     private String mobilePhoneNumber;
 
     /**
      * Можно вводить как с пробелом между 2-й и 3-й цифрами (как напечатано в паспорте), так и подряд все 4 цифры.
      */
+    //TODO Учти одновременность юниг и шифровки
     @NotNull
-    @Convert(converter = StringCryptoConverter.class)
+//    @Convert(converter = StringCryptoConverter.class)
     private String passportSeries;
 
+    //TODO Учти одновременность юниг и шифровки
     @NotNull
-    @Convert(converter = StringCryptoConverter.class)
+//    @Convert(converter = StringCryptoConverter.class)
     private String passportNumber;
 
     @NotBlank
@@ -63,10 +71,10 @@ public class RussianAssetsOwner extends AssetsOwner {
     @NotBlank
     private String placeOfPassportGiven;
 
+    @NotNull
     private LocalDate issueDate;
 
     @NotNull
-    @Pattern(regexp = "^[0-9]{3}-[0-9]{3}$")
     private String issuerOrganisationCode;
 
     public RussianAssetsOwner(String name, String surname, LocalDate birthDate, String email, String patronymic,

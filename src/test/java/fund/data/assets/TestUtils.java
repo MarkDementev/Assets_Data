@@ -69,7 +69,7 @@ public class TestUtils {
             LocalDate.of(2024, 2, 22)
     );
 
-    private TurnoverCommissionValueDTO turnoverCommissionValueDTO = new TurnoverCommissionValueDTO(
+    private final TurnoverCommissionValueDTO turnoverCommissionValueDTO = new TurnoverCommissionValueDTO(
             null,
             TEST_ASSET_TYPE_NAME,
             TEST_COMMISSION_PERCENT_VALUE
@@ -89,6 +89,12 @@ public class TestUtils {
         "name", "surname", "25.05.1995", "Email_sur@mail.ru", "patronymic", MAN,
             "9888888888", "2424", "111111", "placeOfBirth",
             "placeOfPassportGiven", "24.08.2021", "377-777"
+    );
+
+    private final NewRussianAssetsOwnerDTO notValidRussianAssetsOwnerDTO = new NewRussianAssetsOwnerDTO(
+            "", "", "25,05,1995", "Email_surmail.ru", "",
+            null, "988888888", "242", "11111", "",
+            "", "24,08,2021", "377-77"
     );
 
     public void tearDown() {
@@ -123,6 +129,14 @@ public class TestUtils {
 
     public PercentFloatValueDTO getPercentFloatValueDTO() {
         return percentFloatValueDTO;
+    }
+
+    public NewRussianAssetsOwnerDTO getNewRussianAssetsOwnerDTO() {
+        return russianAssetsOwnerDTO;
+    }
+
+    public NewRussianAssetsOwnerDTO getNotValidNewRussianAssetsOwnerDTO() {
+        return notValidRussianAssetsOwnerDTO;
     }
 
     public ResultActions createDefaultAccount() throws Exception {

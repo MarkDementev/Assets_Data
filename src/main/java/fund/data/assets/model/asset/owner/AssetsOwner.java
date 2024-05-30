@@ -37,7 +37,7 @@ import java.util.List;
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor
 @Getter
 @Setter
@@ -52,13 +52,15 @@ public abstract class AssetsOwner {
     @NotBlank
     private String surname;
 
+    @NotNull
     private LocalDate birthDate;
 
     /**
      * Почты может и не быть, потому не ставлю ограничение в виде @NotBlank.
      */
+    //TODO Учти одновременность юниг и шифровки
+//    @Convert(converter = StringCryptoConverter.class)
     @Column(unique = true)
-    @Convert(converter = StringCryptoConverter.class)
     private String email;
 
     /**

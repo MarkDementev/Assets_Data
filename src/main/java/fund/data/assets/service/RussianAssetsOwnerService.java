@@ -5,6 +5,8 @@ import fund.data.assets.dto.owner.PersonalDataRussianAssetsOwnerDTO;
 import fund.data.assets.dto.owner.ContactDataRussianAssetsOwnerDTO;
 import fund.data.assets.model.asset.owner.RussianAssetsOwner;
 
+import java.time.LocalDate;
+
 import java.util.List;
 
 /**
@@ -22,4 +24,6 @@ public interface RussianAssetsOwnerService {
     RussianAssetsOwner updateRussianAssetsOwnerContactData(
             Long id, ContactDataRussianAssetsOwnerDTO contactDataRussianAssetsOwnerDTO);
     void deleteRussianAssetsOwner(Long id);
+    LocalDate parseDatePassportFormatIntoLocalDate(String stringDate);
+    String addRussianNumberPrefixPhoneNumber(String mobilePhoneNumber);
 }

@@ -144,6 +144,7 @@ public class TurnoverCommissionValueControllerIT {
         assertEquals(turnoverCommissionValueFromResponse.getCommissionPercentValue(),
                 TEST_COMMISSION_PERCENT_VALUE_FLOAT);
         assertNotNull(turnoverCommissionValueFromResponse.getCreatedAt());
+        assertNotNull(turnoverCommissionValueFromResponse.getUpdatedAt());
     }
 
     @Test

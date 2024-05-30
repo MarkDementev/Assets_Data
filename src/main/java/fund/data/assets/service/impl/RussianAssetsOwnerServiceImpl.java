@@ -123,7 +123,8 @@ public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService 
      * @return дату в формате LocalDate.
      * @since 0.0.1-alpha
      */
-    private LocalDate parseDatePassportFormatIntoLocalDate(String stringDate) {
+    @Override
+    public LocalDate parseDatePassportFormatIntoLocalDate(String stringDate) {
         DateTimeFormatter fromRFPassportFormatToLocalDateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
         return LocalDate.parse(stringDate, fromRFPassportFormatToLocalDateFormatter);
@@ -136,7 +137,8 @@ public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService 
      * @return номер мобильного телефона РФ с добавлением префикса +7.
      * @since 0.0.1-alpha
      */
-    private String addRussianNumberPrefixPhoneNumber(String mobilePhoneNumber) {
+    @Override
+    public String addRussianNumberPrefixPhoneNumber(String mobilePhoneNumber) {
         return RUSSIAN_MOBILE_PHONE_PREFIX + mobilePhoneNumber;
     }
 }
