@@ -5,18 +5,21 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="create-test-accounts-table" author="MarkDementev">
-        <createTable tableName="accounts">
+    <changeSet id="create-test-turnover-commission-value-table" author="MarkDementev">
+        <createTable tableName="turnover_commission_percent_values">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="organisation_where_account_opened" type="varchar">
+            <column name="commission_system" type="varchar">
                 <constraints nullable="false"/>
             </column>
-            <column name="account_number" type="varchar">
-                <constraints nullable="false" unique="true"/>
+            <column name="account_id" type="BIGINT">
+                <constraints nullable="false"/>
             </column>
-            <column name="account_opening_date" type="TIMESTAMP">
+            <column name="asset_type_name" type="varchar">
+                <constraints nullable="false" unique = "true"/>
+            </column>
+            <column name="commission_percent_value" type="FLOAT">
                 <constraints nullable="false"/>
             </column>
             <column name="created_at" type="TIMESTAMP(3) WITH TIMEZONE">
@@ -26,6 +29,12 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+
+        <addForeignKeyConstraint constraintName="fkb9pyf4sgc87yqcn2ksie4b094"
+                                 baseTableName="turnover_commission_percent_values"
+                                 baseColumnNames="account_id"
+                                 referencedTableName="accounts"
+                                 referencedColumnNames="id"/>
     </changeSet>
 
 </databaseChangeLog>

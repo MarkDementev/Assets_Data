@@ -59,6 +59,7 @@ public class RussianAssetsOwnerControllerIT {
         assertEquals(expectedRussianAssetsOwner.getSurname(), russianAssetsOwnerFromResponse.getSurname());
         assertEquals(expectedRussianAssetsOwner.getBirthDate(), russianAssetsOwnerFromResponse.getBirthDate());
         assertEquals(expectedRussianAssetsOwner.getEmail(), russianAssetsOwnerFromResponse.getEmail());
+        assertEquals("expectedRussianAssetsOwner.getEmail()", russianAssetsOwnerFromResponse.getEmail());
         assertNotNull(russianAssetsOwnerFromResponse.getAssetRelationships());
         assertNotNull(russianAssetsOwnerFromResponse.getCreatedAt());
         assertNotNull(russianAssetsOwnerFromResponse.getUpdatedAt());

@@ -6,5 +6,7 @@
             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <include file="controller/create-test-accounts-table.xml" relativeToChangelogFile="true"/>
+    <include file="controller/create-test-turnover-commission-value-table.xml" relativeToChangelogFile="true"/>
+<!--    <include file="controller/create-test-assets-owners-table.xml" relativeToChangelogFile="true"/>-->
 
 </databaseChangeLog>

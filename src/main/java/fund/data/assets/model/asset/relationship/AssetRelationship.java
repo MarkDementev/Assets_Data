@@ -35,7 +35,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@Table(name = "Asset ownerships with account placement")
+@Table(name = "asset_ownerships_with_account_placement")
 @NoArgsConstructor
 @Getter
 @Setter

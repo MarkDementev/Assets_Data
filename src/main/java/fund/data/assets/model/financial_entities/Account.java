@@ -28,7 +28,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Entity
-@Table(name = "In-fund and out-fund accounts")
+@Table(name = "accounts")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

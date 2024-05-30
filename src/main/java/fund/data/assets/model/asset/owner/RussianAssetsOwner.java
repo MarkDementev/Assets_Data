@@ -6,7 +6,6 @@ import fund.data.assets.utils.enums.RussianSexEnum;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
 import jakarta.persistence.Convert;
 
 import jakarta.validation.constraints.NotBlank;
@@ -29,7 +28,6 @@ import java.time.LocalDate;
  */
 @Primary
 @Entity
-@Table(name = "Asset owners with Russia Federation citizenship")
 @NoArgsConstructor
 @Getter
 @Setter

@@ -15,7 +15,7 @@ import lombok.Setter;
 
 /**
  * Сущность - связующее для финансовых активов.
- * Класс -  наследник абстрактного AssetRelationship.
+ * Класс - наследник абстрактного AssetRelationship.
  * @version 0.0.1-alpha
  * @author MarkDementev a.k.a JavaMarkDem
  */
