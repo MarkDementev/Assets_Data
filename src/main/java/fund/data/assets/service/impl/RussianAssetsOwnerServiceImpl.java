@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
+//import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -29,6 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Service
 @RequiredArgsConstructor
+@Validated
 public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService {
     public static final String RUSSIAN_MOBILE_PHONE_PREFIX = "+7";
     public static final String WRONG_DATES_WARNING = "This is error - issueDate doesn't before birthDate!";
@@ -61,9 +64,12 @@ public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService 
         LocalDate issueDate = parseDatePassportFormatIntoLocalDate(newRussianAssetsOwnerDTO.getIssueDate());
         String issuerOrganisationCode = newRussianAssetsOwnerDTO.getIssuerOrganisationCode();
 
+        validatePassportData(passportSeries, passportNumber, placeOfBirth, placeOfPassportGiven, issueDate,
+                issuerOrganisationCode);
         if (ChronoUnit.DAYS.between(birthDate, issueDate) < 0) {
             throw new IllegalArgumentException(WRONG_DATES_WARNING);
         }
+
         AtomicReference<RussianAssetsOwner> atomicRussianAssetsOwner = new AtomicReference<>(new RussianAssetsOwner(
                 name, surname, birthDate, email, patronymic, sex, mobilePhoneNumber, passportSeries, passportNumber,
                 placeOfBirth, placeOfPassportGiven, issueDate, issuerOrganisationCode));
@@ -133,12 +139,30 @@ public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService 
     /**
      * Чтобы не вводить префикс и не проводить сложную валидацию на фронте, номер вводится в формате ХХХ-ХХХ-ХХ-ХХ
      *  без +7 и приходит через DTO как String. Данный метод собирает его, добавляя префикс +7.
-     * @param mobilePhoneNumber
+     * @param mobilePhoneNumber цифры номера мобильного телефона без добавления префикса
      * @return номер мобильного телефона РФ с добавлением префикса +7.
      * @since 0.0.1-alpha
      */
     @Override
     public String addRussianNumberPrefixPhoneNumber(String mobilePhoneNumber) {
         return RUSSIAN_MOBILE_PHONE_PREFIX + mobilePhoneNumber;
+    }
+
+    private void validatePassportData(String passportSeries, String passportNumber, String placeOfBirth,
+                                      String placeOfPassportGiven, LocalDate issueDate,
+                                      String issuerOrganisationCode) {
+        List<RussianAssetsOwner> russianAssetsOwnerList = russianAssetsOwnerRepository.findAll();
+
+        for (RussianAssetsOwner ownerFromDB : russianAssetsOwnerList) {
+            if ((ownerFromDB.getPassportSeries().equals(passportSeries))
+                    && (ownerFromDB.getPassportNumber().equals(passportNumber))
+                    && (ownerFromDB.getPlaceOfBirth().equals(placeOfBirth))
+                    && (ownerFromDB.getPlaceOfPassportGiven().equals(placeOfPassportGiven))
+                    && (ownerFromDB.getIssueDate().equals(issueDate))
+                    && (ownerFromDB.getIssuerOrganisationCode().equals(issuerOrganisationCode))) {
+//                throw new MethodArgumentNotValidException();
+                throw new IllegalArgumentException("!!!!!!!!!!");
+            }
+        }
     }
 }

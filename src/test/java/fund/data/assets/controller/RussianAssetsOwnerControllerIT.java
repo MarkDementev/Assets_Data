@@ -4,17 +4,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import fund.data.assets.TestUtils;
 import fund.data.assets.config.SpringConfigForTests;
-import fund.data.assets.dto.TurnoverCommissionValueDTO;
-import fund.data.assets.dto.common.PercentFloatValueDTO;
 import fund.data.assets.dto.owner.NewRussianAssetsOwnerDTO;
-import fund.data.assets.exception.NotValidPercentValueInputFormatException;
 import fund.data.assets.model.asset.owner.RussianAssetsOwner;
-import fund.data.assets.model.financial_entities.TurnoverCommissionValue;
 import fund.data.assets.repository.RussianAssetsOwnerRepository;
 import fund.data.assets.service.RussianAssetsOwnerService;
 
-import fund.data.assets.utils.enums.CommissionSystem;
 import jakarta.servlet.ServletException;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -23,23 +19,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import javax.xml.bind.ValidationException;
 import java.util.List;
 
-import static fund.data.assets.TestUtils.*;
+import static fund.data.assets.TestUtils.fromJson;
+import static fund.data.assets.TestUtils.asJson;
 import static fund.data.assets.config.SpringConfigForTests.TEST_PROFILE;
 import static fund.data.assets.controller.AccountController.ID_PATH;
 import static fund.data.assets.controller.RussianAssetsOwnerController.RUSSIAN_OWNERS_CONTROLLER_PATH;
-
-import static fund.data.assets.controller.TurnoverCommissionValueController.TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH;
 import static fund.data.assets.utils.enums.RussianSexEnum.WOMAN;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertNull;
+
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -162,58 +155,56 @@ public class RussianAssetsOwnerControllerIT {
         testUtils.perform(post("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH)
                 .content(asJson(testUtils.getNotValidNewRussianAssetsOwnerDTO()))
                 .contentType(APPLICATION_JSON));
-
         assertThat(russianAssetsOwnerRepository.findAll()).hasSize(0);
 
         testUtils.createDefaultRussianAssetsOwner();
 
-//        NewRussianAssetsOwnerDTO validNewRussianAssetsOwnerDTOButWithExistPassportData
-//                = new NewRussianAssetsOwnerDTO(
-//                testUtils.getNewRussianAssetsOwnerDTO().getName() + "another",
-//                testUtils.getNewRussianAssetsOwnerDTO().getSurname() + "another",
-//                "24.05.1995",
-//                testUtils.getNewRussianAssetsOwnerDTO().getEmail() + "another",
-//                testUtils.getNewRussianAssetsOwnerDTO().getPatronymic() + "another",
-//                WOMAN,
-//                "9988888888",
-//                testUtils.getNewRussianAssetsOwnerDTO().getPassportSeries(),
-//                testUtils.getNewRussianAssetsOwnerDTO().getPassportNumber(),
-//                testUtils.getNewRussianAssetsOwnerDTO().getPlaceOfBirth(),
-//                testUtils.getNewRussianAssetsOwnerDTO().getPlaceOfPassportGiven(),
-//                testUtils.getNewRussianAssetsOwnerDTO().getIssueDate(),
-//                testUtils.getNewRussianAssetsOwnerDTO().getIssuerOrganisationCode()
-//        );
-//
-//        Assertions.assertThrows(ServletException.class,
-//                () -> testUtils.perform(post("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH)
-//                        .content(asJson(validNewRussianAssetsOwnerDTOButWithExistPassportData))
-//                        .contentType(APPLICATION_JSON)));
-//        assertThat(russianAssetsOwnerRepository.findAll()).hasSize(1);
-
-        NewRussianAssetsOwnerDTO validNewRussianAssetsOwnerDTOButWithExistPhoneAndEmail
+        NewRussianAssetsOwnerDTO newRussianAssetsOwnerDTOWithAlreadyExistsPassportData
                 = new NewRussianAssetsOwnerDTO(
-                testUtils.getNewRussianAssetsOwnerDTO().getName() + "another",
-                testUtils.getNewRussianAssetsOwnerDTO().getSurname() + "another",
+                "another",
+                "another",
+                "24.05.1995",
+                "Mark_email@mail.ru",
+                "another",
+                WOMAN,
+                "9988888888",
+                testUtils.getNewRussianAssetsOwnerDTO().getPassportSeries(),
+                testUtils.getNewRussianAssetsOwnerDTO().getPassportNumber(),
+                testUtils.getNewRussianAssetsOwnerDTO().getPlaceOfBirth(),
+                testUtils.getNewRussianAssetsOwnerDTO().getPlaceOfPassportGiven(),
+                testUtils.getNewRussianAssetsOwnerDTO().getIssueDate(),
+                testUtils.getNewRussianAssetsOwnerDTO().getIssuerOrganisationCode()
+        );
+        Assertions.assertThrows(ServletException.class,
+                () -> testUtils.perform(post("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH)
+                        .content(asJson(newRussianAssetsOwnerDTOWithAlreadyExistsPassportData))
+                        .contentType(APPLICATION_JSON)));
+        assertThat(russianAssetsOwnerRepository.findAll()).hasSize(1);
+
+        NewRussianAssetsOwnerDTO newRussianAssetsOwnerDTOWithAlreadyExistsPhoneAndEmail
+                = new NewRussianAssetsOwnerDTO(
+                "another",
+                "another",
                 "24.05.1995",
                 testUtils.getNewRussianAssetsOwnerDTO().getEmail(),
-                testUtils.getNewRussianAssetsOwnerDTO().getPatronymic() + "another",
+                "another",
                 WOMAN,
                 testUtils.getNewRussianAssetsOwnerDTO().getMobilePhoneNumber(),
                 "2425",
                 "111112",
-                testUtils.getNewRussianAssetsOwnerDTO().getPlaceOfBirth() + "another",
-                testUtils.getNewRussianAssetsOwnerDTO().getPlaceOfPassportGiven() + "another",
+                "another",
+                "another",
                 "25.08.2021",
                 "377-778"
         );
-
         testUtils.perform(post("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH)
-                        .content(asJson(validNewRussianAssetsOwnerDTOButWithExistPhoneAndEmail))
+                        .content(asJson(newRussianAssetsOwnerDTOWithAlreadyExistsPhoneAndEmail))
                         .contentType(APPLICATION_JSON))
                         .andExpect(status().isBadRequest());
         assertThat(russianAssetsOwnerRepository.findAll()).hasSize(1);
     }
 
+    //TODO - Добавь интеграционный тест на валидные апдейты, особенно на частичные
 //    @Test
 //    public void updateTurnoverCommissionValueIT() throws Exception {
 //        testUtils.createDefaultTurnoverCommissionValue();
@@ -244,7 +235,8 @@ public class RussianAssetsOwnerControllerIT {
 //        assertNotEquals(turnoverCommissionValueFromResponse.getCreatedAt(),
 //                turnoverCommissionValueFromResponse.getUpdatedAt());
 //    }
-//
+
+    //TODO - Добавь интеграционный тест на невалидный апдейт
 //    @Test
 //    public void notValidUpdateTurnoverCommissionValueIT() throws Exception {
 //        testUtils.createDefaultTurnoverCommissionValue();
