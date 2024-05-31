@@ -11,7 +11,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 
 import jakarta.validation.constraints.NotBlank;
@@ -58,9 +57,7 @@ public abstract class AssetsOwner {
     /**
      * Почты может и не быть, потому не ставлю ограничение в виде @NotBlank.
      */
-    //TODO Учти одновременность юниг и шифровки
-//    @Convert(converter = StringCryptoConverter.class)
-    @Column(unique = true)
+    @Convert(converter = StringCryptoConverter.class)
     private String email;
 
     /**

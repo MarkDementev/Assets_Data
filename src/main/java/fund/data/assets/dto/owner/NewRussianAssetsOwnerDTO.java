@@ -1,6 +1,8 @@
 package fund.data.assets.dto.owner;
 
 import fund.data.assets.utils.enums.RussianSexEnum;
+import fund.data.assets.validation.annotation.UniqueEncryptedEmail;
+import fund.data.assets.validation.annotation.UniqueEncryptedMobilePhone;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -37,6 +39,7 @@ public class NewRussianAssetsOwnerDTO {
      * Почты может и не быть, потому не ставлю ограничение в виде @NotBlank.
      */
     @Email(regexp = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
+    @UniqueEncryptedEmail
     private String email;
 
     @NotBlank
@@ -50,6 +53,7 @@ public class NewRussianAssetsOwnerDTO {
      */
     @NotNull
     @Pattern(regexp = "^9[0-9]{9}$")
+    @UniqueEncryptedMobilePhone
     private String mobilePhoneNumber;
 
     /**

@@ -7,9 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Convert;
-import jakarta.persistence.Column;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+//import jakarta.persistence.Table;
+//import jakarta.persistence.UniqueConstraint;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -33,8 +32,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"passport_series", "passport_number", "place_of_birth",
-        "place_of_passport_given", "issue_date", "issuer_organisation_code"})})
+//@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"passport_series", "passport_number", "place_of_birth",
+//        "place_of_passport_given", "issue_date", "issuer_organisation_code"})})
 public class RussianAssetsOwner extends AssetsOwner {
     @NotBlank
     private String patronymic;
@@ -46,10 +45,8 @@ public class RussianAssetsOwner extends AssetsOwner {
     /**
      * Номер мобильного телефона в формате ХХХ-ХХХ-ХХ-ХХ без +7. +7 добавляет сервис при операциях с полем.
      */
-    //TODO Учти одновременность юниг и шифровки
     @NotNull
-//    @Convert(converter = StringCryptoConverter.class)
-    @Column(unique = true)
+    @Convert(converter = StringCryptoConverter.class)
     private String mobilePhoneNumber;
 
     /**
