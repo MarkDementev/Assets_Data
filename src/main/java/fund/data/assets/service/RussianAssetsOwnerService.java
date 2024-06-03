@@ -26,4 +26,7 @@ public interface RussianAssetsOwnerService {
     void deleteRussianAssetsOwner(Long id);
     LocalDate parseDatePassportFormatIntoLocalDate(String stringDate);
     String addRussianNumberPrefixPhoneNumber(String mobilePhoneNumber);
+    void checkUniquenessRFPassportFields(String passportSeries, String passportNumber, String placeOfBirth,
+                                         String placeOfPassportGiven, LocalDate issueDate,
+                                         String issuerOrganisationCode);
 }

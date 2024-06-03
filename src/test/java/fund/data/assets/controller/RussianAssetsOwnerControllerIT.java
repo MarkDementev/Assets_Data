@@ -29,13 +29,16 @@ import static fund.data.assets.controller.AccountController.ID_PATH;
 import static fund.data.assets.controller.RussianAssetsOwnerController.RUSSIAN_OWNERS_CONTROLLER_PATH;
 import static fund.data.assets.utils.enums.RussianSexEnum.WOMAN;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = SpringConfigForTests.class, webEnvironment = RANDOM_PORT)
@@ -153,11 +156,13 @@ public class RussianAssetsOwnerControllerIT {
     @Test
     public void createNotValidRussianAssetsOwnerIT() throws Exception {
         testUtils.perform(post("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH)
-                .content(asJson(testUtils.getNotValidNewRussianAssetsOwnerDTO()))
-                .contentType(APPLICATION_JSON));
+                        .content(asJson(testUtils.getNotValidNewRussianAssetsOwnerDTO()))
+                        .contentType(APPLICATION_JSON))
+                        .andExpect(status().isBadRequest());
         assertThat(russianAssetsOwnerRepository.findAll()).hasSize(0);
 
         testUtils.createDefaultRussianAssetsOwner();
+        assertThat(russianAssetsOwnerRepository.findAll()).hasSize(1);
 
         NewRussianAssetsOwnerDTO newRussianAssetsOwnerDTOWithAlreadyExistsPassportData
                 = new NewRussianAssetsOwnerDTO(
@@ -204,59 +209,13 @@ public class RussianAssetsOwnerControllerIT {
         assertThat(russianAssetsOwnerRepository.findAll()).hasSize(1);
     }
 
-    //TODO - Добавь интеграционный тест на валидные апдейты, особенно на частичные
-//    @Test
-//    public void updateTurnoverCommissionValueIT() throws Exception {
-//        testUtils.createDefaultTurnoverCommissionValue();
-//
-//        Long createdTurnoverCommissionId = turnoverCommissionValueRepository.findAll().get(0).getId();
-//        PercentFloatValueDTO percentFloatValueDTO = new PercentFloatValueDTO(TEST_STRING_FORMAT_PERCENT_VALUE);
-//        var response = testUtils.perform(put("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH
-//                        + ID_PATH, createdTurnoverCommissionId)
-//                        .content(asJson(percentFloatValueDTO)).contentType(APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andReturn()
-//                .getResponse();
-//        TurnoverCommissionValue turnoverCommissionValueFromResponse = fromJson(response.getContentAsString(),
-//                new TypeReference<>() {});
-//
-//        assertNotNull(turnoverCommissionValueFromResponse.getId());
-//        assertEquals(turnoverCommissionValueFromResponse.getCommissionSystem(),
-//                CommissionSystem.TURNOVER);
-//        assertEquals(turnoverCommissionValueFromResponse.getAccount().getId(),
-//                accountRepository.findByOrganisationWhereAccountOpened(
-//                        testUtils.getAccountDTO().getOrganisationWhereAccountOpened()).getId());
-//        assertEquals(turnoverCommissionValueFromResponse.getAssetTypeName(),
-//                testUtils.getTurnoverCommissionValueDTO().getAssetTypeName());
-//        assertEquals(turnoverCommissionValueFromResponse.getCommissionPercentValue(),
-//                TEST_FORMATTED_PERCENT_VALUE_FLOAT);
-//        assertNotNull(turnoverCommissionValueFromResponse.getCreatedAt());
-//        assertNotNull(turnoverCommissionValueFromResponse.getUpdatedAt());
-//        assertNotEquals(turnoverCommissionValueFromResponse.getCreatedAt(),
-//                turnoverCommissionValueFromResponse.getUpdatedAt());
-//    }
+    @Test
+    public void updateRussianAssetsOwnerIT() {
+    }
 
-    //TODO - Добавь интеграционный тест на невалидный апдейт
-//    @Test
-//    public void notValidUpdateTurnoverCommissionValueIT() throws Exception {
-//        testUtils.createDefaultTurnoverCommissionValue();
-//
-//        PercentFloatValueDTO notValidPercentFloatValueDTO = testUtils.getPercentFloatValueDTO();
-//
-//        notValidPercentFloatValueDTO.setPercentValue(TEST_STRING_FORMAT_PERCENT_VALUE + "111");
-//
-//        Long createdTurnoverCommissionId = turnoverCommissionValueRepository.findAll().get(0).getId();
-//        assertThatThrownBy(() -> testUtils.perform(put("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH
-//                + ID_PATH, createdTurnoverCommissionId)
-//                .content(asJson(notValidPercentFloatValueDTO))
-//                .contentType(APPLICATION_JSON))
-//        )
-//                .isInstanceOf(ServletException.class)
-//                .hasMessageContaining(NotValidPercentValueInputFormatException.MESSAGE);
-//
-//        assertEquals(turnoverCommissionValueRepository.findAll().get(0).getCommissionPercentValue(),
-//                TEST_COMMISSION_PERCENT_VALUE_FLOAT);
-//    }
+    @Test
+    public void notValidUpdateRussianAssetsOwnerIT() {
+    }
 
     @Test
     public void deleteRussianAssetsOwnerIT() throws Exception {

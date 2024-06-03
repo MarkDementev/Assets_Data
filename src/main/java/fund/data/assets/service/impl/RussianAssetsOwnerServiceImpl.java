@@ -13,8 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-//import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -31,10 +29,11 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Service
 @RequiredArgsConstructor
-@Validated
 public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService {
     public static final String RUSSIAN_MOBILE_PHONE_PREFIX = "+7";
     public static final String WRONG_DATES_WARNING = "This is error - issueDate doesn't before birthDate!";
+    public static final String NOT_UNIQUE_RF_PASSPORT_WARNING = "This is error - client with this RF passport already" +
+            " added into system!";
     private final RussianAssetsOwnerRepository russianAssetsOwnerRepository;
 
     @Override
@@ -64,7 +63,7 @@ public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService 
         LocalDate issueDate = parseDatePassportFormatIntoLocalDate(newRussianAssetsOwnerDTO.getIssueDate());
         String issuerOrganisationCode = newRussianAssetsOwnerDTO.getIssuerOrganisationCode();
 
-        validatePassportData(passportSeries, passportNumber, placeOfBirth, placeOfPassportGiven, issueDate,
+        checkUniquenessRFPassportFields(passportSeries, passportNumber, placeOfBirth, placeOfPassportGiven, issueDate,
                 issuerOrganisationCode);
         if (ChronoUnit.DAYS.between(birthDate, issueDate) < 0) {
             throw new IllegalArgumentException(WRONG_DATES_WARNING);
@@ -148,9 +147,21 @@ public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService 
         return RUSSIAN_MOBILE_PHONE_PREFIX + mobilePhoneNumber;
     }
 
-    private void validatePassportData(String passportSeries, String passportNumber, String placeOfBirth,
-                                      String placeOfPassportGiven, LocalDate issueDate,
-                                      String issuerOrganisationCode) {
+    /**
+     * Валидация одновременной уникальности новых полей таблицы, определяющих паспорт РФ, реализована не на уровнях
+     * DTO или Entity, а в этом методе, т.к. необходимо работать с частично зашифрованными Jasypt данными, что сложно
+     * легко написать на других уровнях реализации.
+     * @param passportSeries серия паспорта РФ
+     * @param passportNumber номер паспорта РФ
+     * @param placeOfBirth место рождения
+     * @param placeOfPassportGiven место выдачи паспорта
+     * @param issueDate дата выдачи паспорта
+     * @param issuerOrganisationCode код организации, выдавшей паспорт
+     * @since 0.0.1-alpha
+     */
+    @Override
+    public void checkUniquenessRFPassportFields(String passportSeries, String passportNumber, String placeOfBirth,
+                               String placeOfPassportGiven, LocalDate issueDate, String issuerOrganisationCode) {
         List<RussianAssetsOwner> russianAssetsOwnerList = russianAssetsOwnerRepository.findAll();
 
         for (RussianAssetsOwner ownerFromDB : russianAssetsOwnerList) {
@@ -160,8 +171,7 @@ public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService 
                     && (ownerFromDB.getPlaceOfPassportGiven().equals(placeOfPassportGiven))
                     && (ownerFromDB.getIssueDate().equals(issueDate))
                     && (ownerFromDB.getIssuerOrganisationCode().equals(issuerOrganisationCode))) {
-//                throw new MethodArgumentNotValidException();
-                throw new IllegalArgumentException("!!!!!!!!!!");
+                throw new IllegalArgumentException(NOT_UNIQUE_RF_PASSPORT_WARNING);
             }
         }
     }
