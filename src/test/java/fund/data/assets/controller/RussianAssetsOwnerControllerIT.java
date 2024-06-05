@@ -309,7 +309,54 @@ public class RussianAssetsOwnerControllerIT {
     }
 
     @Test
-    public void notValidUpdateRussianAssetsOwnerIT() {
+    public void notValidUpdateRussianAssetsOwnerIT() throws Exception {
+        testUtils.createDefaultRussianAssetsOwner();
+
+        Long createdRussianAssetsOwnerId = russianAssetsOwnerRepository.findAll().get(0).getId();
+
+        testUtils.perform(put("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH
+                + CONTACT_DATA_PATH + ID_PATH, createdRussianAssetsOwnerId)
+                .content(asJson(testUtils.getNotValidRussianAssetsOwnerContactDataDTO()))
+                .contentType(APPLICATION_JSON));
+        assertEquals(russianAssetsOwnerRepository.findAll().get(0).getEmail(),
+                testUtils.getNewRussianAssetsOwnerDTO().getEmail());
+        assertEquals(russianAssetsOwnerRepository.findAll().get(0).getMobilePhoneNumber(),
+                russianAssetsOwnerService.addRussianNumberPrefixPhoneNumber(testUtils
+                        .getNewRussianAssetsOwnerDTO().getMobilePhoneNumber()));
+
+        testUtils.perform(put("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH
+                + PERSONAL_DATA_PATH + ID_PATH, createdRussianAssetsOwnerId)
+                .content(asJson(testUtils.getNotValidRussianAssetsOwnerPersonalDataDTO()))
+                .contentType(APPLICATION_JSON));
+        assertEquals(russianAssetsOwnerRepository.findAll().get(0).getName(),
+                testUtils.getNewRussianAssetsOwnerDTO().getName());
+        assertEquals(russianAssetsOwnerRepository.findAll().get(0).getSurname(),
+                testUtils.getNewRussianAssetsOwnerDTO().getSurname());
+        assertEquals(russianAssetsOwnerRepository.findAll().get(0).getPatronymic(),
+                testUtils.getNewRussianAssetsOwnerDTO().getPatronymic());
+        assertEquals(russianAssetsOwnerRepository.findAll().get(0).getPassportSeries(),
+                testUtils.getNewRussianAssetsOwnerDTO().getPassportSeries());
+        assertEquals(russianAssetsOwnerRepository.findAll().get(0).getPassportNumber(),
+                testUtils.getNewRussianAssetsOwnerDTO().getPassportNumber());
+        assertEquals(russianAssetsOwnerRepository.findAll().get(0).getPlaceOfPassportGiven(),
+                testUtils.getNewRussianAssetsOwnerDTO().getPlaceOfPassportGiven());
+        assertEquals(russianAssetsOwnerRepository.findAll().get(0).getIssueDate(),
+                russianAssetsOwnerService.parseDatePassportFormatIntoLocalDate(testUtils
+                        .getNewRussianAssetsOwnerDTO().getIssueDate()));
+        assertEquals(russianAssetsOwnerRepository.findAll().get(0).getIssuerOrganisationCode(),
+                testUtils.getNewRussianAssetsOwnerDTO().getIssuerOrganisationCode());
+
+        assertEquals(russianAssetsOwnerRepository.findAll().get(0).getId(), createdRussianAssetsOwnerId);
+        assertEquals(russianAssetsOwnerRepository.findAll().get(0).getBirthDate(),
+                russianAssetsOwnerService.parseDatePassportFormatIntoLocalDate(testUtils.getNewRussianAssetsOwnerDTO()
+                        .getBirthDate()));
+        assertNotNull(russianAssetsOwnerRepository.findAll().get(0).getAssetRelationships());
+        assertNotNull(russianAssetsOwnerRepository.findAll().get(0).getCreatedAt());
+        assertNotNull(russianAssetsOwnerRepository.findAll().get(0).getUpdatedAt());
+        assertEquals(russianAssetsOwnerRepository.findAll().get(0).getSex(),
+                testUtils.getNewRussianAssetsOwnerDTO().getSex());
+        assertEquals(russianAssetsOwnerRepository.findAll().get(0).getPlaceOfBirth(),
+                testUtils.getNewRussianAssetsOwnerDTO().getPlaceOfBirth());
     }
 
     @Test

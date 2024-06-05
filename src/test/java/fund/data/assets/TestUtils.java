@@ -15,6 +15,7 @@ import fund.data.assets.repository.RussianAssetsOwnerRepository;
 import fund.data.assets.repository.TurnoverCommissionValueRepository;
 
 import org.openapitools.jackson.nullable.JsonNullable;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
@@ -116,6 +117,22 @@ public class TestUtils {
                     JsonNullable.of("31.01.1999"),
                     JsonNullable.of("999-999"));
 
+    private final ContactDataRussianAssetsOwnerDTO notValidRussianAssetsOwnerContactDataDTO =
+            new ContactDataRussianAssetsOwnerDTO(
+                    JsonNullable.of("NewEmail_surmail.ru"),
+                    JsonNullable.of("988888888"));
+
+    private final PersonalDataRussianAssetsOwnerDTO notValidRussianAssetsOwnerPersonalDataDTO =
+            new PersonalDataRussianAssetsOwnerDTO(
+                    JsonNullable.of(""),
+                    JsonNullable.of(""),
+                    JsonNullable.of(""),
+                    JsonNullable.of("444"),
+                    JsonNullable.of("99999"),
+                    JsonNullable.of(""),
+                    JsonNullable.of("31,01,1999"),
+                    JsonNullable.of("999-99"));
+
     public void tearDown() {
         russianAssetsOwnerRepository.deleteAll();
         turnoverCommissionValueRepository.deleteAll();
@@ -164,6 +181,14 @@ public class TestUtils {
 
     public PersonalDataRussianAssetsOwnerDTO getValidRussianAssetsOwnerPersonalDataDTO() {
         return validRussianAssetsOwnerPersonalDataDTO;
+    }
+
+    public ContactDataRussianAssetsOwnerDTO getNotValidRussianAssetsOwnerContactDataDTO() {
+        return notValidRussianAssetsOwnerContactDataDTO;
+    }
+
+    public PersonalDataRussianAssetsOwnerDTO getNotValidRussianAssetsOwnerPersonalDataDTO() {
+        return notValidRussianAssetsOwnerPersonalDataDTO;
     }
 
     public ResultActions createDefaultAccount() throws Exception {
