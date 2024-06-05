@@ -110,8 +110,8 @@ public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService 
         );
 
         atomicRussianAssetsOwnerToUpdate.get().setEmail(contactDataRussianAssetsOwnerDTO.getEmail().get());
-        atomicRussianAssetsOwnerToUpdate.get().setMobilePhoneNumber(contactDataRussianAssetsOwnerDTO
-                .getMobilePhoneNumber().get());
+        atomicRussianAssetsOwnerToUpdate.get().setMobilePhoneNumber(addRussianNumberPrefixPhoneNumber(
+                contactDataRussianAssetsOwnerDTO.getMobilePhoneNumber().get()));
 
         return russianAssetsOwnerRepository.save(atomicRussianAssetsOwnerToUpdate.get());
     }

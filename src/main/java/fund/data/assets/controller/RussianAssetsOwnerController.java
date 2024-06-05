@@ -42,7 +42,7 @@ import static fund.data.assets.controller.RussianAssetsOwnerController.RUSSIAN_O
 public class RussianAssetsOwnerController {
     public static final String RUSSIAN_OWNERS_CONTROLLER_PATH = "/owners/russia";
     public static final String ID_PATH = "/{id}";
-    public static final String PERSONAL_DATA_PATH = "/data";
+    public static final String PERSONAL_DATA_PATH = "/personal";
     public static final String CONTACT_DATA_PATH = "/contacts";
     private final RussianAssetsOwnerService russianAssetsOwnerService;
 
@@ -75,7 +75,7 @@ public class RussianAssetsOwnerController {
 
     @Operation(summary = "Update personal data of russian assets owner")
     @ApiResponse(responseCode = "200", description = "Russian assets owner personal data updated")
-    @PutMapping(ID_PATH + PERSONAL_DATA_PATH)
+    @PutMapping(PERSONAL_DATA_PATH + ID_PATH)
     public ResponseEntity<RussianAssetsOwner> updateRussianAssetsOwnerPersonalData(@PathVariable Long id, @RequestBody
     @Valid PersonalDataRussianAssetsOwnerDTO personalDataRussianAssetsOwnerDTO) {
         return ResponseEntity.ok().body(russianAssetsOwnerService.updateRussianAssetsOwnerPersonalData(
@@ -84,7 +84,7 @@ public class RussianAssetsOwnerController {
 
     @Operation(summary = "Update contact data of russian assets owner")
     @ApiResponse(responseCode = "200", description = "Russian assets owner contact data updated")
-    @PutMapping(ID_PATH + CONTACT_DATA_PATH)
+    @PutMapping(CONTACT_DATA_PATH + ID_PATH)
     public ResponseEntity<RussianAssetsOwner> updateRussianAssetsOwnerContactData(@PathVariable Long id, @RequestBody
     @Valid ContactDataRussianAssetsOwnerDTO contactDataRussianAssetsOwnerDTO) {
         return ResponseEntity.ok().body(russianAssetsOwnerService.updateRussianAssetsOwnerContactData(

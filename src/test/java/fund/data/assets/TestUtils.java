@@ -8,10 +8,13 @@ import fund.data.assets.dto.AccountDTO;
 import fund.data.assets.dto.TurnoverCommissionValueDTO;
 import fund.data.assets.dto.common.PercentFloatValueDTO;
 import fund.data.assets.dto.owner.NewRussianAssetsOwnerDTO;
+import fund.data.assets.dto.owner.ContactDataRussianAssetsOwnerDTO;
+import fund.data.assets.dto.owner.PersonalDataRussianAssetsOwnerDTO;
 import fund.data.assets.repository.AccountRepository;
 import fund.data.assets.repository.RussianAssetsOwnerRepository;
 import fund.data.assets.repository.TurnoverCommissionValueRepository;
 
+import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
@@ -97,6 +100,22 @@ public class TestUtils {
             "", "24,08,2021", "377-77"
     );
 
+    private final ContactDataRussianAssetsOwnerDTO validRussianAssetsOwnerContactDataDTO =
+            new ContactDataRussianAssetsOwnerDTO(
+                    JsonNullable.of("NewEmail_sur@mail.ru"),
+                    JsonNullable.of("9888888889"));
+
+    private final PersonalDataRussianAssetsOwnerDTO validRussianAssetsOwnerPersonalDataDTO =
+            new PersonalDataRussianAssetsOwnerDTO(
+                    JsonNullable.of("NewName"),
+                    JsonNullable.of("NewSurname"),
+                    JsonNullable.of("NewPatronymic"),
+                    JsonNullable.of("4444"),
+                    JsonNullable.of("999999"),
+                    JsonNullable.of("NewPlaceOfPassportGiven"),
+                    JsonNullable.of("31.01.1999"),
+                    JsonNullable.of("999-999"));
+
     public void tearDown() {
         russianAssetsOwnerRepository.deleteAll();
         turnoverCommissionValueRepository.deleteAll();
@@ -137,6 +156,14 @@ public class TestUtils {
 
     public NewRussianAssetsOwnerDTO getNotValidNewRussianAssetsOwnerDTO() {
         return notValidRussianAssetsOwnerDTO;
+    }
+
+    public ContactDataRussianAssetsOwnerDTO getValidRussianAssetsOwnerContactDataDTO() {
+        return validRussianAssetsOwnerContactDataDTO;
+    }
+
+    public PersonalDataRussianAssetsOwnerDTO getValidRussianAssetsOwnerPersonalDataDTO() {
+        return validRussianAssetsOwnerPersonalDataDTO;
     }
 
     public ResultActions createDefaultAccount() throws Exception {
