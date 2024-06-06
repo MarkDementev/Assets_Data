@@ -52,6 +52,7 @@ public class TurnoverCommissionValue {
     /**
      * Комиссия обычно устанавливается для определённого счёта.
      */
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;

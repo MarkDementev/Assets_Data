@@ -8,8 +8,6 @@ import fund.data.assets.utils.enums.AssetCurrency;
 import fund.data.assets.utils.enums.CommissionSystem;
 import fund.data.assets.utils.enums.TaxSystem;
 
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
@@ -27,12 +25,11 @@ import java.time.LocalDate;
 
 /**
  * Биржевой актив - сущность для начала конкретизации сути актива.
- * Абстрактный класс -  наследник абстрактного Asset.
+ * Абстрактный класс - наследник абстрактного Asset.
  * @version 0.0.1-alpha
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @NoArgsConstructor
 @Getter
 @Setter

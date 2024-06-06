@@ -10,8 +10,6 @@ import fund.data.assets.utils.FinancialAndAnotherConstants;
 import fund.data.assets.utils.enums.CommissionSystem;
 import fund.data.assets.utils.enums.TaxSystem;
 
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Entity;
 
 import jakarta.validation.constraints.NotNull;
@@ -33,7 +31,6 @@ import java.time.temporal.ChronoUnit;
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @NoArgsConstructor
 @Getter
 @Setter
