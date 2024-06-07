@@ -6,7 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
-import jakarta.persistence.Column;
+import jakarta.persistence.UniqueConstraint;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -31,7 +31,8 @@ import static jakarta.persistence.GenerationType.IDENTITY;
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Entity
-@Table(name = "turnover_commission_percent_values")
+@Table(name = "turnover_commission_percent_values",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"account_id", "asset_type_name"})})
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -53,7 +54,6 @@ public class TurnoverCommissionValue {
      * Комиссия обычно устанавливается для определённого тип актива.
      */
     @NotBlank
-    @Column(unique = true)
     private String assetTypeName;
 
     /**

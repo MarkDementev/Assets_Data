@@ -10,7 +10,6 @@ import fund.data.assets.exception.NotValidPercentValueInputFormatException;
 import fund.data.assets.model.financial_entities.TurnoverCommissionValue;
 import fund.data.assets.repository.AccountRepository;
 import fund.data.assets.repository.TurnoverCommissionValueRepository;
-import fund.data.assets.utils.enums.CommissionSystem;
 
 import jakarta.servlet.ServletException;
 
@@ -148,21 +147,21 @@ public class TurnoverCommissionValueControllerIT {
         testUtils.perform(post("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH)
                 .content(asJson(testUtils.getNotValidTurnoverCommissionValueDTO()))
                 .contentType(APPLICATION_JSON));
-
         assertThat(turnoverCommissionValueRepository.findAll()).hasSize(0);
 
         testUtils.createDefaultTurnoverCommissionValue();
+        assertThat(turnoverCommissionValueRepository.findAll()).hasSize(1);
 
-        TurnoverCommissionValueDTO validTurnoverCommissionValueDTO = new TurnoverCommissionValueDTO(
+        TurnoverCommissionValueDTO turnoverCommissionValueDTOBothNotUniqueAccountAssetTypeName
+                = new TurnoverCommissionValueDTO(
                 accountRepository.findByOrganisationWhereAccountOpened(
                         testUtils.getAccountDTO().getOrganisationWhereAccountOpened()).getId(),
                 TEST_ASSET_TYPE_NAME,
                 TEST_COMMISSION_PERCENT_VALUE + TEST_COMMISSION_PERCENT_VALUE
         );
-
         Assertions.assertThrows(ServletException.class,
                 () -> testUtils.perform(post("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH)
-                        .content(asJson(validTurnoverCommissionValueDTO))
+                        .content(asJson(turnoverCommissionValueDTOBothNotUniqueAccountAssetTypeName))
                         .contentType(APPLICATION_JSON)));
         assertThat(turnoverCommissionValueRepository.findAll()).hasSize(1);
     }
