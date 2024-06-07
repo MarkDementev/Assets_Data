@@ -30,7 +30,7 @@ import java.util.List;
 import static fund.data.assets.controller.TurnoverCommissionValueController.TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH;
 
 /**
- * Контроллер с базовыми возможностями для работы с размерами комиссии с оборота для типа актива на счёте.
+ * Контроллер для работы с размерами комиссии с оборота для типа актива на счёте.
  * Обслуживаемая сущность - {@link fund.data.assets.model.financial_entities.TurnoverCommissionValue}.
  * @version 0.0.1-alpha
  * @author MarkDementev a.k.a JavaMarkDem

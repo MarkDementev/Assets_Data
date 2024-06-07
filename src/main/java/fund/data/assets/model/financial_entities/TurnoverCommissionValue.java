@@ -1,12 +1,8 @@
 package fund.data.assets.model.financial_entities;
 
-import fund.data.assets.utils.enums.CommissionSystem;
-
 import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.EnumType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
@@ -44,10 +40,6 @@ public class TurnoverCommissionValue {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
-
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private CommissionSystem commissionSystem;
 
     /**
      * Комиссия обычно устанавливается для определённого счёта.

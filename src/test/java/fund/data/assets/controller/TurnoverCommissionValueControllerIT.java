@@ -86,8 +86,6 @@ public class TurnoverCommissionValueControllerIT {
 
         assertEquals(expectedTurnoverCommissionValue.getId(),
                 turnoverCommissionValueFromResponse.getId());
-        assertEquals(expectedTurnoverCommissionValue.getCommissionSystem(),
-                turnoverCommissionValueFromResponse.getCommissionSystem());
         assertEquals(expectedTurnoverCommissionValue.getAccount().getId(),
                 turnoverCommissionValueFromResponse.getAccount().getId());
         assertEquals(expectedTurnoverCommissionValue.getAssetTypeName(),
@@ -135,8 +133,6 @@ public class TurnoverCommissionValueControllerIT {
                 new TypeReference<>() {});
 
         assertNotNull(turnoverCommissionValueFromResponse.getId());
-        assertEquals(turnoverCommissionValueFromResponse.getCommissionSystem(),
-                CommissionSystem.TURNOVER);
         assertEquals(turnoverCommissionValueFromResponse.getAccount().getId(),
                 validTurnoverCommissionValueDTO.getAccountID());
         assertEquals(turnoverCommissionValueFromResponse.getAssetTypeName(),
@@ -187,8 +183,6 @@ public class TurnoverCommissionValueControllerIT {
                 new TypeReference<>() {});
 
         assertNotNull(turnoverCommissionValueFromResponse.getId());
-        assertEquals(turnoverCommissionValueFromResponse.getCommissionSystem(),
-                CommissionSystem.TURNOVER);
         assertEquals(turnoverCommissionValueFromResponse.getAccount().getId(),
                 accountRepository.findByOrganisationWhereAccountOpened(
                         testUtils.getAccountDTO().getOrganisationWhereAccountOpened()).getId());

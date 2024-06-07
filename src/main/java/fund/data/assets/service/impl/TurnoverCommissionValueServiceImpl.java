@@ -8,7 +8,6 @@ import fund.data.assets.repository.AccountRepository;
 import fund.data.assets.repository.TurnoverCommissionValueRepository;
 import fund.data.assets.service.TurnoverCommissionValueService;
 import fund.data.assets.utils.InputPercentValueStringsFormatter;
-import fund.data.assets.utils.enums.CommissionSystem;
 
 import lombok.RequiredArgsConstructor;
 
@@ -50,7 +49,6 @@ public class TurnoverCommissionValueServiceImpl implements TurnoverCommissionVal
         Account account = accountRepository.findById(turnoverCommissionValueDTO.getAccountID()).orElseThrow();
 
         atomicTurnoverCommissionValue.get().setAccount(account);
-        atomicTurnoverCommissionValue.get().setCommissionSystem(CommissionSystem.TURNOVER);
         atomicTurnoverCommissionValue.get().setAssetTypeName(turnoverCommissionValueDTO.getAssetTypeName());
         atomicTurnoverCommissionValue.get().setCommissionPercentValue(InputPercentValueStringsFormatter
                 .getCheckedAndFormatted(turnoverCommissionValueDTO.getCommissionPercentValue()));
