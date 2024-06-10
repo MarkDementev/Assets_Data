@@ -1,5 +1,7 @@
 package fund.data.assets.utils.converter;
 
+import fund.data.assets.model.owner.AssetsOwner;
+import fund.data.assets.model.owner.RussianAssetsOwner;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
@@ -10,8 +12,8 @@ import org.springframework.stereotype.Component;
 /**
  * Конвертер строк для ряда полей в классах AssetsOwner и RussianAssetsOwner.
  * Позволяет зашифровать важную информацию с помощью jasypt.
- * AssetsOwner - {@link fund.data.assets.model.asset.owner.AssetsOwner}.
- * RussianAssetsOwner - {@link fund.data.assets.model.asset.owner.RussianAssetsOwner}.
+ * AssetsOwner - {@link AssetsOwner}.
+ * RussianAssetsOwner - {@link RussianAssetsOwner}.
  * @since 0.0.1-alpha
  * @author MarkDementev a.k.a JavaMarkDem
  */

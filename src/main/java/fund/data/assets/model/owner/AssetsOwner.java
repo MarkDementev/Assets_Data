@@ -1,4 +1,4 @@
-package fund.data.assets.model.asset.owner;
+package fund.data.assets.model.owner;
 
 import fund.data.assets.model.asset.relationship.AssetRelationship;
 import fund.data.assets.utils.converter.StringCryptoConverter;

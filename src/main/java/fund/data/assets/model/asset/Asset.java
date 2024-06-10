@@ -2,7 +2,7 @@ package fund.data.assets.model.asset;
 
 import fund.data.assets.model.asset.relationship.AssetRelationship;
 import fund.data.assets.model.asset.relationship.FinancialAssetRelationship;
-import fund.data.assets.model.asset.owner.AssetsOwner;
+import fund.data.assets.model.owner.AssetsOwner;
 import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.utils.enums.AssetCurrency;
 import fund.data.assets.utils.enums.TaxSystem;

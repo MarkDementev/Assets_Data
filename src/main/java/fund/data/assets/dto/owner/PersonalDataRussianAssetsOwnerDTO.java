@@ -1,5 +1,6 @@
 package fund.data.assets.dto.owner;
 
+import fund.data.assets.model.owner.RussianAssetsOwner;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -13,7 +14,7 @@ import org.openapitools.jackson.nullable.JsonNullable;
 /**
  * DTO для обслуживания обновления личных данных о владельце активов с гражданством РФ.
  * Поддерживает частичное обновление данных сущности.
- * Обслуживаемая сущность - {@link fund.data.assets.model.asset.owner.RussianAssetsOwner}.
+ * Обслуживаемая сущность - {@link RussianAssetsOwner}.
  * Сервис сущности - {@link fund.data.assets.service.impl.RussianAssetsOwnerServiceImpl}.
  * @version 0.0.1-alpha
  * @author MarkDementev a.k.a JavaMarkDem

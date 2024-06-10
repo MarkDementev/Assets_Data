@@ -3,7 +3,7 @@ package fund.data.assets.controller;
 import fund.data.assets.dto.owner.ContactDataRussianAssetsOwnerDTO;
 import fund.data.assets.dto.owner.PersonalDataRussianAssetsOwnerDTO;
 import fund.data.assets.dto.owner.NewRussianAssetsOwnerDTO;
-import fund.data.assets.model.asset.owner.RussianAssetsOwner;
+import fund.data.assets.model.owner.RussianAssetsOwner;
 import fund.data.assets.service.RussianAssetsOwnerService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,7 +32,7 @@ import static fund.data.assets.controller.RussianAssetsOwnerController.RUSSIAN_O
 
 /**
  * Контроллер для работы с владельцами активов с гражданством РФ.
- * Обслуживаемая сущность - {@link fund.data.assets.model.asset.owner.RussianAssetsOwner}.
+ * Обслуживаемая сущность - {@link RussianAssetsOwner}.
  * @version 0.0.1-alpha
  * @author MarkDementev a.k.a JavaMarkDem
  */

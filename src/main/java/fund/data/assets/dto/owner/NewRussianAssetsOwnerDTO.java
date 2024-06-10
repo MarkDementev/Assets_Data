@@ -1,5 +1,6 @@
 package fund.data.assets.dto.owner;
 
+import fund.data.assets.model.owner.RussianAssetsOwner;
 import fund.data.assets.utils.enums.RussianSexEnum;
 import fund.data.assets.validation.annotation.UniqueEncryptedEmail;
 import fund.data.assets.validation.annotation.UniqueEncryptedMobilePhone;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * DTO для обслуживания создания владельца активов с гражданством РФ.
- * Обслуживаемая сущность - {@link fund.data.assets.model.asset.owner.RussianAssetsOwner}.
+ * Обслуживаемая сущность - {@link RussianAssetsOwner}.
  * Сервис сущности - {@link fund.data.assets.service.impl.RussianAssetsOwnerServiceImpl}.
  * @version 0.0.1-alpha
  * @author MarkDementev a.k.a JavaMarkDem

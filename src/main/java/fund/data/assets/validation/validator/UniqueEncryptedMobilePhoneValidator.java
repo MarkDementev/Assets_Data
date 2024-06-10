@@ -1,6 +1,6 @@
 package fund.data.assets.validation.validator;
 
-import fund.data.assets.model.asset.owner.RussianAssetsOwner;
+import fund.data.assets.model.owner.RussianAssetsOwner;
 import fund.data.assets.repository.RussianAssetsOwnerRepository;
 import fund.data.assets.service.RussianAssetsOwnerService;
 import fund.data.assets.validation.annotation.UniqueEncryptedMobilePhone;
