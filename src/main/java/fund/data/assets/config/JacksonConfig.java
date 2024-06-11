@@ -1,6 +1,7 @@
 package fund.data.assets.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import org.openapitools.jackson.nullable.JsonNullableModule;
 
@@ -15,6 +16,7 @@ public class JacksonConfig {
         var builder = new Jackson2ObjectMapperBuilder();
 
         builder.serializationInclusion(JsonInclude.Include.NON_NULL).modulesToInstall(new JsonNullableModule());
+        builder.featuresToDisable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 
         return builder;
     }

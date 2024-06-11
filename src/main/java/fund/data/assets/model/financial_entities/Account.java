@@ -1,5 +1,7 @@
 package fund.data.assets.model.financial_entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Entity;
@@ -29,6 +31,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
  */
 @Entity
 @Table(name = "accounts")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

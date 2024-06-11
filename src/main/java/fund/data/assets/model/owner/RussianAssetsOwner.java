@@ -1,5 +1,7 @@
 package fund.data.assets.model.owner;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import fund.data.assets.utils.converter.StringCryptoConverter;
 import fund.data.assets.utils.enums.RussianSexEnum;
 
@@ -27,6 +29,7 @@ import java.time.LocalDate;
  */
 @Primary
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @NoArgsConstructor
 @Getter
 @Setter

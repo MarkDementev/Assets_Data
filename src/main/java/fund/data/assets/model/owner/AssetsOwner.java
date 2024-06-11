@@ -1,5 +1,7 @@
 package fund.data.assets.model.owner;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import fund.data.assets.model.asset.relationship.AssetRelationship;
 import fund.data.assets.utils.converter.StringCryptoConverter;
 
@@ -37,6 +39,7 @@ import java.util.List;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@JsonDeserialize(as = RussianAssetsOwner.class)
 @NoArgsConstructor
 @Getter
 @Setter

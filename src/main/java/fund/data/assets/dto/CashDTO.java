@@ -1,12 +1,7 @@
 package fund.data.assets.dto;
 
-import fund.data.assets.model.financial_entities.Account;
-import fund.data.assets.model.owner.AssetsOwner;
 import fund.data.assets.utils.enums.AssetCurrency;
 
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 
@@ -29,18 +24,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CashDTO {
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id", nullable = false)
-    private Account account;
+    private Long accountID;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     private AssetCurrency assetCurrency;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assets_owner_id", nullable = false)
-    private AssetsOwner assetsOwner;
+    private Long assetsOwnerID;
 
     @NotNull
     @PositiveOrZero

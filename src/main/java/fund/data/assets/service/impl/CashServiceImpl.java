@@ -3,8 +3,10 @@ package fund.data.assets.service.impl;
 import fund.data.assets.dto.CashDTO;
 import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.model.financial_entities.Cash;
-import fund.data.assets.model.owner.AssetsOwner;
+import fund.data.assets.model.owner.RussianAssetsOwner;
+import fund.data.assets.repository.AccountRepository;
 import fund.data.assets.repository.CashRepository;
+import fund.data.assets.repository.RussianAssetsOwnerRepository;
 import fund.data.assets.service.CashService;
 import fund.data.assets.utils.enums.AssetCurrency;
 
@@ -26,7 +28,9 @@ import java.util.concurrent.atomic.AtomicReference;
 @Service
 @RequiredArgsConstructor
 public class CashServiceImpl implements CashService {
-    CashRepository cashRepository;
+    final CashRepository cashRepository;
+    final AccountRepository accountRepository;
+    final RussianAssetsOwnerRepository russianAssetsOwnerRepository;
 
     @Override
     public Cash getCash(Long id) {
@@ -41,9 +45,10 @@ public class CashServiceImpl implements CashService {
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = {Exception.class})
     public Cash depositOrWithdrawCashAmount(CashDTO cashDTO) {
-        Account accountFromDTO = cashDTO.getAccount();
+        Account accountFromDTO = accountRepository.findById(cashDTO.getAccountID()).orElseThrow();
         AssetCurrency assetCurrencyFromDTO = cashDTO.getAssetCurrency();
-        AssetsOwner assetsOwnerFromDTO = cashDTO.getAssetsOwner();
+        RussianAssetsOwner assetsOwnerFromDTO = russianAssetsOwnerRepository.findById(cashDTO.getAssetsOwnerID())
+                .orElseThrow();
         Float amountFromDTO = cashDTO.getAmount();
         Cash cashToWorkWith = cashRepository.findByAccountAndAssetCurrencyAndAssetsOwner(accountFromDTO,
                 assetCurrencyFromDTO, assetsOwnerFromDTO);
