@@ -11,7 +11,10 @@ import fund.data.assets.repository.AccountCashRepository;
 import fund.data.assets.repository.RussianAssetsOwnerRepository;
 import fund.data.assets.utils.enums.AssetCurrency;
 
+import jakarta.servlet.ServletException;
+
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +30,18 @@ import static fund.data.assets.config.SpringConfigForTests.TEST_PROFILE;
 import static fund.data.assets.controller.AccountController.ACCOUNT_CONTROLLER_PATH;
 import static fund.data.assets.controller.AccountController.ID_PATH;
 import static fund.data.assets.controller.AccountCashController.ACCOUNT_CASH_CONTROLLER_PATH;
-
 import static fund.data.assets.controller.RussianAssetsOwnerController.RUSSIAN_OWNERS_CONTROLLER_PATH;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = SpringConfigForTests.class, webEnvironment = RANDOM_PORT)
@@ -192,34 +198,22 @@ public class AccountCashControllerIT {
         assertNotNull(accountCashFromResponse.getUpdatedAt());
     }
 
-//    @Test
-//    public void notValidUpdateAccountIT() throws Exception {
-//        testUtils.createDefaultAccount();
-//
-//        Long createdAccountId = accountRepository.findByOrganisationWhereAccountOpened(
-//                testUtils.getAccountDTO().getOrganisationWhereAccountOpened()).getId();
-//        testUtils.perform(put("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH,
-//                createdAccountId)
-//                .content(asJson(testUtils.getNotValidAccountDTO()))
-//                .contentType(APPLICATION_JSON));
-//
-//        assertEquals(accountRepository.findAll().get(0).getOrganisationWhereAccountOpened(),
-//                testUtils.getAccountDTO().getOrganisationWhereAccountOpened());
-//        assertEquals(accountRepository.findAll().get(0).getAccountNumber(),
-//                testUtils.getAccountDTO().getAccountNumber());
-//        assertEquals(accountRepository.findAll().get(0).getAccountOpeningDate(),
-//                testUtils.getAccountDTO().getAccountOpeningDate());
-//
-//        testUtils.createDefaultSecondAccount();
-//
-//        Long createdSecondAccountId = accountRepository.findByOrganisationWhereAccountOpened(
-//                testUtils.getSecondAccountDTO().getOrganisationWhereAccountOpened()).getId();
-//        Assertions.assertThrows(ServletException.class,
-//                () -> testUtils.perform(put("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH,
-//                        createdSecondAccountId)
-//                        .content(asJson(testUtils.getAccountDTO()))
-//                        .contentType(APPLICATION_JSON)));
-//    }
+    @Test
+    public void notValidWithdrawCashAmountIT() throws Exception {
+        testUtils.createDefaultAccountCash();
+
+        AccountCashDTO accountCashDTOWithNegativeAmount = new AccountCashDTO(
+                accountRepository.findAll().get(0).getId(),
+                AssetCurrency.RUSRUB,
+                russianAssetsOwnerRepository.findAll().get(0).getId(),
+                -10.00F
+        );
+        Assertions.assertThrows(ServletException.class,
+                () -> testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
+                        .content(asJson(accountCashDTOWithNegativeAmount))
+                        .contentType(APPLICATION_JSON)));
+        assertEquals(accountCashRepository.findAll().get(0).getAmount(), 0.00F);
+    }
 
     @Test
     public void deleteCashByDeleteAccountOrOwnerIT() throws Exception {
