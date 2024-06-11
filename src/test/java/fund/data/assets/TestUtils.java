@@ -5,14 +5,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fund.data.assets.dto.AccountDTO;
-import fund.data.assets.dto.CashDTO;
+import fund.data.assets.dto.AccountCashDTO;
 import fund.data.assets.dto.TurnoverCommissionValueDTO;
 import fund.data.assets.dto.common.PercentFloatValueDTO;
 import fund.data.assets.dto.owner.NewRussianAssetsOwnerDTO;
 import fund.data.assets.dto.owner.ContactDataRussianAssetsOwnerDTO;
 import fund.data.assets.dto.owner.PersonalDataRussianAssetsOwnerDTO;
 import fund.data.assets.repository.AccountRepository;
-import fund.data.assets.repository.CashRepository;
+import fund.data.assets.repository.AccountCashRepository;
 import fund.data.assets.repository.RussianAssetsOwnerRepository;
 import fund.data.assets.repository.TurnoverCommissionValueRepository;
 import fund.data.assets.utils.enums.AssetCurrency;
@@ -28,7 +28,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import java.time.LocalDate;
 
 import static fund.data.assets.controller.AccountController.ACCOUNT_CONTROLLER_PATH;
-import static fund.data.assets.controller.CashController.CASH_CONTROLLER_PATH;
+import static fund.data.assets.controller.AccountCashController.ACCOUNT_CASH_CONTROLLER_PATH;
 import static fund.data.assets.controller.RussianAssetsOwnerController.RUSSIAN_OWNERS_CONTROLLER_PATH;
 import static fund.data.assets.controller.TurnoverCommissionValueController.TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH;
 import static fund.data.assets.utils.enums.RussianSexEnum.MAN;
@@ -53,7 +53,7 @@ public class TestUtils {
     @Autowired
     private RussianAssetsOwnerRepository russianAssetsOwnerRepository;
     @Autowired
-    private CashRepository cashRepository;
+    private AccountCashRepository accountCashRepository;
 
     private final AccountDTO accountDTO = new AccountDTO(
             "defaultBank",
@@ -140,7 +140,7 @@ public class TestUtils {
                     JsonNullable.of("999-99"));
 
     public void tearDown() {
-        cashRepository.deleteAll();
+        accountCashRepository.deleteAll();
         russianAssetsOwnerRepository.deleteAll();
         turnoverCommissionValueRepository.deleteAll();
         accountRepository.deleteAll();
@@ -226,13 +226,13 @@ public class TestUtils {
         createDefaultAccount();
         createDefaultRussianAssetsOwner();
 
-        CashDTO cashDTO = new CashDTO(
+        AccountCashDTO accountCashDTO = new AccountCashDTO(
                 accountRepository.findAll().get(0).getId(),
                 AssetCurrency.RUSRUB,
                 russianAssetsOwnerRepository.findAll().get(0).getId(),
                 0.00F
         );
-        return createCash(cashDTO);
+        return createCash(accountCashDTO);
     }
 
     public ResultActions createAccount(final AccountDTO accountDTO) throws Exception {
@@ -261,9 +261,9 @@ public class TestUtils {
         return perform(request);
     }
 
-    public ResultActions createCash(final CashDTO cashDTO) throws Exception {
-        final var request = post("/data" + CASH_CONTROLLER_PATH)
-                .content(asJson(cashDTO))
+    public ResultActions createCash(final AccountCashDTO accountCashDTO) throws Exception {
+        final var request = post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
+                .content(asJson(accountCashDTO))
                 .contentType(APPLICATION_JSON);
 
         return perform(request);

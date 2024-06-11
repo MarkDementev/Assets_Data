@@ -1,5 +1,7 @@
 package fund.data.assets.dto;
 
+import fund.data.assets.model.financial_entities.AccountCash;
+import fund.data.assets.service.impl.AccountCashServiceImpl;
 import fund.data.assets.utils.enums.AssetCurrency;
 
 import jakarta.persistence.Enumerated;
@@ -14,15 +16,15 @@ import lombok.NoArgsConstructor;
 
 /**
  * DTO для обслуживания денежных средств собственников активов на счетах.
- * Обслуживаемая сущность - {@link fund.data.assets.model.financial_entities.Cash}.
- * Сервис сущности - {@link fund.data.assets.service.impl.CashServiceImpl}.
+ * Обслуживаемая сущность - {@link AccountCash}.
+ * Сервис сущности - {@link AccountCashServiceImpl}.
  * @version 0.0.1-alpha
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CashDTO {
+public class AccountCashDTO {
     @NotNull
     private Long accountID;
 

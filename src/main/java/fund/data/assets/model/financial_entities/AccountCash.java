@@ -38,7 +38,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Cash {
+public class AccountCash {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -67,7 +67,7 @@ public class Cash {
     @UpdateTimestamp
     private Instant updatedAt;
 
-    public Cash(Account account, AssetCurrency assetCurrency, AssetsOwner assetsOwner, Float amount) {
+    public AccountCash(Account account, AssetCurrency assetCurrency, AssetsOwner assetsOwner, Float amount) {
         this.account = account;
         this.assetCurrency = assetCurrency;
         this.assetsOwner = assetsOwner;
