@@ -58,7 +58,7 @@ public class AccountCashControllerIT {
 
     @Test
     public void getCashIT() throws Exception {
-        testUtils.createDefaultCash();
+        testUtils.createDefaultAccountCash();
 
         AccountCash expectedAccountCash = accountCashRepository.findAll().get(0);
         var response = testUtils.perform(get("/data" + ACCOUNT_CASH_CONTROLLER_PATH + ID_PATH,
@@ -79,7 +79,7 @@ public class AccountCashControllerIT {
 
     @Test
     public void getAllCashIT() throws Exception {
-        testUtils.createDefaultCash();
+        testUtils.createDefaultAccountCash();
 
         var response = testUtils.perform(get("/data" + ACCOUNT_CASH_CONTROLLER_PATH))
                 .andExpect(status().isOk())
@@ -140,6 +140,7 @@ public class AccountCashControllerIT {
         testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
                 .content(asJson(accountCashDTOWithNotUniqueTableConstraints))
                 .contentType(APPLICATION_JSON));
+        accountCashDTOWithNotUniqueTableConstraints.setAmount(15.00F);
         testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
                 .content(asJson(accountCashDTOWithNotUniqueTableConstraints))
                 .contentType(APPLICATION_JSON));
@@ -204,7 +205,7 @@ public class AccountCashControllerIT {
 
     @Test
     public void deleteCashByDeleteAccountOrOwnerIT() throws Exception {
-        testUtils.createDefaultCash();
+        testUtils.createDefaultAccountCash();
         assertThat(accountCashRepository.findAll()).hasSize(1);
 
         Long createdAccountId = accountRepository.findAll().get(0).getId();
@@ -214,7 +215,7 @@ public class AccountCashControllerIT {
                 .getResponse();
         assertThat(accountCashRepository.findAll()).hasSize(0);
 
-        testUtils.createDefaultCash();
+        testUtils.createDefaultAccountCash();
         assertThat(accountCashRepository.findAll()).hasSize(1);
 
         Long createdOwnerId = russianAssetsOwnerRepository.findAll().get(0).getId();

@@ -222,7 +222,7 @@ public class TestUtils {
         return createRussianAssetsOwner(russianAssetsOwnerDTO);
     }
 
-    public ResultActions createDefaultCash() throws Exception {
+    public ResultActions createDefaultAccountCash() throws Exception {
         createDefaultAccount();
         createDefaultRussianAssetsOwner();
 
@@ -232,7 +232,7 @@ public class TestUtils {
                 russianAssetsOwnerRepository.findAll().get(0).getId(),
                 0.00F
         );
-        return createCash(accountCashDTO);
+        return createAccountCash(accountCashDTO);
     }
 
     public ResultActions createAccount(final AccountDTO accountDTO) throws Exception {
@@ -261,7 +261,7 @@ public class TestUtils {
         return perform(request);
     }
 
-    public ResultActions createCash(final AccountCashDTO accountCashDTO) throws Exception {
+    public ResultActions createAccountCash(final AccountCashDTO accountCashDTO) throws Exception {
         final var request = post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
                 .content(asJson(accountCashDTO))
                 .contentType(APPLICATION_JSON);
