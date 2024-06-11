@@ -147,33 +147,51 @@ public class AccountCashControllerIT {
         assertThat(accountCashRepository.findAll()).hasSize(1);
     }
 
-//    @Test
-//    public void updateAccountIT() throws Exception {
-//        testUtils.createDefaultAccount();
-//
-//        Long createdAccountId = accountRepository.findByOrganisationWhereAccountOpened(
-//                testUtils.getAccountDTO().getOrganisationWhereAccountOpened()).getId();
-//        var response = testUtils.perform(put("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH,
-//                        createdAccountId)
-//                        .content(asJson(testUtils.getSecondAccountDTO())).contentType(APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andReturn()
-//                .getResponse();
-//        Account accountFromResponse = fromJson(response.getContentAsString(), new TypeReference<>() {
-//        });
-//
-//        assertEquals(accountFromResponse.getId(), createdAccountId);
-//        assertEquals(accountFromResponse.getOrganisationWhereAccountOpened(),
-//                testUtils.getSecondAccountDTO().getOrganisationWhereAccountOpened());
-//        assertEquals(accountFromResponse.getAccountNumber(),
-//                testUtils.getSecondAccountDTO().getAccountNumber());
-//        assertEquals(accountFromResponse.getAccountOpeningDate(),
-//                testUtils.getSecondAccountDTO().getAccountOpeningDate());
-//        assertNotNull(accountFromResponse.getCreatedAt());
-//        assertNotNull(accountFromResponse.getUpdatedAt());
-//        assertNotEquals(accountFromResponse.getCreatedAt(), accountFromResponse.getUpdatedAt());
-//    }
-//
+    @Test
+    public void depositAndWithdrawCashAmountIT() throws Exception {
+        testUtils.createDefaultAccountCash();
+
+        AccountCashDTO accountCashDTOWithPositiveAmount = new AccountCashDTO(
+                accountRepository.findAll().get(0).getId(),
+                AssetCurrency.RUSRUB,
+                russianAssetsOwnerRepository.findAll().get(0).getId(),
+                15.00F
+        );
+        testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
+                .content(asJson(accountCashDTOWithPositiveAmount))
+                .contentType(APPLICATION_JSON));
+        testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
+                .content(asJson(accountCashDTOWithPositiveAmount))
+                .contentType(APPLICATION_JSON));
+        assertEquals(accountCashRepository.findAll().get(0).getAmount(), 30.00F);
+
+        AccountCashDTO accountCashDTOWithNegativeAmount = new AccountCashDTO(
+                accountRepository.findAll().get(0).getId(),
+                AssetCurrency.RUSRUB,
+                russianAssetsOwnerRepository.findAll().get(0).getId(),
+                -10.00F
+        );
+        testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
+                .content(asJson(accountCashDTOWithNegativeAmount))
+                .contentType(APPLICATION_JSON));
+        var response = testUtils.perform(
+                        post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
+                                .content(asJson(accountCashDTOWithNegativeAmount))
+                                .contentType(APPLICATION_JSON)
+                ).andExpect(status().isOk())
+                .andReturn()
+                .getResponse();
+        AccountCash accountCashFromResponse = fromJson(response.getContentAsString(), new TypeReference<>() {});
+        assertEquals(accountCashRepository.findAll().get(0).getAmount(), 10.00F);
+        assertNotNull(accountCashFromResponse.getId());
+        assertEquals(accountCashDTOWithNegativeAmount.getAccountID(), accountCashFromResponse.getAccount().getId());
+        assertEquals(accountCashDTOWithNegativeAmount.getAssetCurrency(), accountCashFromResponse.getAssetCurrency());
+        assertEquals(accountCashDTOWithNegativeAmount.getAssetsOwnerID(),
+                accountCashFromResponse.getAssetsOwner().getId());
+        assertNotNull(accountCashFromResponse.getCreatedAt());
+        assertNotNull(accountCashFromResponse.getUpdatedAt());
+    }
+
 //    @Test
 //    public void notValidUpdateAccountIT() throws Exception {
 //        testUtils.createDefaultAccount();

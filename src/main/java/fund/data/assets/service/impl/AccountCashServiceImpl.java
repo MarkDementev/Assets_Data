@@ -59,7 +59,7 @@ public class AccountCashServiceImpl implements AccountCashService {
                     assetsOwnerFromDTO, amountFromDTO));
         } else {
             accountCashAtomicReference = new AtomicReference<>(accountCashToWorkWith);
-            accountCashAtomicReference.get().setAmount(amountFromDTO);
+            accountCashAtomicReference.get().setAmount(accountCashToWorkWith.getAmount() + amountFromDTO);
         }
         return accountCashRepository.save(accountCashAtomicReference.get());
     }

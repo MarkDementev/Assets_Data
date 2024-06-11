@@ -8,7 +8,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,6 +35,5 @@ public class AccountCashDTO {
     private Long assetsOwnerID;
 
     @NotNull
-    @PositiveOrZero
     private Float amount;
 }
