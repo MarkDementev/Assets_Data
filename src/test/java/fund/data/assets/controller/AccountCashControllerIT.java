@@ -121,7 +121,7 @@ public class AccountCashControllerIT {
         assertEquals(accountCashDTO.getAccountID(), accountCashFromResponse.getAccount().getId());
         assertEquals(accountCashDTO.getAssetCurrency(), accountCashFromResponse.getAssetCurrency());
         assertEquals(accountCashDTO.getAssetsOwnerID(), accountCashFromResponse.getAssetsOwner().getId());
-        assertEquals(accountCashDTO.getAmount(), accountCashFromResponse.getAmount());
+        assertEquals(accountCashDTO.getAmountChangeValue(), accountCashFromResponse.getAmount());
         assertNotNull(accountCashFromResponse.getCreatedAt());
         assertNotNull(accountCashFromResponse.getUpdatedAt());
     }
@@ -146,7 +146,7 @@ public class AccountCashControllerIT {
         testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
                 .content(asJson(accountCashDTOWithNotUniqueTableConstraints))
                 .contentType(APPLICATION_JSON));
-        accountCashDTOWithNotUniqueTableConstraints.setAmount(15.00F);
+        accountCashDTOWithNotUniqueTableConstraints.setAmountChangeValue(15.00F);
         testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
                 .content(asJson(accountCashDTOWithNotUniqueTableConstraints))
                 .contentType(APPLICATION_JSON));

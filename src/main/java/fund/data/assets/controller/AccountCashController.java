@@ -61,7 +61,8 @@ public class AccountCashController {
     @Operation(summary = "Change owner account cash amount")
     @ApiResponse(responseCode = "200", description = "Cash amount changed")
     @PostMapping
-    public ResponseEntity<AccountCash> depositOrWithdrawCashAmount(@RequestBody @Valid AccountCashDTO accountCashDTO) {
-        return ResponseEntity.ok().body(accountCashService.depositOrWithdrawCashAmount(accountCashDTO));
+    public ResponseEntity<AccountCash> createAccountCashOrChangeAmount(@RequestBody @Valid
+                                                                           AccountCashDTO accountCashDTO) {
+        return ResponseEntity.ok().body(accountCashService.createAccountCashOrChangeAmount(accountCashDTO));
     }
 }

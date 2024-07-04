@@ -35,5 +35,5 @@ public class AccountCashDTO {
     private Long assetsOwnerID;
 
     @NotNull
-    private Float amount;
+    private Float amountChangeValue;
 }

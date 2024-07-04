@@ -44,13 +44,13 @@ public class AccountCashServiceImpl implements AccountCashService {
 
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = {Exception.class})
-    public AccountCash depositOrWithdrawCashAmount(AccountCashDTO accountCashDTO) {
+    public AccountCash createAccountCashOrChangeAmount(AccountCashDTO accountCashDTO) {
         AtomicReference<AccountCash> accountCashAtomicReference;
         Account accountFromDTO = accountRepository.findById(accountCashDTO.getAccountID()).orElseThrow();
         AssetCurrency assetCurrencyFromDTO = accountCashDTO.getAssetCurrency();
         RussianAssetsOwner assetsOwnerFromDTO = russianAssetsOwnerRepository.findById(accountCashDTO.getAssetsOwnerID())
                 .orElseThrow();
-        Float amountFromDTO = accountCashDTO.getAmount();
+        Float amountFromDTO = accountCashDTO.getAmountChangeValue();
         AccountCash accountCashToWorkWith = accountCashRepository.findByAccountAndAssetCurrencyAndAssetsOwner(
                 accountFromDTO, assetCurrencyFromDTO, assetsOwnerFromDTO);
 
