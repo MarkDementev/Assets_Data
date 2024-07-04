@@ -132,12 +132,12 @@ public class TurnoverCommissionValueControllerIT {
                 new TypeReference<>() {});
 
         assertNotNull(turnoverCommissionValueFromResponse.getId());
-        assertEquals(turnoverCommissionValueFromResponse.getAccount().getId(),
-                validTurnoverCommissionValueDTO.getAccountID());
-        assertEquals(turnoverCommissionValueFromResponse.getAssetTypeName(),
-                validTurnoverCommissionValueDTO.getAssetTypeName());
-        assertEquals(turnoverCommissionValueFromResponse.getCommissionPercentValue(),
-                TEST_COMMISSION_PERCENT_VALUE_FLOAT);
+        assertEquals(validTurnoverCommissionValueDTO.getAccountID(),
+                turnoverCommissionValueFromResponse.getAccount().getId());
+        assertEquals(validTurnoverCommissionValueDTO.getAssetTypeName(),
+                turnoverCommissionValueFromResponse.getAssetTypeName());
+        assertEquals(TEST_COMMISSION_PERCENT_VALUE_FLOAT,
+                turnoverCommissionValueFromResponse.getCommissionPercentValue());
         assertNotNull(turnoverCommissionValueFromResponse.getCreatedAt());
         assertNotNull(turnoverCommissionValueFromResponse.getUpdatedAt());
     }
@@ -182,13 +182,13 @@ public class TurnoverCommissionValueControllerIT {
                 new TypeReference<>() {});
 
         assertNotNull(turnoverCommissionValueFromResponse.getId());
-        assertEquals(turnoverCommissionValueFromResponse.getAccount().getId(),
-                accountRepository.findByOrganisationWhereAccountOpened(
-                        testUtils.getAccountDTO().getOrganisationWhereAccountOpened()).getId());
-        assertEquals(turnoverCommissionValueFromResponse.getAssetTypeName(),
-                testUtils.getTurnoverCommissionValueDTO().getAssetTypeName());
-        assertEquals(turnoverCommissionValueFromResponse.getCommissionPercentValue(),
-                TEST_FORMATTED_PERCENT_VALUE_FLOAT);
+        assertEquals(accountRepository.findByOrganisationWhereAccountOpened(
+                        testUtils.getAccountDTO().getOrganisationWhereAccountOpened()).getId(),
+                turnoverCommissionValueFromResponse.getAccount().getId());
+        assertEquals(testUtils.getTurnoverCommissionValueDTO().getAssetTypeName(),
+                turnoverCommissionValueFromResponse.getAssetTypeName());
+        assertEquals(TEST_FORMATTED_PERCENT_VALUE_FLOAT,
+                turnoverCommissionValueFromResponse.getCommissionPercentValue());
         assertNotNull(turnoverCommissionValueFromResponse.getCreatedAt());
         assertNotNull(turnoverCommissionValueFromResponse.getUpdatedAt());
         assertNotEquals(turnoverCommissionValueFromResponse.getCreatedAt(),
@@ -212,8 +212,8 @@ public class TurnoverCommissionValueControllerIT {
                 .isInstanceOf(ServletException.class)
                 .hasMessageContaining(NotValidPercentValueInputFormatException.MESSAGE);
 
-        assertEquals(turnoverCommissionValueRepository.findAll().get(0).getCommissionPercentValue(),
-                TEST_COMMISSION_PERCENT_VALUE_FLOAT);
+        assertEquals(TEST_COMMISSION_PERCENT_VALUE_FLOAT,
+                turnoverCommissionValueRepository.findAll().get(0).getCommissionPercentValue());
     }
 
     @Test

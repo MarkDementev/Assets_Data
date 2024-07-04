@@ -40,8 +40,8 @@ public class AutoSelectorTest {
     public void testSelectAssetOperationsCostSystem(AssetCurrency assetCurrency, String assetTypeName,
                                                     String costSystemToChoose, Enum<? extends Enum<?>> correctReturn) {
         Assertions.assertEquals(
-                AutoSelector.selectAssetOperationsCostSystem(assetCurrency, assetTypeName, costSystemToChoose),
-                correctReturn
+                correctReturn,
+                AutoSelector.selectAssetOperationsCostSystem(assetCurrency, assetTypeName, costSystemToChoose)
         );
     }
 

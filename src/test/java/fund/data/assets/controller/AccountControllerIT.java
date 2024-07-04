@@ -110,12 +110,12 @@ class AccountControllerIT {
 		});
 
 		assertNotNull(accountFromResponse.getId());
-		assertEquals(accountFromResponse.getOrganisationWhereAccountOpened(),
-				testUtils.getAccountDTO().getOrganisationWhereAccountOpened());
-		assertEquals(accountFromResponse.getAccountNumber(),
-				testUtils.getAccountDTO().getAccountNumber());
-		assertEquals(accountFromResponse.getAccountOpeningDate(),
-				testUtils.getAccountDTO().getAccountOpeningDate());
+		assertEquals(testUtils.getAccountDTO().getOrganisationWhereAccountOpened(),
+				accountFromResponse.getOrganisationWhereAccountOpened());
+		assertEquals(testUtils.getAccountDTO().getAccountNumber(),
+				accountFromResponse.getAccountNumber());
+		assertEquals(testUtils.getAccountDTO().getAccountOpeningDate(),
+				accountFromResponse.getAccountOpeningDate());
 		assertNotNull(accountFromResponse.getCreatedAt());
 		assertNotNull(accountFromResponse.getUpdatedAt());
 	}
@@ -152,13 +152,13 @@ class AccountControllerIT {
 		Account accountFromResponse = fromJson(response.getContentAsString(), new TypeReference<>() {
 		});
 
-		assertEquals(accountFromResponse.getId(), createdAccountId);
-		assertEquals(accountFromResponse.getOrganisationWhereAccountOpened(),
-				testUtils.getSecondAccountDTO().getOrganisationWhereAccountOpened());
-		assertEquals(accountFromResponse.getAccountNumber(),
-				testUtils.getSecondAccountDTO().getAccountNumber());
-		assertEquals(accountFromResponse.getAccountOpeningDate(),
-				testUtils.getSecondAccountDTO().getAccountOpeningDate());
+		assertEquals(createdAccountId, accountFromResponse.getId());
+		assertEquals(testUtils.getSecondAccountDTO().getOrganisationWhereAccountOpened(),
+				accountFromResponse.getOrganisationWhereAccountOpened());
+		assertEquals(testUtils.getSecondAccountDTO().getAccountNumber(),
+				accountFromResponse.getAccountNumber());
+		assertEquals(testUtils.getSecondAccountDTO().getAccountOpeningDate(),
+				accountFromResponse.getAccountOpeningDate());
 		assertNotNull(accountFromResponse.getCreatedAt());
 		assertNotNull(accountFromResponse.getUpdatedAt());
 		assertNotEquals(accountFromResponse.getCreatedAt(), accountFromResponse.getUpdatedAt());
@@ -175,12 +175,12 @@ class AccountControllerIT {
 				.content(asJson(testUtils.getNotValidAccountDTO()))
 				.contentType(APPLICATION_JSON));
 
-		assertEquals(accountRepository.findAll().get(0).getOrganisationWhereAccountOpened(),
-				testUtils.getAccountDTO().getOrganisationWhereAccountOpened());
-		assertEquals(accountRepository.findAll().get(0).getAccountNumber(),
-				testUtils.getAccountDTO().getAccountNumber());
-		assertEquals(accountRepository.findAll().get(0).getAccountOpeningDate(),
-				testUtils.getAccountDTO().getAccountOpeningDate());
+		assertEquals(testUtils.getAccountDTO().getOrganisationWhereAccountOpened(),
+				accountRepository.findAll().get(0).getOrganisationWhereAccountOpened());
+		assertEquals(testUtils.getAccountDTO().getAccountNumber(),
+				accountRepository.findAll().get(0).getAccountNumber());
+		assertEquals(testUtils.getAccountDTO().getAccountOpeningDate(),
+				accountRepository.findAll().get(0).getAccountOpeningDate());
 
 		testUtils.createDefaultSecondAccount();
 

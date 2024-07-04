@@ -87,12 +87,13 @@ public class CommissionCalculatorTest {
         turnoverCommissionValueService.updateTurnoverCommissionValue(turnoverCommissionValueIDToUpdate,
                 percentFloatValueDTO);
 
-        Assertions.assertEquals(commissionCalculator.calculateTotalCommissionForPurchase(
+        Assertions.assertEquals(inputCorrectResult,
+                commissionCalculator.calculateTotalCommissionForPurchase(
                 CommissionSystem.TURNOVER,
                 accountService.getAccounts().get(0),
                 TEST_ASSET_TYPE_NAME,
                 TEST_ASSET_COUNT,
-                TEST_DIRTY_BOND_PRICE_IN_CURRENCY
-                ), inputCorrectResult);
+                TEST_DIRTY_BOND_PRICE_IN_CURRENCY)
+        );
     }
 }
