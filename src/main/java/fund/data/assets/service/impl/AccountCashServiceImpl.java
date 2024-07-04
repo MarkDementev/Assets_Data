@@ -1,6 +1,8 @@
 package fund.data.assets.service.impl;
 
 import fund.data.assets.dto.AccountCashDTO;
+import fund.data.assets.exception.AmountFromDTOMoreThanAccountCashAmountException;
+import fund.data.assets.exception.NegativeValueNotExistAccountCashException;
 import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.model.financial_entities.AccountCash;
 import fund.data.assets.model.owner.RussianAssetsOwner;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -45,21 +48,29 @@ public class AccountCashServiceImpl implements AccountCashService {
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = {Exception.class})
     public AccountCash createAccountCashOrChangeAmount(AccountCashDTO accountCashDTO) {
-        AtomicReference<AccountCash> accountCashAtomicReference;
         Account accountFromDTO = accountRepository.findById(accountCashDTO.getAccountID()).orElseThrow();
         AssetCurrency assetCurrencyFromDTO = accountCashDTO.getAssetCurrency();
         RussianAssetsOwner assetsOwnerFromDTO = russianAssetsOwnerRepository.findById(accountCashDTO.getAssetsOwnerID())
                 .orElseThrow();
-        Float amountFromDTO = accountCashDTO.getAmountChangeValue();
-        AccountCash accountCashToWorkWith = accountCashRepository.findByAccountAndAssetCurrencyAndAssetsOwner(
-                accountFromDTO, assetCurrencyFromDTO, assetsOwnerFromDTO);
+        float amountFromDTO = accountCashDTO.getAmountChangeValue();
+        Optional<AccountCash> accountCashToWorkWith = Optional.ofNullable(
+                accountCashRepository.findByAccountAndAssetCurrencyAndAssetsOwner(accountFromDTO, assetCurrencyFromDTO,
+                        assetsOwnerFromDTO));
 
-        if (accountCashToWorkWith == null) {
-            accountCashAtomicReference = new AtomicReference<>(new AccountCash(accountFromDTO, assetCurrencyFromDTO,
-                    assetsOwnerFromDTO, amountFromDTO));
+        if (accountCashToWorkWith.isEmpty() && amountFromDTO >= 0) {
+            return accountCashRepository.save(new AtomicReference<>(new AccountCash(accountFromDTO,
+                    assetCurrencyFromDTO, assetsOwnerFromDTO, amountFromDTO)).get());
+        } else if (accountCashToWorkWith.isEmpty() && amountFromDTO < 0) {
+            throw new NegativeValueNotExistAccountCashException();
+        }
+        AtomicReference<AccountCash> accountCashAtomicReference = new AtomicReference<>(accountCashToWorkWith
+                .orElseThrow());
+        float accountCashAmount = accountCashToWorkWith.orElseThrow().getAmount();
+
+        if (amountFromDTO < 0 && Math.abs(amountFromDTO) >= accountCashAmount) {
+            throw new AmountFromDTOMoreThanAccountCashAmountException(amountFromDTO, accountCashAmount);
         } else {
-            accountCashAtomicReference = new AtomicReference<>(accountCashToWorkWith);
-            accountCashAtomicReference.get().setAmount(accountCashToWorkWith.getAmount() + amountFromDTO);
+            accountCashAtomicReference.get().setAmount(accountCashAmount + amountFromDTO);
         }
         return accountCashRepository.save(accountCashAtomicReference.get());
     }
