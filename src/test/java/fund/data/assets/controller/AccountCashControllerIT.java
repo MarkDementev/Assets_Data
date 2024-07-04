@@ -131,69 +131,74 @@ public class AccountCashControllerIT {
         testUtils.createDefaultAccount();
         testUtils.createDefaultRussianAssetsOwner();
 
-        AccountCashDTO notValidAccountCashDTO = new AccountCashDTO();
         testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
-                .content(asJson(notValidAccountCashDTO))
+                .content(asJson(new AccountCashDTO()))
                 .contentType(APPLICATION_JSON));
         assertThat(accountCashRepository.findAll()).hasSize(0);
 
-        AccountCashDTO accountCashDTOWithNotUniqueTableConstraints = new AccountCashDTO(
+        float amountChangeValue = 10.00F;
+
+        AccountCashDTO accountCashDTO = new AccountCashDTO(
                 accountRepository.findAll().get(0).getId(),
                 AssetCurrency.RUSRUB,
                 russianAssetsOwnerRepository.findAll().get(0).getId(),
-                10.00F
+                -amountChangeValue
         );
+        Assertions.assertThrows(ServletException.class,
+                () -> testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
+                        .content(asJson(accountCashDTO)).contentType(APPLICATION_JSON)));
+        assertThat(accountCashRepository.findAll()).hasSize(0);
+
+        accountCashDTO.setAmountChangeValue(amountChangeValue);
         testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
-                .content(asJson(accountCashDTOWithNotUniqueTableConstraints))
+                .content(asJson(accountCashDTO))
                 .contentType(APPLICATION_JSON));
-        accountCashDTOWithNotUniqueTableConstraints.setAmountChangeValue(15.00F);
+        accountCashDTO.setAmountChangeValue(amountChangeValue * 2);
         testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
-                .content(asJson(accountCashDTOWithNotUniqueTableConstraints))
+                .content(asJson(accountCashDTO))
                 .contentType(APPLICATION_JSON));
         assertThat(accountCashRepository.findAll()).hasSize(1);
+        assertEquals(amountChangeValue * 3, accountCashRepository.findAll().get(0).getAmount());
     }
 
     @Test
     public void depositAndWithdrawCashAmountIT() throws Exception {
         testUtils.createDefaultAccountCash();
 
-        AccountCashDTO accountCashDTOWithPositiveAmount = new AccountCashDTO(
+        float amountChangeValue = 15.00F;
+        AccountCashDTO accountCashDTO = new AccountCashDTO(
                 accountRepository.findAll().get(0).getId(),
                 AssetCurrency.RUSRUB,
                 russianAssetsOwnerRepository.findAll().get(0).getId(),
-                15.00F
+                amountChangeValue
         );
         testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
-                .content(asJson(accountCashDTOWithPositiveAmount))
+                .content(asJson(accountCashDTO))
                 .contentType(APPLICATION_JSON));
         testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
-                .content(asJson(accountCashDTOWithPositiveAmount))
+                .content(asJson(accountCashDTO))
                 .contentType(APPLICATION_JSON));
-        assertEquals(accountCashRepository.findAll().get(0).getAmount(), 30.00F);
+        assertEquals(amountChangeValue * 2, accountCashRepository.findAll().get(0).getAmount());
 
-        AccountCashDTO accountCashDTOWithNegativeAmount = new AccountCashDTO(
-                accountRepository.findAll().get(0).getId(),
-                AssetCurrency.RUSRUB,
-                russianAssetsOwnerRepository.findAll().get(0).getId(),
-                -10.00F
-        );
+        amountChangeValue = -10.00F;
+        accountCashDTO.setAmountChangeValue(amountChangeValue);
         testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
-                .content(asJson(accountCashDTOWithNegativeAmount))
+                .content(asJson(accountCashDTO))
                 .contentType(APPLICATION_JSON));
         var response = testUtils.perform(
-                        post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
-                                .content(asJson(accountCashDTOWithNegativeAmount))
-                                .contentType(APPLICATION_JSON)
+                post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
+                        .content(asJson(accountCashDTO))
+                        .contentType(APPLICATION_JSON)
                 ).andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
         AccountCash accountCashFromResponse = fromJson(response.getContentAsString(), new TypeReference<>() {});
-        assertEquals(accountCashRepository.findAll().get(0).getAmount(), 10.00F);
+
         assertNotNull(accountCashFromResponse.getId());
-        assertEquals(accountCashDTOWithNegativeAmount.getAccountID(), accountCashFromResponse.getAccount().getId());
-        assertEquals(accountCashDTOWithNegativeAmount.getAssetCurrency(), accountCashFromResponse.getAssetCurrency());
-        assertEquals(accountCashDTOWithNegativeAmount.getAssetsOwnerID(),
-                accountCashFromResponse.getAssetsOwner().getId());
+        assertEquals(accountCashDTO.getAccountID(), accountCashFromResponse.getAccount().getId());
+        assertEquals(accountCashDTO.getAssetCurrency(), accountCashFromResponse.getAssetCurrency());
+        assertEquals(accountCashDTO.getAssetsOwnerID(), accountCashFromResponse.getAssetsOwner().getId());
+        assertEquals(-amountChangeValue, accountCashRepository.findAll().get(0).getAmount());
         assertNotNull(accountCashFromResponse.getCreatedAt());
         assertNotNull(accountCashFromResponse.getUpdatedAt());
     }
@@ -212,7 +217,7 @@ public class AccountCashControllerIT {
                 () -> testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
                         .content(asJson(accountCashDTOWithNegativeAmount))
                         .contentType(APPLICATION_JSON)));
-        assertEquals(accountCashRepository.findAll().get(0).getAmount(), 0.00F);
+        assertEquals(0.00F, accountCashRepository.findAll().get(0).getAmount());
     }
 
     @Test
