@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import fund.data.assets.TestUtils;
 import fund.data.assets.config.SpringConfigForTests;
-import fund.data.assets.dto.AccountCashDTO;
+import fund.data.assets.dto.financial_entities.AccountCashDTO;
 import fund.data.assets.model.financial_entities.AccountCash;
 import fund.data.assets.repository.AccountRepository;
 import fund.data.assets.repository.AccountCashRepository;

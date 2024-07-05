@@ -1,4 +1,4 @@
-package fund.data.assets.dto;
+package fund.data.assets.dto.financial_entities;
 
 import fund.data.assets.model.financial_entities.AccountCash;
 import fund.data.assets.service.impl.AccountCashServiceImpl;

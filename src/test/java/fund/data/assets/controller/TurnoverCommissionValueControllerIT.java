@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import fund.data.assets.TestUtils;
 import fund.data.assets.config.SpringConfigForTests;
-import fund.data.assets.dto.TurnoverCommissionValueDTO;
+import fund.data.assets.dto.financial_entities.TurnoverCommissionValueDTO;
 import fund.data.assets.dto.common.PercentFloatValueDTO;
 import fund.data.assets.exception.NotValidPercentValueInputFormatException;
 import fund.data.assets.model.financial_entities.TurnoverCommissionValue;

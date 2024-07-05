@@ -4,9 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fund.data.assets.dto.AccountDTO;
-import fund.data.assets.dto.AccountCashDTO;
-import fund.data.assets.dto.TurnoverCommissionValueDTO;
+import fund.data.assets.dto.financial_entities.AccountDTO;
+import fund.data.assets.dto.financial_entities.AccountCashDTO;
+import fund.data.assets.dto.financial_entities.TurnoverCommissionValueDTO;
 import fund.data.assets.dto.common.PercentFloatValueDTO;
 import fund.data.assets.dto.owner.NewRussianAssetsOwnerDTO;
 import fund.data.assets.dto.owner.ContactDataRussianAssetsOwnerDTO;

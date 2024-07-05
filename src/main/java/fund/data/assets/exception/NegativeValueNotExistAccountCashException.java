@@ -2,7 +2,7 @@ package fund.data.assets.exception;
 
 import fund.data.assets.model.financial_entities.AccountCash;
 
-import fund.data.assets.dto.AccountCashDTO;
+import fund.data.assets.dto.financial_entities.AccountCashDTO;
 
 /**
  * Исключение - наследник IllegalArgumentException.

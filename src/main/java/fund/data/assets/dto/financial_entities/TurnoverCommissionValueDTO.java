@@ -1,4 +1,4 @@
-package fund.data.assets.dto;
+package fund.data.assets.dto.financial_entities;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

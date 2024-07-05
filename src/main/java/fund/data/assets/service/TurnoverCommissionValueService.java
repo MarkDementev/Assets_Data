@@ -1,7 +1,7 @@
 package fund.data.assets.service;
 
 import fund.data.assets.dto.common.PercentFloatValueDTO;
-import fund.data.assets.dto.TurnoverCommissionValueDTO;
+import fund.data.assets.dto.financial_entities.TurnoverCommissionValueDTO;
 import fund.data.assets.model.financial_entities.TurnoverCommissionValue;
 
 import java.util.List;

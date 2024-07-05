@@ -1,6 +1,6 @@
 package fund.data.assets.service.impl;
 
-import fund.data.assets.dto.AccountCashDTO;
+import fund.data.assets.dto.financial_entities.AccountCashDTO;
 import fund.data.assets.exception.AmountFromDTOMoreThanAccountCashAmountException;
 import fund.data.assets.exception.NegativeValueNotExistAccountCashException;
 import fund.data.assets.model.financial_entities.Account;

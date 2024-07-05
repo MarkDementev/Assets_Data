@@ -1,6 +1,6 @@
 package fund.data.assets.service;
 
-import fund.data.assets.dto.AccountDTO;
+import fund.data.assets.dto.financial_entities.AccountDTO;
 import fund.data.assets.model.financial_entities.Account;
 
 import java.util.List;

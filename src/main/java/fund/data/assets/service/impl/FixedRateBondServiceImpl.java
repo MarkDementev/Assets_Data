@@ -1,7 +1,6 @@
 package fund.data.assets.service.impl;
 
 import fund.data.assets.model.asset.exchange.FixedRateBond;
-import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.repository.FixedRateBondRepository;
 import fund.data.assets.service.FixedRateBondService;
 
@@ -10,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Реализация сервиса для обслуживания облигаций с фиксированным купоном.

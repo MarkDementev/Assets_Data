@@ -1,6 +1,6 @@
 package fund.data.assets.controller;
 
-//import fund.data.assets.dto.FixedRateBondDTO;
+import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
 import fund.data.assets.model.asset.exchange.FixedRateBond;
 import fund.data.assets.service.FixedRateBondService;
 
@@ -15,7 +15,12 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -23,7 +28,7 @@ import static fund.data.assets.controller.FixedRateBondController.FIXED_RATE_BON
 
 /**
  * Контроллер для работы с облигациями с фиксированным купоном.
- * Обслуживаемая сущность - {@link fund.data.assets.model.asset.exchange.FixedRateBond}.
+ * Обслуживаемая сущность - {@link FixedRateBond}.
  * @version 0.0.1-alpha
  * @author MarkDementev a.k.a JavaMarkDem
  */
@@ -53,12 +58,14 @@ public class FixedRateBondController {
         return ResponseEntity.ok().body(fixedRateBondService.getFixedRateBonds());
     }
 
-//    @Operation(summary = "Buy fixed rate bond first time on this account")
-//    @ApiResponse(responseCode = "201", description = "Fixed rate bond bought")
-//    @PostMapping
-//    public ResponseEntity<FixedRateBond> firstBuyFixedRateBond(@RequestBody @Valid FixedRateBondDTO fixedRateBondDTO) {
-//        return ResponseEntity.created(null).body(fixedRateBondService.firstBuyFixedRateBond(fixedRateBondDTO));
-//    }
+    @Operation(summary = "Buy fixed rate bond package first time on this account")
+    @ApiResponse(responseCode = "201", description = "Fixed rate bond package bought")
+    @PostMapping
+    public ResponseEntity<FixedRateBond> firstBuyFixedRateBond(@RequestBody @Valid
+                                                                   FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO) {
+        return ResponseEntity.created(null).body(
+                fixedRateBondService.firstBuyFixedRateBond(firstBuyFixedRateBondDTO));
+    }
 
     //TODO - Реализуй остальные контроллеры
 }
