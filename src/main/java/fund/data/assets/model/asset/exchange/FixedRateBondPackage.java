@@ -27,6 +27,8 @@ import java.time.temporal.ChronoUnit;
  * Облигация с фиксированным купоном.
  * Класс - наследник абстрактного ExchangeAsset.
  * Один из вариантов финализации сути Asset.
+ * Представляет собой информацию о пакете облигаций с общим ISIN на балансе фонда. В пакете может быть как одна
+ * облигация, так и бесконечно большое количество.
  * @version 0.0.1-alpha
  * @author MarkDementev a.k.a JavaMarkDem
  */
@@ -34,7 +36,7 @@ import java.time.temporal.ChronoUnit;
 @NoArgsConstructor
 @Getter
 @Setter
-public class FixedRateBond extends ExchangeAsset {
+public class FixedRateBondPackage extends ExchangeAsset {
     public static final String WRONG_DATE_BOND_ADDING_WARNING = "This is error - don't add into system already" +
             " redeemed bond";
 
@@ -108,20 +110,14 @@ public class FixedRateBond extends ExchangeAsset {
      */
     private Float markDementevYieldIndicator;
 
-    public FixedRateBond(AssetCurrency assetCurrency, String assetTitle, Integer assetCount,
-                         String iSIN, String assetIssuerTitle, LocalDate lastAssetBuyDate,
-                         Integer bondParValue,
-                         Float purchaseBondParValuePercent,
-                         Float bondAccruedInterest,
-                         Account account,
-                         AssetsOwner assetsOwner,
-                         Float bondCouponValue,
-                         Integer expectedBondCouponPaymentsCount,
-                         LocalDate bondMaturityDate) {
-        super(assetCurrency, FixedRateBond.class.getTypeName(), assetTitle, assetCount,
+    public FixedRateBondPackage(AssetCurrency assetCurrency, String assetTitle, Integer assetCount, AssetsOwner assetsOwner,
+                                Account account, String iSIN, String assetIssuerTitle, LocalDate lastAssetBuyDate,
+                                Integer bondParValue, Float purchaseBondParValuePercent, Float bondAccruedInterest,
+                                Float bondCouponValue, Integer expectedBondCouponPaymentsCount, LocalDate bondMaturityDate) {
+        super(assetCurrency, FixedRateBondPackage.class.getTypeName(), assetTitle, assetCount,
                 (TaxSystem) AutoSelector.selectAssetOperationsCostSystem(assetCurrency,
-                        FixedRateBond.class.getTypeName(), AutoSelector.TAX_SYSTEM_CHOOSE), account, assetsOwner,
-                iSIN, assetIssuerTitle, lastAssetBuyDate);
+                        FixedRateBondPackage.class.getTypeName(), AutoSelector.TAX_SYSTEM_CHOOSE), assetsOwner, account, iSIN,
+                assetIssuerTitle, lastAssetBuyDate);
         this.bondParValue = bondParValue;
         this.purchaseBondParValuePercent = purchaseBondParValuePercent;
         this.bondAccruedInterest = bondAccruedInterest;
@@ -132,7 +128,7 @@ public class FixedRateBond extends ExchangeAsset {
             this.totalCommissionForPurchase = commissionCalculator.calculateTotalCommissionForPurchase(
                     getAssetCommissionSystem(),
                     account,
-                    FixedRateBond.class.getTypeName(),
+                    FixedRateBondPackage.class.getTypeName(),
                     getAssetCount(),
                     purchaseBondParValuePercent * bondParValue + bondAccruedInterest);
         } else {

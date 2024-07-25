@@ -1,7 +1,7 @@
 package fund.data.assets.controller;
 
 import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
-import fund.data.assets.model.asset.exchange.FixedRateBond;
+import fund.data.assets.model.asset.exchange.FixedRateBondPackage;
 import fund.data.assets.service.FixedRateBondService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,44 +24,44 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-import static fund.data.assets.controller.FixedRateBondController.FIXED_RATE_BOND_CONTROLLER_PATH;
+import static fund.data.assets.controller.FixedRateBondPackageController.FIXED_RATE_BOND_CONTROLLER_PATH;
 
 /**
- * Контроллер для работы с облигациями с фиксированным купоном.
- * Обслуживаемая сущность - {@link FixedRateBond}.
+ * Контроллер для работы с пакетами облигаций с фиксированным купоном.
+ * Обслуживаемая сущность - {@link FixedRateBondPackage}.
  * @version 0.0.1-alpha
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @RestController
 @RequestMapping("{base-url}" + FIXED_RATE_BOND_CONTROLLER_PATH)
 @AllArgsConstructor
-public class FixedRateBondController {
+public class FixedRateBondPackageController {
     public static final String FIXED_RATE_BOND_CONTROLLER_PATH = "/bonds/simple";
     public static final String ID_PATH = "/{id}";
     private final FixedRateBondService fixedRateBondService;
 
     @Operation(summary = "Get fixed rate bond by id")
     @ApiResponse(responseCode = "200", content = @Content(
-            schema = @Schema(implementation = FixedRateBond.class))
+            schema = @Schema(implementation = FixedRateBondPackage.class))
     )
     @GetMapping(ID_PATH)
-    public ResponseEntity<FixedRateBond> getFixedRateBond(@PathVariable Long id) {
+    public ResponseEntity<FixedRateBondPackage> getFixedRateBond(@PathVariable Long id) {
         return ResponseEntity.ok().body(fixedRateBondService.getFixedRateBond(id));
     }
 
     @Operation(summary = "Get all fixed rate bonds")
     @ApiResponses(@ApiResponse(responseCode = "200", content = @Content(
-            schema = @Schema(implementation = FixedRateBond.class)))
+            schema = @Schema(implementation = FixedRateBondPackage.class)))
     )
     @GetMapping
-    public ResponseEntity<List<FixedRateBond>> getFixedRateBonds() {
+    public ResponseEntity<List<FixedRateBondPackage>> getFixedRateBonds() {
         return ResponseEntity.ok().body(fixedRateBondService.getFixedRateBonds());
     }
 
     @Operation(summary = "Buy fixed rate bond package first time on this account")
     @ApiResponse(responseCode = "201", description = "Fixed rate bond package bought")
     @PostMapping
-    public ResponseEntity<FixedRateBond> firstBuyFixedRateBond(@RequestBody @Valid
+    public ResponseEntity<FixedRateBondPackage> firstBuyFixedRateBond(@RequestBody @Valid
                                                                    FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO) {
         return ResponseEntity.created(null).body(
                 fixedRateBondService.firstBuyFixedRateBond(firstBuyFixedRateBondDTO));

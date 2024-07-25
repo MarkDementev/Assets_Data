@@ -34,11 +34,12 @@ public class FinancialAssetRelationship extends AssetRelationship {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
-    public FinancialAssetRelationship(Asset asset, Account account, AssetsOwner assetOwner) {
-        super(asset, assetOwner);
+    public FinancialAssetRelationship(Asset asset, AssetsOwner assetsOwner, Account account) {
+        super(asset, assetsOwner);
 
         this.account = account;
 
+        //TODO ?
         getAssetsOwner().getAssetRelationships().add(this);
     }
 }

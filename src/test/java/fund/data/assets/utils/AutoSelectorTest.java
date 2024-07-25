@@ -1,7 +1,7 @@
 package fund.data.assets.utils;
 
 import fund.data.assets.config.SpringConfigForTests;
-import fund.data.assets.model.asset.exchange.FixedRateBond;
+import fund.data.assets.model.asset.exchange.FixedRateBondPackage;
 import fund.data.assets.utils.enums.AssetCurrency;
 import fund.data.assets.utils.enums.CommissionSystem;
 import fund.data.assets.utils.enums.TaxSystem;
@@ -67,13 +67,13 @@ public class AutoSelectorTest {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
-                    Arguments.of(AssetCurrency.RUSRUB, FixedRateBond.class.getTypeName(), COMMISSION_SYSTEM_CHOOSE,
+                    Arguments.of(AssetCurrency.RUSRUB, FixedRateBondPackage.class.getTypeName(), COMMISSION_SYSTEM_CHOOSE,
                             CommissionSystem.TURNOVER
                     ),
-                    Arguments.of(AssetCurrency.RUSRUB, FixedRateBond.class.getTypeName(), TAX_SYSTEM_CHOOSE,
+                    Arguments.of(AssetCurrency.RUSRUB, FixedRateBondPackage.class.getTypeName(), TAX_SYSTEM_CHOOSE,
                             TaxSystem.EQUAL_COUPON_DIVIDEND_TRADE
                     ),
-                    Arguments.of(AssetCurrency.RUSRUB, FixedRateBond.class.getTypeName(), NO_TAX_SYSTEM_CHOOSE,
+                    Arguments.of(AssetCurrency.RUSRUB, FixedRateBondPackage.class.getTypeName(), NO_TAX_SYSTEM_CHOOSE,
                             TaxSystem.NO_TAX
                     )
             );
@@ -84,11 +84,11 @@ public class AutoSelectorTest {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
-                    Arguments.of(AssetCurrency.RUSRUB, FixedRateBond.class.getTypeName(), TEST_WRONG_CHOOSE
+                    Arguments.of(AssetCurrency.RUSRUB, FixedRateBondPackage.class.getTypeName(), TEST_WRONG_CHOOSE
                     ),
                     Arguments.of(AssetCurrency.RUSRUB, TEST_WRONG_ASSET_TYPE, TAX_SYSTEM_CHOOSE
                     ),
-                    Arguments.of(TEST_WRONG_CURRENCY, FixedRateBond.class.getTypeName(), NO_TAX_SYSTEM_CHOOSE
+                    Arguments.of(TEST_WRONG_CURRENCY, FixedRateBondPackage.class.getTypeName(), NO_TAX_SYSTEM_CHOOSE
                     )
             );
         }

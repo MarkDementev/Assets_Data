@@ -1,7 +1,6 @@
 package fund.data.assets.dto.asset.exchange;
 
 import fund.data.assets.utils.enums.AssetCurrency;
-import fund.data.assets.utils.enums.CommissionSystem;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -39,6 +38,11 @@ public class FirstBuyFixedRateBondDTO {
     @Positive
     private Integer assetCount;
 
+    //assetsOwner
+
+    @NotNull
+    private Long accountID;
+
     @NotNull
     @Size(min = 12, max = 12)
     @Pattern(regexp = "^[A-Z]{2}[A-Z0-9]{9}[0-9]$")
@@ -49,9 +53,6 @@ public class FirstBuyFixedRateBondDTO {
 
     @NotNull
     private LocalDate lastAssetBuyDate;
-
-    @Enumerated(EnumType.STRING)
-    private CommissionSystem assetCommissionSystem;
 
     @NotNull
     @Positive

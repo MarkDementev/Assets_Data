@@ -1,6 +1,6 @@
 package fund.data.assets.utils;
 
-import fund.data.assets.model.asset.exchange.FixedRateBond;
+import fund.data.assets.model.asset.exchange.FixedRateBondPackage;
 import fund.data.assets.utils.enums.AssetCurrency;
 import fund.data.assets.utils.enums.CommissionSystem;
 import fund.data.assets.utils.enums.TaxSystem;
@@ -44,7 +44,7 @@ public class AutoSelector {
                                                                           String assetTypeName,
                                                                           String costSystemToChoose) {
         if (assetCurrency.equals(RUSRUB)) {
-            if (assetTypeName.equals(FixedRateBond.class.getTypeName())) {
+            if (assetTypeName.equals(FixedRateBondPackage.class.getTypeName())) {
                 switch (costSystemToChoose) {
                     case COMMISSION_SYSTEM_CHOOSE:
                         return CommissionSystem.TURNOVER;

@@ -102,12 +102,12 @@ public abstract class Asset {
     private Instant updatedAt;
 
     public Asset(AssetCurrency assetCurrency, String assetTypeName, String assetTitle,
-                 Integer assetCount, TaxSystem assetTaxSystem, Account account, AssetsOwner assetsOwner) {
+                 Integer assetCount, TaxSystem assetTaxSystem, AssetsOwner assetsOwner, Account account) {
         this.assetCurrency = assetCurrency;
         this.assetTypeName = assetTypeName;
         this.assetTitle = assetTitle;
         this.assetCount = assetCount;
         this.assetTaxSystem = assetTaxSystem;
-        this.assetRelationship = new FinancialAssetRelationship(this, account, assetsOwner);
+        this.assetRelationship = new FinancialAssetRelationship(this, assetsOwner, account);
     }
 }
