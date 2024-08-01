@@ -23,6 +23,8 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
+import java.util.Map;
+
 /**
  * Биржевой актив - сущность для начала конкретизации сути актива.
  * Абстрактный класс - наследник абстрактного Asset.
@@ -65,9 +67,10 @@ public abstract class ExchangeAsset extends Asset {
     private CommissionSystem assetCommissionSystem;
 
     public ExchangeAsset(AssetCurrency assetCurrency, String assetTypeName, String assetTitle, Integer assetCount,
-                         TaxSystem assetTaxSystem, AssetsOwner assetsOwner, Account account, String iSIN,
-                         String assetIssuerTitle, LocalDate lastAssetBuyDate) {
-        super(assetCurrency, assetTypeName, assetTitle, assetCount, assetTaxSystem, assetsOwner, account);
+                         TaxSystem assetTaxSystem, Map<AssetsOwner, Double> assetOwnersWithAssetCounts, Account account,
+                         String iSIN, String assetIssuerTitle, LocalDate lastAssetBuyDate) {
+        super(assetCurrency, assetTypeName, assetTitle, assetCount, assetTaxSystem, assetOwnersWithAssetCounts,
+                account);
 
         this.iSIN = iSIN;
         this.assetIssuerTitle = assetIssuerTitle;

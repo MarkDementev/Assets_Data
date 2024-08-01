@@ -15,6 +15,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Map;
+
 /**
  * Сущность - связующее для финансовых активов.
  * Класс - наследник абстрактного AssetRelationship.
@@ -34,12 +36,10 @@ public class FinancialAssetRelationship extends AssetRelationship {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
-    public FinancialAssetRelationship(Asset asset, AssetsOwner assetsOwner, Account account) {
-        super(asset, assetsOwner);
+    public FinancialAssetRelationship(Asset asset, Map<AssetsOwner, Double> assetOwnersWithAssetCounts,
+                                      Account account) {
+        super(asset, assetOwnersWithAssetCounts);
 
         this.account = account;
-
-        //TODO ?
-        getAssetsOwner().getAssetRelationships().add(this);
     }
 }

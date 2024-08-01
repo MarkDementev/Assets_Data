@@ -12,7 +12,9 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.MapKeyJoinColumn;
 
 import jakarta.validation.constraints.NotNull;
 
@@ -24,6 +26,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
+
+import java.util.Map;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
@@ -51,10 +55,17 @@ public abstract class AssetRelationship {
     @JoinColumn(name = "asset_id", nullable = false)
     private Asset asset;
 
+    /**
+     * Поле ниже представляет собой мапу с указанием того, каким владельцам принадлежит какое количество ценных бумаг
+     * в рамках пакета, который обслуживает данная сущность.
+     */
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assets_owner_id", nullable = false)
-    private AssetsOwner assetsOwner;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "asset_ownership_counts",
+            joinColumns = @JoinColumn(name = "assetRelationship_id"),
+            inverseJoinColumns = @JoinColumn(name = "assetsOwner_id"))
+    @MapKeyJoinColumn(name = "assetsOwner_id")
+    private Map<AssetsOwner, Double> assetOwnersWithAssetCounts;
 
     @CreationTimestamp
     private Instant createdAt;
@@ -62,8 +73,8 @@ public abstract class AssetRelationship {
     @UpdateTimestamp
     private Instant updatedAt;
 
-    public AssetRelationship(Asset asset, AssetsOwner assetsOwner) {
+    public AssetRelationship(Asset asset, Map<AssetsOwner, Double> assetOwnersWithAssetCounts) {
         this.asset = asset;
-        this.assetsOwner = assetsOwner;
+        this.assetOwnersWithAssetCounts = assetOwnersWithAssetCounts;
     }
 }

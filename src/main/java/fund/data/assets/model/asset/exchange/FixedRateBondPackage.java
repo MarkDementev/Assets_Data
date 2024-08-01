@@ -23,6 +23,8 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
+import java.util.Map;
+
 /**
  * Облигация с фиксированным купоном.
  * Класс - наследник абстрактного ExchangeAsset.
@@ -110,14 +112,15 @@ public class FixedRateBondPackage extends ExchangeAsset {
      */
     private Float markDementevYieldIndicator;
 
-    public FixedRateBondPackage(AssetCurrency assetCurrency, String assetTitle, Integer assetCount, AssetsOwner assetsOwner,
-                                Account account, String iSIN, String assetIssuerTitle, LocalDate lastAssetBuyDate,
-                                Integer bondParValue, Float purchaseBondParValuePercent, Float bondAccruedInterest,
-                                Float bondCouponValue, Integer expectedBondCouponPaymentsCount, LocalDate bondMaturityDate) {
+    public FixedRateBondPackage(AssetCurrency assetCurrency, String assetTitle, Integer assetCount,
+                                Map<AssetsOwner, Double> assetOwnersWithAssetCounts, Account account, String iSIN,
+                                String assetIssuerTitle, LocalDate lastAssetBuyDate, Integer bondParValue,
+                                Float purchaseBondParValuePercent, Float bondAccruedInterest, Float bondCouponValue,
+                                Integer expectedBondCouponPaymentsCount, LocalDate bondMaturityDate) {
         super(assetCurrency, FixedRateBondPackage.class.getTypeName(), assetTitle, assetCount,
                 (TaxSystem) AutoSelector.selectAssetOperationsCostSystem(assetCurrency,
-                        FixedRateBondPackage.class.getTypeName(), AutoSelector.TAX_SYSTEM_CHOOSE), assetsOwner, account, iSIN,
-                assetIssuerTitle, lastAssetBuyDate);
+                        FixedRateBondPackage.class.getTypeName(), AutoSelector.TAX_SYSTEM_CHOOSE),
+                assetOwnersWithAssetCounts, account, iSIN, assetIssuerTitle, lastAssetBuyDate);
         this.bondParValue = bondParValue;
         this.purchaseBondParValuePercent = purchaseBondParValuePercent;
         this.bondAccruedInterest = bondAccruedInterest;

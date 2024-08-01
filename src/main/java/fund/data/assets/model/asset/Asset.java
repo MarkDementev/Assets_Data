@@ -32,6 +32,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 
+import java.util.Map;
+
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 /**
@@ -101,13 +103,13 @@ public abstract class Asset {
     @UpdateTimestamp
     private Instant updatedAt;
 
-    public Asset(AssetCurrency assetCurrency, String assetTypeName, String assetTitle,
-                 Integer assetCount, TaxSystem assetTaxSystem, AssetsOwner assetsOwner, Account account) {
+    public Asset(AssetCurrency assetCurrency, String assetTypeName, String assetTitle, Integer assetCount,
+                 TaxSystem assetTaxSystem, Map<AssetsOwner, Double> assetOwnersWithAssetCounts, Account account) {
         this.assetCurrency = assetCurrency;
         this.assetTypeName = assetTypeName;
         this.assetTitle = assetTitle;
         this.assetCount = assetCount;
         this.assetTaxSystem = assetTaxSystem;
-        this.assetRelationship = new FinancialAssetRelationship(this, assetsOwner, account);
+        this.assetRelationship = new FinancialAssetRelationship(this, assetOwnersWithAssetCounts, account);
     }
 }
