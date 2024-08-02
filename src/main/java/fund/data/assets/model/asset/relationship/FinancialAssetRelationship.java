@@ -35,8 +35,7 @@ public class FinancialAssetRelationship extends AssetRelationship {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
-    public FinancialAssetRelationship(Asset asset, Map<String, Double> assetOwnersWithAssetCounts,
-                                      Account account) {
+    public FinancialAssetRelationship(Asset asset, Map<String, Double> assetOwnersWithAssetCounts, Account account) {
         super(asset, assetOwnersWithAssetCounts);
 
         this.account = account;

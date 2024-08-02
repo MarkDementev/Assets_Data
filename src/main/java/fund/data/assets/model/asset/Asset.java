@@ -4,6 +4,7 @@ import fund.data.assets.model.asset.relationship.AssetRelationship;
 import fund.data.assets.model.asset.relationship.FinancialAssetRelationship;
 import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.utils.enums.AssetCurrency;
+import fund.data.assets.utils.enums.FinancialAssetTypeName;
 import fund.data.assets.utils.enums.TaxSystem;
 
 import jakarta.persistence.Enumerated;
@@ -109,6 +110,11 @@ public abstract class Asset {
         this.assetTitle = assetTitle;
         this.assetCount = assetCount;
         this.assetTaxSystem = assetTaxSystem;
-        this.assetRelationship = new FinancialAssetRelationship(this, assetOwnersWithAssetCounts, account);
+
+        if (FinancialAssetTypeName.isInFinancialAssetTypeNameEnum(assetTypeName)) {
+            this.assetRelationship = new FinancialAssetRelationship(this, assetOwnersWithAssetCounts, account);
+        } else {
+            throw new IllegalArgumentException("Sorry, this asset type is not yet supported by the fund!");
+        }
     }
 }
