@@ -35,11 +35,9 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
 
     @Override
     public FixedRateBondPackage firstBuyFixedRateBond(FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO) {
+        //Пропиши валидацию assetOwnersWithAssetCounts и assetCount;
         //Пропиши связь с AccountCash
         //Пропиши связь с assetRelationship
-        //Надо поменять assetsOwner на мапу assetsOwner/кол-во бумаг в FixedRateBond? И добавить это в DTO
-
-        AtomicReference<FixedRateBondPackage> atomicNewFixedRateBond = new AtomicReference<>(new FixedRateBondPackage());
 
         return null;
     }

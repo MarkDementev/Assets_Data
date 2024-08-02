@@ -18,6 +18,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+import java.util.Map;
+
 /**
  * DTO для обслуживания внесения в систему данных о первой покупке пакета бумаг данного выпуска облигаций.
  * @version 0.0.1-alpha
@@ -38,7 +40,8 @@ public class FirstBuyFixedRateBondDTO {
     @Positive
     private Integer assetCount;
 
-    //assetsOwner
+    @NotNull
+    private Map<String, Double> assetOwnersWithAssetCounts;
 
     @NotNull
     private Long accountID;
