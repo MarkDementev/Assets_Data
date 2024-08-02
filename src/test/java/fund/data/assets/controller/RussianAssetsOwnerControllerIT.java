@@ -78,7 +78,6 @@ public class RussianAssetsOwnerControllerIT {
         assertEquals(expectedRussianAssetsOwner.getSurname(), russianAssetsOwnerFromResponse.getSurname());
         assertEquals(expectedRussianAssetsOwner.getBirthDate(), russianAssetsOwnerFromResponse.getBirthDate());
         assertEquals(expectedRussianAssetsOwner.getEmail(), russianAssetsOwnerFromResponse.getEmail());
-        assertNotNull(russianAssetsOwnerFromResponse.getAssetRelationships());
         assertNotNull(russianAssetsOwnerFromResponse.getCreatedAt());
         assertNotNull(russianAssetsOwnerFromResponse.getUpdatedAt());
         assertEquals(expectedRussianAssetsOwner.getPatronymic(), russianAssetsOwnerFromResponse.getPatronymic());
@@ -132,7 +131,6 @@ public class RussianAssetsOwnerControllerIT {
                 testUtils.getNewRussianAssetsOwnerDTO().getBirthDate()),
                 russianAssetsOwnerFromResponse.getBirthDate());
         assertEquals(testUtils.getNewRussianAssetsOwnerDTO().getEmail(), russianAssetsOwnerFromResponse.getEmail());
-        assertNotNull(russianAssetsOwnerFromResponse.getAssetRelationships());
         assertNotNull(russianAssetsOwnerFromResponse.getCreatedAt());
         assertNotNull(russianAssetsOwnerFromResponse.getUpdatedAt());
         assertEquals(testUtils.getNewRussianAssetsOwnerDTO().getPatronymic(),
@@ -241,7 +239,6 @@ public class RussianAssetsOwnerControllerIT {
         assertEquals(russianAssetsOwnerService.parseDatePassportFormatIntoLocalDate(testUtils
                         .getNewRussianAssetsOwnerDTO().getBirthDate()),
                 russianAssetsOwnerWithUpdatedContactDataFromResponse.getBirthDate());
-        assertNotNull(russianAssetsOwnerWithUpdatedContactDataFromResponse.getAssetRelationships());
         assertNotNull(russianAssetsOwnerWithUpdatedContactDataFromResponse.getCreatedAt());
         assertNotNull(russianAssetsOwnerWithUpdatedContactDataFromResponse.getUpdatedAt());
         assertEquals(testUtils.getNewRussianAssetsOwnerDTO().getPatronymic(),
@@ -295,7 +292,6 @@ public class RussianAssetsOwnerControllerIT {
                         .getBirthDate()), russianAssetsOwnerWithUpdatedPersonalDataFromResponse.getBirthDate());
         assertEquals(testUtils.getValidRussianAssetsOwnerContactDataDTO().getEmail().get(),
                 russianAssetsOwnerWithUpdatedPersonalDataFromResponse.getEmail());
-        assertNotNull(russianAssetsOwnerWithUpdatedPersonalDataFromResponse.getAssetRelationships());
         assertNotNull(russianAssetsOwnerWithUpdatedPersonalDataFromResponse.getCreatedAt());
         assertNotNull(russianAssetsOwnerWithUpdatedPersonalDataFromResponse.getUpdatedAt());
         assertEquals(testUtils.getNewRussianAssetsOwnerDTO().getSex(),
@@ -349,7 +345,6 @@ public class RussianAssetsOwnerControllerIT {
         assertEquals(russianAssetsOwnerRepository.findAll().get(0).getBirthDate(),
                 russianAssetsOwnerService.parseDatePassportFormatIntoLocalDate(testUtils.getNewRussianAssetsOwnerDTO()
                         .getBirthDate()));
-        assertNotNull(russianAssetsOwnerRepository.findAll().get(0).getAssetRelationships());
         assertNotNull(russianAssetsOwnerRepository.findAll().get(0).getCreatedAt());
         assertNotNull(russianAssetsOwnerRepository.findAll().get(0).getUpdatedAt());
         assertEquals(russianAssetsOwnerRepository.findAll().get(0).getSex(),

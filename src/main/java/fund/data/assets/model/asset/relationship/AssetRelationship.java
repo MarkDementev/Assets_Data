@@ -1,7 +1,6 @@
 package fund.data.assets.model.asset.relationship;
 
 import fund.data.assets.model.asset.Asset;
-import fund.data.assets.model.owner.AssetsOwner;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -12,9 +11,10 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.MapKeyJoinColumn;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.MapKeyColumn;
+import jakarta.persistence.Column;
 
 import jakarta.validation.constraints.NotNull;
 
@@ -59,13 +59,11 @@ public abstract class AssetRelationship {
      * Поле ниже представляет собой мапу с указанием того, каким владельцам принадлежит какое количество ценных бумаг
      * в рамках пакета, который обслуживает данная сущность.
      */
-    @NotNull
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "asset_ownership_counts",
-            joinColumns = @JoinColumn(name = "assetRelationship_id"),
-            inverseJoinColumns = @JoinColumn(name = "assetsOwner_id"))
-    @MapKeyJoinColumn(name = "assetsOwner_id")
-    private Map<AssetsOwner, Double> assetOwnersWithAssetCounts;
+    @ElementCollection
+    @CollectionTable(name = "asset_ownership_counts", joinColumns = @JoinColumn(name = "asset_relationship_id"))
+    @MapKeyColumn(name = "assets_owner_id")
+    @Column(name = "asset_count")
+    private Map<String, Double> assetOwnersWithAssetCounts;
 
     @CreationTimestamp
     private Instant createdAt;
@@ -73,7 +71,7 @@ public abstract class AssetRelationship {
     @UpdateTimestamp
     private Instant updatedAt;
 
-    public AssetRelationship(Asset asset, Map<AssetsOwner, Double> assetOwnersWithAssetCounts) {
+    public AssetRelationship(Asset asset, Map<String, Double> assetOwnersWithAssetCounts) {
         this.asset = asset;
         this.assetOwnersWithAssetCounts = assetOwnersWithAssetCounts;
     }

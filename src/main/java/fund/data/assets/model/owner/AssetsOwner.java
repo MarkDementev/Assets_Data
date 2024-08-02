@@ -2,7 +2,6 @@ package fund.data.assets.model.owner;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import fund.data.assets.model.asset.relationship.AssetRelationship;
 import fund.data.assets.utils.converter.StringCryptoConverter;
 
 import jakarta.persistence.Entity;
@@ -11,8 +10,6 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Convert;
 
 import jakarta.validation.constraints.NotBlank;
@@ -27,9 +24,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 import java.time.LocalDate;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Сущность - абстрактная заготовка собственника активов без специфичных для каждой страны
@@ -63,15 +57,6 @@ public abstract class AssetsOwner {
     @Convert(converter = StringCryptoConverter.class)
     private String email;
 
-    /**
-     * Обращаясь к AssetsOwner, с вероятностью в 95% нам важны не его иные параметры, а активы на балансе. Информацию
-     * о них можно получить через обращение к сущности AssetRelationship. Потому fetch - это сразу FetchType.EAGER,
-     * а не FetchType.LAZY.
-     */
-    @NotNull
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "assetsOwner")
-    private List<AssetRelationship> assetRelationships;
-
     @CreationTimestamp
     private Instant createdAt;
 
@@ -87,6 +72,5 @@ public abstract class AssetsOwner {
         this.surname = surname;
         this.birthDate = birthDate;
         this.email = email;
-        this.assetRelationships = new ArrayList<>();
     }
 }
