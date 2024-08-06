@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Реализация сервиса для обслуживания облигаций с фиксированным купоном.
@@ -38,6 +37,8 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     public FixedRateBondPackage firstBuyFixedRateBond(FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO) {
         isAssetOwnersWithAssetCountsValid(firstBuyFixedRateBondDTO.getAssetCount(),
                 firstBuyFixedRateBondDTO.getAssetOwnersWithAssetCounts());
+
+
         //Пропиши связь с AccountCash
         //Пропиши связь с assetRelationship
 
@@ -45,7 +46,12 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     }
 
     /**
-     * Сумма выльюс в assetOwnersWithAssetCounts, приведённая к Integer, должна быть равна значению assetCount.
+     * Проводится валидация - сумма выльюс в assetOwnersWithAssetCounts, приведённая к Integer, должна быть равна
+     * значению assetCount. Аргументы метода берутся из DTO {@link FirstBuyFixedRateBondDTO}.
+     @param assetCount количество бумаг в пакете ценных бумаг.
+     @param assetOwnersWithAssetCounts мапа, где кей - это владелец актива, вэлью - количество ценных бумаг оунера
+     в рамках данного пакета ценных бумаг. Вэлью - число с плавающей точкой!
+     @since 0.0.1-alpha
      */
     private void isAssetOwnersWithAssetCountsValid(Integer assetCount,
                                                    Map<String, Double> assetOwnersWithAssetCounts) {
