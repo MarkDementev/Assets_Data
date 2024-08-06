@@ -2,15 +2,25 @@ package fund.data.assets.service.impl;
 
 import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
 import fund.data.assets.model.asset.exchange.FixedRateBondPackage;
+import fund.data.assets.model.financial_entities.Account;
+import fund.data.assets.model.financial_entities.AccountCash;
+import fund.data.assets.model.owner.AssetsOwner;
+import fund.data.assets.repository.AccountCashRepository;
+import fund.data.assets.repository.AccountRepository;
 import fund.data.assets.repository.FixedRateBondRepository;
+import fund.data.assets.repository.RussianAssetsOwnerRepository;
 import fund.data.assets.service.FixedRateBondService;
+import fund.data.assets.utils.enums.AssetCurrency;
 
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Реализация сервиса для обслуживания облигаций с фиксированным купоном.
@@ -22,6 +32,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class FixedRateBondServiceImpl implements FixedRateBondService {
     private final FixedRateBondRepository fixedRateBondRepository;
+    private final AccountRepository accountRepository;
+    //TODO Надо-бы не только чтобы с русскими ПО работало!
+    private final RussianAssetsOwnerRepository russianAssetsOwnerRepository;
+    private final AccountCashRepository accountCashRepository;
 
     @Override
     public FixedRateBondPackage getFixedRateBond(Long id) {
@@ -35,29 +49,64 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
 
     @Override
     public FixedRateBondPackage firstBuyFixedRateBond(FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO) {
-        isAssetOwnersWithAssetCountsValid(firstBuyFixedRateBondDTO.getAssetCount(),
-                firstBuyFixedRateBondDTO.getAssetOwnersWithAssetCounts());
-
-
-        //Пропиши связь с AccountCash
-        //Пропиши связь с assetRelationship
-
         return null;
     }
+
+//    //TODO продумай изоляцию и подобные прибамбасы после реализации всего внутри!
+//    @Override
+//    public FixedRateBondPackage firstBuyFixedRateBond(FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO) {
+//        isAssetOwnersWithAssetCountsValid(firstBuyFixedRateBondDTO.getAssetCount(),
+//                firstBuyFixedRateBondDTO.getAssetOwnersWithAssetCounts());
+//
+//        //Пропиши связь с AccountCash
+//        //В данном методе эта связь только создаётся, т.к. это первая покупка данных бумаг
+//        //1) Надо проверить, могут ли купить оунеры активы - пробежаться по их долям и т.п!
+//        //Если у кого-то не хватит, сразу выброс исключения.
+//        Account accountFromDTO = accountRepository.findById(firstBuyFixedRateBondDTO.getAccountID()).orElseThrow();
+//        AssetCurrency assetCurrency = firstBuyFixedRateBondDTO.getAssetCurrency();
+//        Map<String, Float> assetOwnersWithAssetCounts = firstBuyFixedRateBondDTO.getAssetOwnersWithAssetCounts();
+//
+//        isOwnersHaveEnoughMoney(accountFromDTO, assetCurrency, assetOwnersWithAssetCounts);
+//
+//        String assetTitle = firstBuyFixedRateBondDTO.getAssetTitle();
+//        Integer assetCount = firstBuyFixedRateBondDTO.getAssetCount();
+//        String iSIN = firstBuyFixedRateBondDTO.getISIN();
+//        String assetIssuerTitle = firstBuyFixedRateBondDTO.getAssetIssuerTitle();
+//        LocalDate lastAssetBuyDate = firstBuyFixedRateBondDTO.getLastAssetBuyDate();
+//        Integer bondParValue = firstBuyFixedRateBondDTO.getBondParValue();
+//        Float purchaseBondParValuePercent = firstBuyFixedRateBondDTO.getPurchaseBondParValuePercent();
+//        Float bondAccruedInterest = firstBuyFixedRateBondDTO.getBondAccruedInterest();
+//        Float bondCouponValue = firstBuyFixedRateBondDTO.getBondCouponValue();
+//        Integer expectedBondCouponPaymentsCount = firstBuyFixedRateBondDTO.getExpectedBondCouponPaymentsCount();
+//        LocalDate bondMaturityDate = firstBuyFixedRateBondDTO.getBondMaturityDate();
+//
+//        FixedRateBondPackage newFixedRateBondPackage = new FixedRateBondPackage(assetCurrency, assetTitle, assetCount,
+//                assetOwnersWithAssetCounts,  accountFromDTO, iSIN, assetIssuerTitle, lastAssetBuyDate, bondParValue,
+//                purchaseBondParValuePercent, bondAccruedInterest, bondCouponValue, expectedBondCouponPaymentsCount,
+//                bondMaturityDate);
+//        AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
+//                newFixedRateBondPackage);
+//
+//        //2)Если сущность пакета бумаг может быть создана (т.е. ничего не выбросилось и не упало выше, то измени
+//        // положение на счетах в сущностях AccountCash оунеров
+//        changeAccountCashAmountsOfOwners(accountFromDTO, assetCurrency, assetOwnersWithAssetCounts);
+//
+//        return fixedRateBondRepository.save(atomicFixedRateBondPackage.get());
+//    }
 
     /**
      * Проводится валидация - сумма выльюс в assetOwnersWithAssetCounts, приведённая к Integer, должна быть равна
      * значению assetCount. Аргументы метода берутся из DTO {@link FirstBuyFixedRateBondDTO}.
      @param assetCount количество бумаг в пакете ценных бумаг.
      @param assetOwnersWithAssetCounts мапа, где кей - это владелец актива, вэлью - количество ценных бумаг оунера
-     в рамках данного пакета ценных бумаг. Вэлью - число с плавающей точкой!
+     в рамках данного пакета ценных бумаг.
      @since 0.0.1-alpha
      */
     private void isAssetOwnersWithAssetCountsValid(Integer assetCount,
-                                                   Map<String, Double> assetOwnersWithAssetCounts) {
-        Double mapValuesSum = 0.0;
+                                                   Map<String, Float> assetOwnersWithAssetCounts) {
+        Float mapValuesSum = 0.0F;
 
-        for (Map.Entry<String, Double> mapElement : assetOwnersWithAssetCounts.entrySet()) {
+        for (Map.Entry<String, Float> mapElement : assetOwnersWithAssetCounts.entrySet()) {
             mapValuesSum += mapElement.getValue();
         }
         Integer mapValuesSumToInteger = mapValuesSum.intValue();
@@ -68,4 +117,20 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
                     + " are not equals field assetCount!");
         }
     }
+
+//    private void isOwnersHaveEnoughMoney(Account accountFromDTO, AssetCurrency assetCurrency,
+//                                         Map<String, Float> assetOwnersWithAssetCounts) {
+//        for (Map.Entry<String, Float> mapElement : assetOwnersWithAssetCounts.entrySet()) {
+//            AssetsOwner assetsOwner = russianAssetsOwnerRepository.findById(Long.valueOf(mapElement.getKey()))
+//                    .orElseThrow();
+//            AccountCash assetsOwnerAccountCash = accountCashRepository.findByAccountAndAssetCurrencyAndAssetsOwner(
+//                    accountFromDTO, assetCurrency, assetsOwner);
+//            //тут иициализируй переменную - размер траты оунера, чтобы её сравнить с его кэшем и понять, можно ли
+//            //столько потратить
+//
+//            if () {
+//
+//            }
+//        }
+//    }
 }

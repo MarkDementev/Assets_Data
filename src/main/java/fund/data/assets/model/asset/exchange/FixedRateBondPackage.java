@@ -112,7 +112,7 @@ public class FixedRateBondPackage extends ExchangeAsset {
     private Float markDementevYieldIndicator;
 
     public FixedRateBondPackage(AssetCurrency assetCurrency, String assetTitle, Integer assetCount,
-                                Map<String, Double> assetOwnersWithAssetCounts, Account account, String iSIN,
+                                Map<String, Float> assetOwnersWithAssetCounts, Account account, String iSIN,
                                 String assetIssuerTitle, LocalDate lastAssetBuyDate, Integer bondParValue,
                                 Float purchaseBondParValuePercent, Float bondAccruedInterest, Float bondCouponValue,
                                 Integer expectedBondCouponPaymentsCount, LocalDate bondMaturityDate) {

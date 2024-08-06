@@ -63,7 +63,7 @@ public abstract class AssetRelationship {
     @CollectionTable(name = "asset_ownership_counts", joinColumns = @JoinColumn(name = "asset_relationship_id"))
     @MapKeyColumn(name = "assets_owner_id")
     @Column(name = "asset_count")
-    private Map<String, Double> assetOwnersWithAssetCounts;
+    private Map<String, Float> assetOwnersWithAssetCounts;
 
     @CreationTimestamp
     private Instant createdAt;
@@ -71,7 +71,7 @@ public abstract class AssetRelationship {
     @UpdateTimestamp
     private Instant updatedAt;
 
-    public AssetRelationship(Asset asset, Map<String, Double> assetOwnersWithAssetCounts) {
+    public AssetRelationship(Asset asset, Map<String, Float> assetOwnersWithAssetCounts) {
         this.asset = asset;
         this.assetOwnersWithAssetCounts = assetOwnersWithAssetCounts;
     }

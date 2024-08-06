@@ -66,7 +66,7 @@ public abstract class ExchangeAsset extends Asset {
     private CommissionSystem assetCommissionSystem;
 
     public ExchangeAsset(AssetCurrency assetCurrency, String assetTypeName, String assetTitle, Integer assetCount,
-                         TaxSystem assetTaxSystem, Map<String, Double> assetOwnersWithAssetCounts, Account account,
+                         TaxSystem assetTaxSystem, Map<String, Float> assetOwnersWithAssetCounts, Account account,
                          String iSIN, String assetIssuerTitle, LocalDate lastAssetBuyDate) {
         super(assetCurrency, assetTypeName, assetTitle, assetCount, assetTaxSystem, assetOwnersWithAssetCounts,
                 account);

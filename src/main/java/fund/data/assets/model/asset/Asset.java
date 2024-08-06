@@ -104,7 +104,7 @@ public abstract class Asset {
     private Instant updatedAt;
 
     public Asset(AssetCurrency assetCurrency, String assetTypeName, String assetTitle, Integer assetCount,
-                 TaxSystem assetTaxSystem, Map<String, Double> assetOwnersWithAssetCounts, Account account) {
+                 TaxSystem assetTaxSystem, Map<String, Float> assetOwnersWithAssetCounts, Account account) {
         this.assetCurrency = assetCurrency;
         this.assetTypeName = assetTypeName;
         this.assetTitle = assetTitle;

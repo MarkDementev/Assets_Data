@@ -41,7 +41,7 @@ public class FirstBuyFixedRateBondDTO {
     private Integer assetCount;
 
     @NotNull
-    private Map<String, Double> assetOwnersWithAssetCounts;
+    private Map<String, Float> assetOwnersWithAssetCounts;
 
     @NotNull
     private Long accountID;
