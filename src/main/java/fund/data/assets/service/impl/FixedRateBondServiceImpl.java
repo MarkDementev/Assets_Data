@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -35,10 +36,30 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
 
     @Override
     public FixedRateBondPackage firstBuyFixedRateBond(FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO) {
-        //Пропиши валидацию assetOwnersWithAssetCounts и assetCount;
+        isAssetOwnersWithAssetCountsValid(firstBuyFixedRateBondDTO.getAssetCount(),
+                firstBuyFixedRateBondDTO.getAssetOwnersWithAssetCounts());
         //Пропиши связь с AccountCash
         //Пропиши связь с assetRelationship
 
         return null;
+    }
+
+    /**
+     * Сумма выльюс в assetOwnersWithAssetCounts, приведённая к Integer, должна быть равна значению assetCount.
+     */
+    private void isAssetOwnersWithAssetCountsValid(Integer assetCount,
+                                                   Map<String, Double> assetOwnersWithAssetCounts) {
+        Double mapValuesSum = 0.0;
+
+        for (Map.Entry<String, Double> mapElement : assetOwnersWithAssetCounts.entrySet()) {
+            mapValuesSum += mapElement.getValue();
+        }
+        Integer mapValuesSumToInteger = mapValuesSum.intValue();
+
+        if ((Math.ceil(mapValuesSum) != Math.floor(mapValuesSum))
+                || (!mapValuesSumToInteger.equals(assetCount))) {
+            throw new IllegalArgumentException("Field assetOwnersWithAssetCounts in DTO is not correct - sum of values"
+                    + " are not equals field assetCount!");
+        }
     }
 }
