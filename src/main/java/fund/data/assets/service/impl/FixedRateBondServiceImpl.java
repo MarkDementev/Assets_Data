@@ -47,52 +47,49 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         return fixedRateBondRepository.findAll();
     }
 
+    //TODO продумай изоляцию и подобные прибамбасы после реализации всего внутри!
     @Override
     public FixedRateBondPackage firstBuyFixedRateBond(FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO) {
-        return null;
-    }
+        //проверяется, валидны ли поля DTO - сколько всего хотят бумаг купить, и равно ли это сумме хотелок всех оунеров
+        isAssetOwnersWithAssetCountsValid(firstBuyFixedRateBondDTO.getAssetCount(),
+                firstBuyFixedRateBondDTO.getAssetOwnersWithAssetCounts());
 
-//    //TODO продумай изоляцию и подобные прибамбасы после реализации всего внутри!
-//    @Override
-//    public FixedRateBondPackage firstBuyFixedRateBond(FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO) {
-//        isAssetOwnersWithAssetCountsValid(firstBuyFixedRateBondDTO.getAssetCount(),
-//                firstBuyFixedRateBondDTO.getAssetOwnersWithAssetCounts());
-//
-//        //Пропиши связь с AccountCash
-//        //В данном методе эта связь только создаётся, т.к. это первая покупка данных бумаг
-//        //1) Надо проверить, могут ли купить оунеры активы - пробежаться по их долям и т.п!
-//        //Если у кого-то не хватит, сразу выброс исключения.
-//        Account accountFromDTO = accountRepository.findById(firstBuyFixedRateBondDTO.getAccountID()).orElseThrow();
-//        AssetCurrency assetCurrency = firstBuyFixedRateBondDTO.getAssetCurrency();
-//        Map<String, Float> assetOwnersWithAssetCounts = firstBuyFixedRateBondDTO.getAssetOwnersWithAssetCounts();
-//
-//        isOwnersHaveEnoughMoney(accountFromDTO, assetCurrency, assetOwnersWithAssetCounts);
-//
-//        String assetTitle = firstBuyFixedRateBondDTO.getAssetTitle();
-//        Integer assetCount = firstBuyFixedRateBondDTO.getAssetCount();
-//        String iSIN = firstBuyFixedRateBondDTO.getISIN();
-//        String assetIssuerTitle = firstBuyFixedRateBondDTO.getAssetIssuerTitle();
-//        LocalDate lastAssetBuyDate = firstBuyFixedRateBondDTO.getLastAssetBuyDate();
-//        Integer bondParValue = firstBuyFixedRateBondDTO.getBondParValue();
-//        Float purchaseBondParValuePercent = firstBuyFixedRateBondDTO.getPurchaseBondParValuePercent();
-//        Float bondAccruedInterest = firstBuyFixedRateBondDTO.getBondAccruedInterest();
-//        Float bondCouponValue = firstBuyFixedRateBondDTO.getBondCouponValue();
-//        Integer expectedBondCouponPaymentsCount = firstBuyFixedRateBondDTO.getExpectedBondCouponPaymentsCount();
-//        LocalDate bondMaturityDate = firstBuyFixedRateBondDTO.getBondMaturityDate();
-//
-//        FixedRateBondPackage newFixedRateBondPackage = new FixedRateBondPackage(assetCurrency, assetTitle, assetCount,
-//                assetOwnersWithAssetCounts,  accountFromDTO, iSIN, assetIssuerTitle, lastAssetBuyDate, bondParValue,
-//                purchaseBondParValuePercent, bondAccruedInterest, bondCouponValue, expectedBondCouponPaymentsCount,
-//                bondMaturityDate);
-//        AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
-//                newFixedRateBondPackage);
-//
-//        //2)Если сущность пакета бумаг может быть создана (т.е. ничего не выбросилось и не упало выше, то измени
-//        // положение на счетах в сущностях AccountCash оунеров
-//        changeAccountCashAmountsOfOwners(accountFromDTO, assetCurrency, assetOwnersWithAssetCounts);
-//
-//        return fixedRateBondRepository.save(atomicFixedRateBondPackage.get());
-//    }
+        AssetCurrency assetCurrency = firstBuyFixedRateBondDTO.getAssetCurrency();
+        String assetTitle = firstBuyFixedRateBondDTO.getAssetTitle();
+        Integer assetCount = firstBuyFixedRateBondDTO.getAssetCount();
+        Map<String, Float> assetOwnersWithAssetCounts = firstBuyFixedRateBondDTO.getAssetOwnersWithAssetCounts();
+        Account accountFromDTO = accountRepository.findById(firstBuyFixedRateBondDTO.getAccountID()).orElseThrow();
+        String iSIN = firstBuyFixedRateBondDTO.getISIN();
+        String assetIssuerTitle = firstBuyFixedRateBondDTO.getAssetIssuerTitle();
+        LocalDate lastAssetBuyDate = firstBuyFixedRateBondDTO.getLastAssetBuyDate();
+        Integer bondParValue = firstBuyFixedRateBondDTO.getBondParValue();
+        Float purchaseBondParValuePercent = firstBuyFixedRateBondDTO.getPurchaseBondParValuePercent();
+        Float bondAccruedInterest = firstBuyFixedRateBondDTO.getBondAccruedInterest();
+        Float bondCouponValue = firstBuyFixedRateBondDTO.getBondCouponValue();
+        Integer expectedBondCouponPaymentsCount = firstBuyFixedRateBondDTO.getExpectedBondCouponPaymentsCount();
+        LocalDate bondMaturityDate = firstBuyFixedRateBondDTO.getBondMaturityDate();
+
+        //используя инфу из DTO, создается сущность, но не сохраняется
+        FixedRateBondPackage fixedRateBondPackageToCreate = new FixedRateBondPackage(assetCurrency, assetTitle,
+                assetCount, assetOwnersWithAssetCounts, accountFromDTO, iSIN, assetIssuerTitle, lastAssetBuyDate,
+                bondParValue, purchaseBondParValuePercent, bondAccruedInterest, bondCouponValue,
+                expectedBondCouponPaymentsCount, bondMaturityDate);
+
+        //Надо проверить, могут ли купить оунеры активы - пробежаться по их долям и т.п!
+        //Если у кого-то не хватит, сразу выброс исключения.
+        isOwnersHaveEnoughMoney(fixedRateBondPackageToCreate);
+
+        //если всё ок, создаётся атомарная ссылка, чтобы потом сохранять в базу сущность
+        AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
+                fixedRateBondPackageToCreate);
+
+        //Если сущность пакета бумаг может быть создана (т.е. ничего не выбросилось и не упало выше), то измени
+        // положение на счетах в сущностях AccountCash оунеров
+        changeAccountCashAmountsOfOwners(accountFromDTO, assetCurrency, assetOwnersWithAssetCounts);
+
+        //СОХРАНЯЕМ, УРРА!
+        return fixedRateBondRepository.save(atomicFixedRateBondPackage.get());
+    }
 
     /**
      * Проводится валидация - сумма выльюс в assetOwnersWithAssetCounts, приведённая к Integer, должна быть равна
@@ -118,19 +115,36 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         }
     }
 
-//    private void isOwnersHaveEnoughMoney(Account accountFromDTO, AssetCurrency assetCurrency,
-//                                         Map<String, Float> assetOwnersWithAssetCounts) {
-//        for (Map.Entry<String, Float> mapElement : assetOwnersWithAssetCounts.entrySet()) {
-//            AssetsOwner assetsOwner = russianAssetsOwnerRepository.findById(Long.valueOf(mapElement.getKey()))
-//                    .orElseThrow();
-//            AccountCash assetsOwnerAccountCash = accountCashRepository.findByAccountAndAssetCurrencyAndAssetsOwner(
-//                    accountFromDTO, assetCurrency, assetsOwner);
-//            //тут иициализируй переменную - размер траты оунера, чтобы её сравнить с его кэшем и понять, можно ли
-//            //столько потратить
-//
-//            if () {
-//
-//            }
-//        }
-//    }
+    /**
+     * Проводится проверка, могут ли собственники активов купить данный пакет облигаций, исходя из наличия денежных
+     * средств у себя на счетах (эта информация находится в сущности {@link AccountCash}.
+     * @param fixedRateBondPackageToCreate пакет облигаций с фиксированным купоном с общим ISIN, который проверяется.
+     * @since 0.0.1-alpha
+     */
+    private void isOwnersHaveEnoughMoney(FixedRateBondPackage fixedRateBondPackageToCreate) {
+        Float totalAssetPurchasePriceWithCommission = fixedRateBondPackageToCreate
+                .getTotalAssetPurchasePriceWithCommission();
+        Map<String, Float> assetOwnersWithAssetCounts = fixedRateBondPackageToCreate.getAssetRelationship()
+                .getAssetOwnersWithAssetCounts();
+        Account account = fixedRateBondPackageToCreate.getAssetRelationship()
+        AssetCurrency assetCurrency = fixedRateBondPackageToCreate.getAssetCurrency();
+
+
+        for (Map.Entry<String, Float> mapElement : assetOwnersWithAssetCounts.entrySet()) {
+            //находится оунер по кею в мапе
+            AssetsOwner assetsOwner = russianAssetsOwnerRepository.findById(Long.valueOf(mapElement.getKey()))
+                    .orElseThrow();
+            //находится счёт с деньгами данного оунера
+            AccountCash assetsOwnerAccountCash = accountCashRepository.findByAccountAndAssetCurrencyAndAssetsOwner(
+                    accountFromDTO, assetCurrency, assetsOwner);
+            //считается, сколько оунер хочет потратить (т.е. сколько стоит ЕГО ДОЛЯ в пакете бумаг, которую хочет купить)
+            Float ownerWantToBuyAssetsInCurrency =
+
+            //проверка, если величина в переменной выше больше, чем денег у оунера, то сущность не создаётся, нужен
+            //новый DTO!
+            if (ownerWantToBuyAssetsInCurrency > assetsOwnerAccountCash.getAmount()) {
+                throw new IllegalArgumentException("At least one of the owners does not have enough money to buy!");
+            }
+        }
+    }
 }
