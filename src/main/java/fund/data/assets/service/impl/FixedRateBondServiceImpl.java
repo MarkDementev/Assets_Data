@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -72,16 +74,12 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
                 assetCount, assetOwnersWithAssetCounts, accountFromDTO, iSIN, assetIssuerTitle, lastAssetBuyDate,
                 bondParValue, purchaseBondParValuePercent, bondAccruedInterest, bondCouponValue,
                 expectedBondCouponPaymentsCount, bondMaturityDate);
-
-        isOwnersHaveEnoughMoney(fixedRateBondPackageToCreate, accountFromDTO);
-
         AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
                 fixedRateBondPackageToCreate);
+        Map<AccountCash, Float> accountCashAmountChanges = formAccountCashAmountChanges(
+                atomicFixedRateBondPackage.get(), accountFromDTO);
 
-        //Если сущность пакета бумаг может быть создана (т.е. ничего не выбросилось и не упало выше), то измени
-        // положение на счетах в сущностях AccountCash оунеров
-        changeAccountCashAmountsOfOwners(accountFromDTO, assetCurrency, assetOwnersWithAssetCounts);
-
+        changeAccountCashAmountsOfOwners(accountCashAmountChanges);
         return fixedRateBondRepository.save(atomicFixedRateBondPackage.get());
     }
 
@@ -110,12 +108,18 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     }
 
     /**
-     * Проводится проверка, могут ли собственники активов купить данный пакет облигаций, исходя из наличия денежных
-     * средств у себя на счетах (эта информация находится в сущности {@link AccountCash}).
-     * @param fixedRateBondPackageToCreate пакет облигаций с фиксированным купоном с общим ISIN, который проверяется.
+     * Формируется мапа для изменения состояния группы счетов с денежными средствами в процессе создания
+     * сущности {@link FixedRateBondPackage}.
+     * Параллельно проводится валидация, могут ли собственники активов купить данный пакет облигаций, исходя из наличия
+     * денежных средств у себя на счетах (эта информация находится в сущности {@link AccountCash}).
+     * @param fixedRateBondPackageToCreate пакет облигаций с фиксированным купоном с общим ISIN, который создаётся.
+     * @return мапа, где кэй - счет с денежными средствами {@link AccountCash}, вэлью - сумма, на которую надо будет
+     * уменьшить соответствующий счёт.
      * @since 0.0.1-alpha
      */
-    private void isOwnersHaveEnoughMoney(FixedRateBondPackage fixedRateBondPackageToCreate, Account accountToWorkOn) {
+    private Map<AccountCash, Float> formAccountCashAmountChanges(FixedRateBondPackage fixedRateBondPackageToCreate,
+                                                      Account accountToWorkOn) {
+        Map<AccountCash, Float> accountCashes = new HashMap<>();
         Float totalAssetPurchasePriceWithCommission = fixedRateBondPackageToCreate
                 .getTotalAssetPurchasePriceWithCommission();
         Map<String, Float> assetOwnersWithAssetCounts = fixedRateBondPackageToCreate.getAssetRelationship()
@@ -132,7 +136,25 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
 
             if (ownerWantToBuyAssetsInCurrency > assetsOwnerAccountCash.getAmount()) {
                 throw new IllegalArgumentException("At least one of the owners does not have enough money to buy!");
+            } else {
+                accountCashes.put(assetsOwnerAccountCash, ownerWantToBuyAssetsInCurrency);
             }
+        }
+        return accountCashes;
+    }
+
+    /**
+     * Суммы на счетах с денежными средствами уменьшаются при создании (покупке) пакета облигаций с фиксированным
+     * купоном.
+     * @param accountCashAmountChanges мапа, где кэй - счет с денежными средствами {@link AccountCash}, вэлью - сумма,
+     * на которую надо будет уменьшить соответствующий счёт.
+     * @since 0.0.1-alpha
+     */
+    private void changeAccountCashAmountsOfOwners(Map<AccountCash, Float> accountCashAmountChanges) {
+        for (Map.Entry<AccountCash, Float> mapElement : accountCashAmountChanges.entrySet()) {
+            Float mapElementAccountCashAmount = mapElement.getKey().getAmount();
+
+            mapElement.getKey().setAmount(mapElementAccountCashAmount - mapElement.getValue());
         }
     }
 }
