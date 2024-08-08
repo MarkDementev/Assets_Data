@@ -15,11 +15,12 @@ import fund.data.assets.utils.enums.AssetCurrency;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -49,8 +50,8 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         return fixedRateBondRepository.findAll();
     }
 
-    //TODO продумай изоляцию и подобные прибамбасы после реализации всего внутри!
     @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = {Exception.class})
     public FixedRateBondPackage firstBuyFixedRateBond(FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO) {
         isAssetOwnersWithAssetCountsValid(firstBuyFixedRateBondDTO.getAssetCount(),
                 firstBuyFixedRateBondDTO.getAssetOwnersWithAssetCounts());
