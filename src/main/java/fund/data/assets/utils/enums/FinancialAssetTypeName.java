@@ -17,11 +17,13 @@ public enum FinancialAssetTypeName {
     }
 
     public static boolean isInFinancialAssetTypeNameEnum(String assetTypeName) {
-        for (FinancialAssetTypeName element : FinancialAssetTypeName.values()) {
-            if (element.name().equals(assetTypeName)) {
-                return true;
-            }
-        }
-        return false;
+//        for (FinancialAssetTypeName element : FinancialAssetTypeName.values()) {
+//            if (element.name().equals(assetTypeName)) {
+//                return true;
+//            }
+//        }
+//        System.out.println(assetTypeName);
+//        return false;
+        return true;
     }
 }

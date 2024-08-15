@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class FixedRateBondServiceImpl implements FixedRateBondService {
     private final FixedRateBondRepository fixedRateBondRepository;
     private final AccountRepository accountRepository;
-    //TODO Надо-бы не только чтобы с русскими ПО работало!
+    //TODO Надо-бы не только чтобы с русскими ПО работало! Сделай это, добившись сначала общей функциональности класса
     private final RussianAssetsOwnerRepository russianAssetsOwnerRepository;
     private final AccountCashRepository accountCashRepository;
 

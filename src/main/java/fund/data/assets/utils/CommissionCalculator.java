@@ -4,7 +4,7 @@ import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.repository.TurnoverCommissionValueRepository;
 import fund.data.assets.utils.enums.CommissionSystem;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,7 @@ import static fund.data.assets.utils.enums.CommissionSystem.TURNOVER;
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Component
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class CommissionCalculator {
     public static final String NOT_IMPLEMENTED_COMMISSION_SYSTEM_TO_CALCULATE = "Sorry, this commission system" +
             " is not yet supported by the fund.";
@@ -25,7 +25,7 @@ public class CommissionCalculator {
     private TurnoverCommissionValueRepository turnoverCommissionValueRepository;
 
     /**
-     * Метод рассчитывает общий размер комиссии с оборота по активу при конкретной тразакции.
+     * Метод рассчитывает общий размер комиссии с оборота по активу при конкретной транзакции.
      * @param commissionSystem Система комиссии, необходимо, чтобы была только CommissionSystem.TURNOVER.
      * @param account Счёт, где проводится операция.
      * @param assetTypeName Тип актива, с которым проводится операция.

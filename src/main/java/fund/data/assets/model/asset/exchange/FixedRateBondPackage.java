@@ -1,7 +1,9 @@
 package fund.data.assets.model.asset.exchange;
 
+import fund.data.assets.config.SpringConfiguration;
 import fund.data.assets.exception.UnrealAddingAssetsParameterException;
 import fund.data.assets.model.financial_entities.Account;
+import fund.data.assets.repository.TurnoverCommissionValueRepository;
 import fund.data.assets.utils.AutoSelector;
 import fund.data.assets.utils.CommissionCalculator;
 import fund.data.assets.utils.enums.AssetCurrency;
@@ -38,6 +40,7 @@ import java.util.Map;
 @Getter
 @Setter
 public class FixedRateBondPackage extends ExchangeAsset {
+    //TODO М.б. надо добавить трансиент?
     public static final String WRONG_DATE_BOND_ADDING_WARNING = "This is error - don't add into system already" +
             " redeemed bond";
 
@@ -125,8 +128,8 @@ public class FixedRateBondPackage extends ExchangeAsset {
         this.bondAccruedInterest = bondAccruedInterest;
 
         if (getAssetCommissionSystem() != null) {
-            CommissionCalculator commissionCalculator = new CommissionCalculator();
-
+            CommissionCalculator commissionCalculator = new CommissionCalculator(SpringConfiguration.contextProvider()
+                    .getApplicationContext().getBean(TurnoverCommissionValueRepository.class));
             this.totalCommissionForPurchase = commissionCalculator.calculateTotalCommissionForPurchase(
                     getAssetCommissionSystem(),
                     account,

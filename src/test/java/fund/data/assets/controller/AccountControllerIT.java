@@ -99,7 +99,7 @@ class AccountControllerIT {
 	@Test
 	public void createAccountIT() throws Exception {
 		var response = testUtils.perform(
-						post("/data" + ACCOUNT_CONTROLLER_PATH)
+				post("/data" + ACCOUNT_CONTROLLER_PATH)
 								.content(asJson(testUtils.getAccountDTO()))
 								.contentType(APPLICATION_JSON)
 				)
