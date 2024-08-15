@@ -1,5 +1,6 @@
 package fund.data.assets.utils.enums;
 
+import fund.data.assets.model.asset.exchange.FixedRateBondPackage;
 import fund.data.assets.model.asset.relationship.FinancialAssetRelationship;
 
 /**
@@ -8,7 +9,7 @@ import fund.data.assets.model.asset.relationship.FinancialAssetRelationship;
  * @author MarkDementev a.k.a JavaMarkDem
  */
 public enum FinancialAssetTypeName {
-    FRB("FixedRateBondPackage");
+    FRB(FixedRateBondPackage.class.getTypeName());
 
     private final String title;
 
@@ -17,13 +18,11 @@ public enum FinancialAssetTypeName {
     }
 
     public static boolean isInFinancialAssetTypeNameEnum(String assetTypeName) {
-//        for (FinancialAssetTypeName element : FinancialAssetTypeName.values()) {
-//            if (element.name().equals(assetTypeName)) {
-//                return true;
-//            }
-//        }
-//        System.out.println(assetTypeName);
-//        return false;
-        return true;
+        for (FinancialAssetTypeName element : FinancialAssetTypeName.values()) {
+            if (element.title.equals(assetTypeName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

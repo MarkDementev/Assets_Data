@@ -77,6 +77,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
                 expectedBondCouponPaymentsCount, bondMaturityDate);
         AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
                 fixedRateBondPackageToCreate);
+        //TODO я здесь в тесте!
         Map<AccountCash, Float> accountCashAmountChanges = formAccountCashAmountChanges(
                 atomicFixedRateBondPackage.get(), accountFromDTO);
 
