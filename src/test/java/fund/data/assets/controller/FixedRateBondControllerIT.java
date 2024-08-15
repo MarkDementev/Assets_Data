@@ -6,8 +6,8 @@ import fund.data.assets.TestUtils;
 import fund.data.assets.config.SpringConfigForTests;
 import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
 import fund.data.assets.model.asset.exchange.FixedRateBondPackage;
-
 import fund.data.assets.repository.TurnoverCommissionValueRepository;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 
@@ -63,5 +63,7 @@ public class FixedRateBondControllerIT {
 
         assertNotNull(fixedRateBondPackageFromResponse.getCreatedAt());
         assertNotNull(fixedRateBondPackageFromResponse.getUpdatedAt());
+
+        //дополнительно проверь, как дела в смеэных сущностях, как минимум, уменьшились ли деньги!
     }
 }

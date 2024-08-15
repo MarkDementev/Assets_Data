@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.time.LocalDate;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -231,13 +232,13 @@ public class TestUtils {
                 accountRepository.findAll().get(0).getId(),
                 RUSRUB,
                 russianAssetsOwnerRepository.findAll().get(0).getId(),
-                10000.00F
+                10150.0F
         );
         AccountCashDTO secondAccountCashDTO = new AccountCashDTO(
                 accountRepository.findAll().get(0).getId(),
                 RUSRUB,
                 russianAssetsOwnerRepository.findAll().get(1).getId(),
-                20000.00F
+                20300.0F
         );
         createAccountCash(firstAccountCashDTO);
         createAccountCash(secondAccountCashDTO);

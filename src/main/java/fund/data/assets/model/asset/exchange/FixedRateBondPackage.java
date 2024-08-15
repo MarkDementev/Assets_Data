@@ -12,6 +12,7 @@ import fund.data.assets.utils.enums.CommissionSystem;
 import fund.data.assets.utils.enums.TaxSystem;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -40,7 +41,7 @@ import java.util.Map;
 @Getter
 @Setter
 public class FixedRateBondPackage extends ExchangeAsset {
-    //TODO М.б. надо добавить трансиент?
+    @Transient
     public static final String WRONG_DATE_BOND_ADDING_WARNING = "This is error - don't add into system already" +
             " redeemed bond";
 
@@ -135,7 +136,7 @@ public class FixedRateBondPackage extends ExchangeAsset {
                     account,
                     FixedRateBondPackage.class.getTypeName(),
                     getAssetCount(),
-                    purchaseBondParValuePercent * bondParValue + bondAccruedInterest);
+                    (purchaseBondParValuePercent / 100.0F) * bondParValue + bondAccruedInterest);
         } else {
             this.totalCommissionForPurchase = 0.00F;
         }
@@ -159,7 +160,7 @@ public class FixedRateBondPackage extends ExchangeAsset {
      * @since 0.0.1-alpha
      */
     private Float calculateTotalAssetPurchasePriceWithCommission() {
-        return getAssetCount() * (purchaseBondParValuePercent * bondParValue + bondAccruedInterest)
+        return getAssetCount() * ((purchaseBondParValuePercent / 100.0F) * bondParValue + bondAccruedInterest)
                 + totalCommissionForPurchase;
     }
 
