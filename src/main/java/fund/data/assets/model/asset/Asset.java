@@ -1,5 +1,7 @@
 package fund.data.assets.model.asset;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import fund.data.assets.model.asset.relationship.AssetRelationship;
 import fund.data.assets.model.asset.relationship.FinancialAssetRelationship;
 import fund.data.assets.model.financial_entities.Account;
@@ -92,9 +94,9 @@ public abstract class Asset {
      * конкретного типа актива. Как и Asset, AssetRelationship - это абстрактный класс.
      * Поле инициализируется после заполнения полей актива, но до инициализации полей его наследников.
      */
-    @NotNull
-    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "asset_relationship_id")
+    @JsonManagedReference
     private AssetRelationship assetRelationship;
 
     @CreationTimestamp

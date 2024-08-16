@@ -5,18 +5,21 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="create-test-turnover-commission-value-table" author="MarkDementev">
-        <createTable tableName="turnover_commission_percent_values">
+    <changeSet id="create-test-account-cash-table" author="MarkDementev">
+        <createTable tableName="free_owners_cash_on_accounts">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="account_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="asset_type_name" type="varchar">
+            <column name="asset_currency" type="varchar">
                 <constraints nullable="false"/>
             </column>
-            <column name="commission_percent_value" type="FLOAT">
+            <column name="assets_owner_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="FLOAT">
                 <constraints nullable="false"/>
             </column>
             <column name="created_at" type="TIMESTAMP(3) WITH TIMEZONE">
@@ -27,10 +30,16 @@
             </column>
         </createTable>
 
-        <addForeignKeyConstraint constraintName="fkb9pyf4sgc87yqcn2ksie4b094"
-                                 baseTableName="turnover_commission_percent_values"
+        <addForeignKeyConstraint constraintName="fkfgo63fkisjbhbnjoy972ptt1v"
+                                 baseTableName="free_owners_cash_on_accounts"
                                  baseColumnNames="account_id"
                                  referencedTableName="accounts"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint constraintName="fk2n542ltrxw12faov6cj1tif5b"
+                                 baseTableName="free_owners_cash_on_accounts"
+                                 baseColumnNames="assets_owner_id"
+                                 referencedTableName="assets_owners_with_every_country_personal_data"
                                  referencedColumnNames="id"/>
     </changeSet>
 

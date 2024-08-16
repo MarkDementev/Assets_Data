@@ -2,6 +2,8 @@ package fund.data.assets.model.asset.relationship;
 
 import fund.data.assets.model.asset.Asset;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Entity;
@@ -51,8 +53,9 @@ public abstract class AssetRelationship {
     private Long id;
 
     @NotNull
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "asset_id", nullable = false)
+    @JsonBackReference
     private Asset asset;
 
     /**

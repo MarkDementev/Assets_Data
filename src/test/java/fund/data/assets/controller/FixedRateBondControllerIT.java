@@ -61,9 +61,11 @@ public class FixedRateBondControllerIT {
         assertNotNull(fixedRateBondPackageFromResponse.getId());
         assertEquals(firstBuyFixedRateBondDTO.getAssetCurrency(), fixedRateBondPackageFromResponse.getAssetCurrency());
 
+        //TODO Допиши здесь проверки для этой сущности!
+
         assertNotNull(fixedRateBondPackageFromResponse.getCreatedAt());
         assertNotNull(fixedRateBondPackageFromResponse.getUpdatedAt());
 
-        //дополнительно проверь, как дела в смеэных сущностях, как минимум, уменьшились ли деньги!
+        //TODO дополнительно проверь, как дела в смеэных сущностях, как минимум, уменьшились ли деньги!
     }
 }

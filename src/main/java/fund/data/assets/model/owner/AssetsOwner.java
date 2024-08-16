@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Convert;
+import jakarta.persistence.Table;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -32,6 +33,7 @@ import java.time.LocalDate;
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Entity
+@Table(name = "assets_owners_with_every_country_personal_data")
 @Inheritance(strategy = InheritanceType.JOINED)
 @JsonDeserialize(as = RussianAssetsOwner.class)
 @NoArgsConstructor
