@@ -2,7 +2,7 @@ package fund.data.assets.model.owner;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import fund.data.assets.utils.converter.StringCryptoConverter;
+import fund.data.assets.utils.StringCryptoConverter;
 import fund.data.assets.utils.enums.RussianSexEnum;
 
 import jakarta.persistence.Entity;
@@ -18,17 +18,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import org.springframework.context.annotation.Primary;
-
 import java.time.LocalDate;
 
 /**
  * Сущность - собственник активов - гражданин РФ. Для идентификации используются данные из паспорта гражданина РФ.
- * Класс - наследник абстрактного AssetsOwner. Используется по дефолту (@Primary).
+ * Класс - наследник абстрактного AssetsOwner.
  * @since 0.0.1-alpha
  * @author MarkDementev a.k.a JavaMarkDem
  */
-@Primary
 @Entity
 @Table(name = "russian_assets_owners")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})

@@ -1,8 +1,11 @@
 package fund.data.assets.model.asset.relationship;
 
-import fund.data.assets.model.asset.Asset;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+import fund.data.assets.model.asset.Asset;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -42,8 +45,11 @@ import static jakarta.persistence.GenerationType.IDENTITY;
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@Table(name = "asset_ownerships_with_account_placement")
+@Table(name = "abstract_asset_ownerships_with_account_placement")
+@Inheritance(strategy = InheritanceType.JOINED)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
+@JsonSubTypes({@JsonSubTypes.Type(value = FinancialAssetRelationship.class)})
 @NoArgsConstructor
 @Getter
 @Setter
@@ -53,7 +59,7 @@ public abstract class AssetRelationship {
     private Long id;
 
     @NotNull
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "asset_id", nullable = false)
     @JsonBackReference
     private Asset asset;

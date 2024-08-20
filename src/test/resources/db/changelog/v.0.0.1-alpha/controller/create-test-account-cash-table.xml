@@ -36,7 +36,7 @@
                                  referencedTableName="accounts"
                                  referencedColumnNames="id"/>
 
-        <addForeignKeyConstraint constraintName="fk2n542ltrxw12faov6cj1tif5b"
+        <addForeignKeyConstraint constraintName="fkbe1guvtynfqcb54kacn5t3rwk"
                                  baseTableName="free_owners_cash_on_accounts"
                                  baseColumnNames="assets_owner_id"
                                  referencedTableName="assets_owners_with_every_country_personal_data"

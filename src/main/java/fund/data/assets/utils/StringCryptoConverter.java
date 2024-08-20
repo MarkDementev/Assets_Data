@@ -1,7 +1,8 @@
-package fund.data.assets.utils.converter;
+package fund.data.assets.utils;
 
 import fund.data.assets.model.owner.AssetsOwner;
 import fund.data.assets.model.owner.RussianAssetsOwner;
+
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 

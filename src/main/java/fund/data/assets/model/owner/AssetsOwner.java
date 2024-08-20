@@ -1,8 +1,10 @@
 package fund.data.assets.model.owner;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import fund.data.assets.utils.converter.StringCryptoConverter;
+import fund.data.assets.utils.StringCryptoConverter;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Inheritance;
@@ -35,7 +37,9 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "assets_owners_with_every_country_personal_data")
 @Inheritance(strategy = InheritanceType.JOINED)
-@JsonDeserialize(as = RussianAssetsOwner.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
+@JsonSubTypes({@JsonSubTypes.Type(value = RussianAssetsOwner.class)})
 @NoArgsConstructor
 @Getter
 @Setter

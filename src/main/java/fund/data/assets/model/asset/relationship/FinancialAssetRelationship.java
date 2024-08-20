@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import jakarta.validation.constraints.NotNull;
 
@@ -23,6 +24,7 @@ import java.util.Map;
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Entity
+@Table(name = "financial_asset_relationships")
 @NoArgsConstructor
 @Getter
 @Setter

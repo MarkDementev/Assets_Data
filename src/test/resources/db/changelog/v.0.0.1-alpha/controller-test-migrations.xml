@@ -7,8 +7,9 @@
 
     <include file="controller/create-test-accounts-table.xml" relativeToChangelogFile="true"/>
     <include file="controller/create-test-turnover-commission-value-table.xml" relativeToChangelogFile="true"/>
-    <include file="controller/create-test-russian-assets-owner-table.xml" relativeToChangelogFile="true"/>
     <include file="controller/create-test-assets-owner-table.xml" relativeToChangelogFile="true"/>
+    <include file="controller/create-test-russian-assets-owner-table.xml" relativeToChangelogFile="true"/>
     <include file="controller/create-test-account-cash-table.xml" relativeToChangelogFile="true"/>
-
+<!--    <include file="controller/create-test-asset-relationship-table.xml" relativeToChangelogFile="true"/>-->
+<!--    <include file="controller/create-test-financial-asset-relationship-table.xml" relativeToChangelogFile="true"/>-->
 </databaseChangeLog>
