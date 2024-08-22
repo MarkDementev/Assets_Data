@@ -6,7 +6,6 @@ import fund.data.assets.TestUtils;
 import fund.data.assets.config.SpringConfigForTests;
 import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
 import fund.data.assets.model.asset.exchange.FixedRateBondPackage;
-import fund.data.assets.repository.TurnoverCommissionValueRepository;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
@@ -35,8 +34,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class FixedRateBondControllerIT {
     @Autowired
     private TestUtils testUtils;
-    @Autowired
-    private TurnoverCommissionValueRepository turnoverCommissionValueRepository;
 
     @AfterEach
     public void clearRepositories() {

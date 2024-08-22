@@ -10,6 +10,7 @@ import fund.data.assets.utils.enums.TaxSystem;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
+import jakarta.persistence.Table;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotBlank;
@@ -31,6 +32,7 @@ import java.util.Map;
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Entity
+@Table(name = "exchange_assets")
 @NoArgsConstructor
 @Getter
 @Setter

@@ -47,7 +47,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
  */
 @Entity
 @Table(name = "abstract_assets")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor
 @Getter
 @Setter

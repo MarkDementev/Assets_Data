@@ -12,6 +12,7 @@ import fund.data.assets.utils.enums.CommissionSystem;
 import fund.data.assets.utils.enums.TaxSystem;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 import jakarta.validation.constraints.NotNull;
@@ -37,6 +38,7 @@ import java.util.Map;
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Entity
+@Table(name = "fixed_rate_bonds")
 @NoArgsConstructor
 @Getter
 @Setter

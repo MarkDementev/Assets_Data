@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 /**
  * DAO для обслуживания банковских счетов.
- * Обслуживаемая сущность - {@link fund.data.assets.model.financial_entities.Account}.
+ * Обслуживаемая сущность - {@link Account}.
  * @version 0.0.1-alpha
  * @author MarkDementev a.k.a JavaMarkDem
  */

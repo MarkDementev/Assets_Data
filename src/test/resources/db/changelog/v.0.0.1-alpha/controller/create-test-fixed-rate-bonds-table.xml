@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="create-test-fixed-rate-bonds-table" author="MarkDementev">
+        <createTable tableName= "fixed_rate_bonds">
+            <column name="asset_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bond_par_value" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="purchase_bond_par_value_percent" type="FLOAT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bond_accrued_interest" type="FLOAT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_commission_for_purchase" type="FLOAT">
+            </column>
+            <column name="total_asset_purchase_price_with_commission" type="FLOAT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bond_coupon_value" type="FLOAT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expected_bond_coupon_payments_count" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bond_maturity_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="simple_yield_to_maturity" type="FLOAT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mark_dementev_yield_indicator" type="FLOAT">
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="fk53sil2ysgdbiqmcsb5r40ltfg"
+                                 baseTableName="fixed_rate_bonds"
+                                 baseColumnNames="asset_id"
+                                 referencedTableName="abstract_assets"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

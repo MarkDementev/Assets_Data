@@ -17,6 +17,8 @@ import fund.data.assets.repository.AccountRepository;
 import fund.data.assets.repository.AccountCashRepository;
 import fund.data.assets.repository.RussianAssetsOwnerRepository;
 import fund.data.assets.repository.TurnoverCommissionValueRepository;
+import fund.data.assets.repository.FinancialAssetRelationshipRepository;
+import fund.data.assets.repository.FixedRateBondRepository;
 
 import org.openapitools.jackson.nullable.JsonNullable;
 
@@ -60,6 +62,10 @@ public class TestUtils {
     private RussianAssetsOwnerRepository russianAssetsOwnerRepository;
     @Autowired
     private AccountCashRepository accountCashRepository;
+    @Autowired
+    private FixedRateBondRepository fixedRateBondRepository;
+    @Autowired
+    private FinancialAssetRelationshipRepository financialAssetRelationshipRepository;
 
     private final AccountDTO accountDTO = new AccountDTO(
             "defaultBank",
@@ -152,7 +158,10 @@ public class TestUtils {
                     JsonNullable.of("31,01,1999"),
                     JsonNullable.of("999-99"));
 
+    //По логике, не надо напрямую юзать взаимосвязь, она должна схлопываться при удалении актива
     public void tearDown() {
+        fixedRateBondRepository.deleteAll();
+//        financialAssetRelationshipRepository.deleteAll();
         accountCashRepository.deleteAll();
         russianAssetsOwnerRepository.deleteAll();
         turnoverCommissionValueRepository.deleteAll();

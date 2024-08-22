@@ -4,31 +4,27 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-
-    <changeSet id="create-test-asset-relationship-table" author="MarkDementev">
-        <createTable tableName="abstract_asset_ownerships_with_account_placement">
-            <column name="id" type="BIGINT">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
+    <changeSet id="create-test-exchange-assets-table" author="MarkDementev">
+        <createTable tableName= "exchange_assets">
             <column name="asset_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-<!--            <column name="surname" type="varchar">-->
-<!--                <constraints nullable="false"/>-->
-<!--            </column>-->
-            <column name="created_at" type="TIMESTAMP(3) WITH TIMEZONE">
+            <column name="iSIN" type="varchar">
                 <constraints nullable="false"/>
             </column>
-            <column name="updated_at" type="TIMESTAMP(3) WITH TIMEZONE">
+            <column name="asset_issuer_title" type="varchar">
                 <constraints nullable="false"/>
+            </column>
+            <column name="last_asset_buy_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="asset_commission_system" type="varchar">
             </column>
         </createTable>
-
-        <addForeignKeyConstraint constraintName="fkha3t5j0pyhdrdxleiuwh49jk9"
-                                 baseTableName="abstract_asset_ownerships_with_account_placement"
+        <addForeignKeyConstraint constraintName="fkorwb8jgrpglk9gduh9hwbg0ha"
+                                 baseTableName="exchange_assets"
                                  baseColumnNames="asset_id"
                                  referencedTableName="abstract_assets"
                                  referencedColumnNames="id"/>
     </changeSet>
-
 </databaseChangeLog>
