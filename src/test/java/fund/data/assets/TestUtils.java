@@ -158,10 +158,9 @@ public class TestUtils {
                     JsonNullable.of("31,01,1999"),
                     JsonNullable.of("999-99"));
 
-    //По логике, не надо напрямую юзать взаимосвязь, она должна схлопываться при удалении актива
     public void tearDown() {
         fixedRateBondRepository.deleteAll();
-//        financialAssetRelationshipRepository.deleteAll();
+        financialAssetRelationshipRepository.deleteAll();
         accountCashRepository.deleteAll();
         russianAssetsOwnerRepository.deleteAll();
         turnoverCommissionValueRepository.deleteAll();

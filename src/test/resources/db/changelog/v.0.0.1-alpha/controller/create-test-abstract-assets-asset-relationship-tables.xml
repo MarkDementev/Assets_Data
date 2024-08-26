@@ -55,10 +55,5 @@
                                  baseColumnNames="asset_relationship_id"
                                  referencedTableName="abstract_asset_ownerships_with_account_placement"
                                  referencedColumnNames="id"/>
-        <addForeignKeyConstraint constraintName="fk6673sqrf91uc2of45fyny8nh9"
-                                 baseTableName="abstract_asset_ownerships_with_account_placement"
-                                 baseColumnNames="asset_id"
-                                 referencedTableName="abstract_assets"
-                                 referencedColumnNames="id"/>
     </changeSet>
 </databaseChangeLog>

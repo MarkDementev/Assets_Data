@@ -1,7 +1,5 @@
 package fund.data.assets.model.asset;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import fund.data.assets.model.asset.relationship.AssetRelationship;
 import fund.data.assets.model.asset.relationship.FinancialAssetRelationship;
 import fund.data.assets.model.financial_entities.Account;
@@ -98,7 +96,6 @@ public abstract class Asset {
      */
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "asset_relationship_id")
-    @JsonManagedReference
     private AssetRelationship assetRelationship;
 
     @CreationTimestamp
@@ -116,7 +113,7 @@ public abstract class Asset {
         this.assetTaxSystem = assetTaxSystem;
 
         if (FinancialAssetTypeName.isInFinancialAssetTypeNameEnum(assetTypeName)) {
-            this.assetRelationship = new FinancialAssetRelationship(this, assetOwnersWithAssetCounts, account);
+            this.assetRelationship = new FinancialAssetRelationship(assetOwnersWithAssetCounts, account);
         } else {
             throw new IllegalArgumentException("Sorry, this asset type is not yet supported by the fund!");
         }

@@ -81,6 +81,12 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
                 atomicFixedRateBondPackage.get(), accountFromDTO);
 
         changeAccountCashAmountsOfOwners(accountCashAmountChanges);
+        /*
+         * Сущность сохраняется, а потом снова сохраняется. Это нужно, чтобы инициализировать поле assetId
+         * в сущности AssetRelationship, которое заполняется значением из поля id из сохранённой в БД ранее сущности.
+         */
+        fixedRateBondRepository.save(atomicFixedRateBondPackage.get());
+        atomicFixedRateBondPackage.get().getAssetRelationship().setAssetId(fixedRateBondPackageToCreate.getId());
         return fixedRateBondRepository.save(atomicFixedRateBondPackage.get());
     }
 

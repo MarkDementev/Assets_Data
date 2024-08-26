@@ -6,6 +6,8 @@ import fund.data.assets.TestUtils;
 import fund.data.assets.config.SpringConfigForTests;
 import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
 import fund.data.assets.model.asset.exchange.FixedRateBondPackage;
+import fund.data.assets.model.asset.relationship.FinancialAssetRelationship;
+import fund.data.assets.utils.enums.TaxSystem;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
@@ -57,12 +59,21 @@ public class FixedRateBondControllerIT {
 
         assertNotNull(fixedRateBondPackageFromResponse.getId());
         assertEquals(firstBuyFixedRateBondDTO.getAssetCurrency(), fixedRateBondPackageFromResponse.getAssetCurrency());
-
-        //TODO Допиши здесь проверки для этой сущности!
-
+        assertEquals(FixedRateBondPackage.class.getTypeName(), fixedRateBondPackageFromResponse.getAssetTypeName());
+        assertEquals(firstBuyFixedRateBondDTO.getAssetTitle(), fixedRateBondPackageFromResponse.getAssetTitle());
+        assertEquals(firstBuyFixedRateBondDTO.getAssetCount(), fixedRateBondPackageFromResponse.getAssetCount());
+        assertEquals(TaxSystem.EQUAL_COUPON_DIVIDEND_TRADE, fixedRateBondPackageFromResponse.getAssetTaxSystem());
+        assertNotNull(fixedRateBondPackageFromResponse.getAssetRelationship());
+        assertNotNull(fixedRateBondPackageFromResponse.getAssetRelationship().getAssetId());
+        assertEquals(fixedRateBondPackageFromResponse.getAssetRelationship().getClass(),
+                FinancialAssetRelationship.class);
         assertNotNull(fixedRateBondPackageFromResponse.getCreatedAt());
         assertNotNull(fixedRateBondPackageFromResponse.getUpdatedAt());
-
+        assertEquals(firstBuyFixedRateBondDTO.getISIN(), fixedRateBondPackageFromResponse.getISIN());
+        assertEquals(firstBuyFixedRateBondDTO.getAssetIssuerTitle(),
+                fixedRateBondPackageFromResponse.getAssetIssuerTitle());
+        //TODO пиши дальше, след поле - lastAssetBuyDate в ExchangeAsset
+        //TODO проверь внутренности assetRelationship
         //TODO дополнительно проверь, как дела в смеэных сущностях, как минимум, уменьшились ли деньги!
     }
 }
