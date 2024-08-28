@@ -56,6 +56,7 @@ public class FixedRateBondPackage extends ExchangeAsset {
 
     /**
      * "Чистая" цена облигации при покупке. Представляет собой формируемую на рынке цену, являющуюся % от номинала.
+     * Например, если бумага куплена по цене 1500, а номинал равен 1000, то значение поля равно 150.00F.
      */
     @NotNull
     @Positive
@@ -103,7 +104,8 @@ public class FixedRateBondPackage extends ExchangeAsset {
     private LocalDate bondMaturityDate;
 
     /**
-     * Простая (без реинвестирования купонных выплат) доходность к погашению облигации.
+     * Простая (без реинвестирования купонных выплат) доходность к погашению облигации. К примеру, если показатель
+     * равен 8.45% - то поле будет равно 8.45F.
      */
     @NotNull
     private Float simpleYieldToMaturity;
@@ -114,6 +116,7 @@ public class FixedRateBondPackage extends ExchangeAsset {
      * Для определения размера дохода учитывает не только купоны, но и возможный доход при погашении по более
      * высокой цене, чем облигация была приобретена.
      * Не учитывает возможный дополнительный доход от реинвестирования купонов.
+     * К примеру, если показатель равен 8.45% - то поле будет равно 8.45F.
      */
     private Float markDementevYieldIndicator;
 
@@ -138,7 +141,7 @@ public class FixedRateBondPackage extends ExchangeAsset {
                     account,
                     FixedRateBondPackage.class.getTypeName(),
                     getAssetCount(),
-                    (purchaseBondParValuePercent / 100.0F) * bondParValue + bondAccruedInterest);
+                    (purchaseBondParValuePercent / 100.00F) * bondParValue + bondAccruedInterest);
         } else {
             this.totalCommissionForPurchase = 0.00F;
         }
@@ -162,29 +165,31 @@ public class FixedRateBondPackage extends ExchangeAsset {
      * @since 0.0.1-alpha
      */
     private Float calculateTotalAssetPurchasePriceWithCommission() {
-        return getAssetCount() * ((purchaseBondParValuePercent / 100.0F) * bondParValue + bondAccruedInterest)
+        return getAssetCount() * ((purchaseBondParValuePercent / 100.00F) * bondParValue + bondAccruedInterest)
                 + totalCommissionForPurchase;
     }
 
     /**
      * Возвращает простую доходность к погашению.
      * Источник формулы - https://bcs-express.ru/novosti-i-analitika/dokhodnost-obligatsii-na-vse-sluchai-zhizni
-     * @return Простая доходность к погашению в % годовых, выраженная в десятичной форме. К примеру, 8% годовых = 0.08.
+     * @return Простая доходность к погашению в % годовых, выраженная в десятичной форме. К примеру, 8% годовых = 8.00F.
      * @since 0.0.1-alpha
      */
     private Float calculateSimpleYieldToMaturity() {
-        float marketClearPriceInCurrency = purchaseBondParValuePercent * bondParValue;
+        float marketClearPriceInCurrency = purchaseBondParValuePercent * bondParValue / 100.00F;
         float allExpectedCouponPaymentsSum = bondCouponValue * expectedBondCouponPaymentsCount;
         int daysBeforeMaturity = calculateDaysBeforeMaturity();
 
-        return  ((bondParValue - marketClearPriceInCurrency + (allExpectedCouponPaymentsSum - bondAccruedInterest))
-                / marketClearPriceInCurrency) * (FinancialAndAnotherConstants.YEAR_DAYS_COUNT / daysBeforeMaturity);
+        return  (((bondParValue - marketClearPriceInCurrency + (allExpectedCouponPaymentsSum - bondAccruedInterest))
+                / marketClearPriceInCurrency) * (FinancialAndAnotherConstants.YEAR_DAYS_COUNT / daysBeforeMaturity))
+                * 100.00F;
     }
 
     /**
      * Возвращает "неакадемический параметр" реальной доходности % в год - основной параметр Фонда
      * для отбора облигаций с фиксированным купоном.
-     * @return Показатель реальной доходности по облигации в % годовых.
+     * @return Показатель реальной доходности по облигации в % годовых, выраженный в десятичной форме. К примеру,
+     * 8% годовых = 8.00F.
      * @since 0.0.1-alpha
      */
     private Float calculateMarkDementevYieldIndicator() {
@@ -197,9 +202,9 @@ public class FixedRateBondPackage extends ExchangeAsset {
         if (bondParValue > oneBondValueSummedWithHisCommission) {
             taxValueOfMaturityIncome = incomeTaxCorrection * (bondParValue - oneBondValueSummedWithHisCommission);
         }
-        return ((expectedBondCouponPaymentsSum * incomeTaxCorrection + bondParValue + taxValueOfMaturityIncome)
-                / oneBondValueSummedWithHisCommission - 1)
-                / (daysBeforeMaturity / FinancialAndAnotherConstants.YEAR_DAYS_COUNT);
+        return (((expectedBondCouponPaymentsSum * incomeTaxCorrection + bondParValue + taxValueOfMaturityIncome)
+                / oneBondValueSummedWithHisCommission - 1) / (daysBeforeMaturity
+                / FinancialAndAnotherConstants.YEAR_DAYS_COUNT)) * 100.00F;
     }
 
     /**

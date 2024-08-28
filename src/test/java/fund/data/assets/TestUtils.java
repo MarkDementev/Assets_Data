@@ -259,13 +259,13 @@ public class TestUtils {
                 accountRepository.findAll().get(0).getId(),
                 "RU000A103NZ8",
                 "assetIssuerTitle",
-                LocalDate.of(2024, 2, 22),
+                LocalDate.of(2024, 2, 23),
                 1000,
-                100.0F,
-                0.0F,
-                50.0F,
-                2,
-                LocalDate.of(2024, 12, 20)
+                100.00F,
+                0.00F,
+                100.00F,
+                1,
+                LocalDate.of(2025, 2, 22)
         );
     }
 

@@ -7,6 +7,7 @@ import fund.data.assets.config.SpringConfigForTests;
 import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
 import fund.data.assets.model.asset.exchange.FixedRateBondPackage;
 import fund.data.assets.model.asset.relationship.FinancialAssetRelationship;
+import fund.data.assets.utils.enums.CommissionSystem;
 import fund.data.assets.utils.enums.TaxSystem;
 
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.text.DecimalFormat;
 
 import static fund.data.assets.TestUtils.asJson;
 import static fund.data.assets.TestUtils.fromJson;
@@ -56,7 +59,11 @@ public class FixedRateBondControllerIT {
                 .getResponse();
         FixedRateBondPackage fixedRateBondPackageFromResponse = fromJson(response.getContentAsString(),
                 new TypeReference<>() {});
+        DecimalFormat decimalFormat = new DecimalFormat( "#.####" );
 
+        /*
+        Сначала проверяются поля самого FixedRateBond.
+         */
         assertNotNull(fixedRateBondPackageFromResponse.getId());
         assertEquals(firstBuyFixedRateBondDTO.getAssetCurrency(), fixedRateBondPackageFromResponse.getAssetCurrency());
         assertEquals(FixedRateBondPackage.class.getTypeName(), fixedRateBondPackageFromResponse.getAssetTypeName());
@@ -64,7 +71,6 @@ public class FixedRateBondControllerIT {
         assertEquals(firstBuyFixedRateBondDTO.getAssetCount(), fixedRateBondPackageFromResponse.getAssetCount());
         assertEquals(TaxSystem.EQUAL_COUPON_DIVIDEND_TRADE, fixedRateBondPackageFromResponse.getAssetTaxSystem());
         assertNotNull(fixedRateBondPackageFromResponse.getAssetRelationship());
-        assertNotNull(fixedRateBondPackageFromResponse.getAssetRelationship().getAssetId());
         assertEquals(fixedRateBondPackageFromResponse.getAssetRelationship().getClass(),
                 FinancialAssetRelationship.class);
         assertNotNull(fixedRateBondPackageFromResponse.getCreatedAt());
@@ -72,8 +78,38 @@ public class FixedRateBondControllerIT {
         assertEquals(firstBuyFixedRateBondDTO.getISIN(), fixedRateBondPackageFromResponse.getISIN());
         assertEquals(firstBuyFixedRateBondDTO.getAssetIssuerTitle(),
                 fixedRateBondPackageFromResponse.getAssetIssuerTitle());
-        //TODO пиши дальше, след поле - lastAssetBuyDate в ExchangeAsset
+        assertNotNull(fixedRateBondPackageFromResponse.getLastAssetBuyDate());
+        assertEquals(CommissionSystem.TURNOVER, fixedRateBondPackageFromResponse.getAssetCommissionSystem());
+        assertEquals(firstBuyFixedRateBondDTO.getBondParValue(), fixedRateBondPackageFromResponse.getBondParValue());
+        assertEquals(firstBuyFixedRateBondDTO.getPurchaseBondParValuePercent(),
+                fixedRateBondPackageFromResponse.getPurchaseBondParValuePercent());
+        assertEquals(firstBuyFixedRateBondDTO.getBondAccruedInterest(),
+                fixedRateBondPackageFromResponse.getBondAccruedInterest());
+        /*
+        По дефолту в тесте используется размер комиссии в размере 1% от суммы покупаемого пакета бумаг, эта сумма
+        равна 30000, потому размер комиссии равен 300.
+         */
+        assertEquals(300.00F, fixedRateBondPackageFromResponse.getTotalCommissionForPurchase());
+        assertEquals(30300.00F, fixedRateBondPackageFromResponse.getTotalAssetPurchasePriceWithCommission());
+        assertEquals(firstBuyFixedRateBondDTO.getBondCouponValue(),
+                fixedRateBondPackageFromResponse.getBondCouponValue());
+        assertEquals(firstBuyFixedRateBondDTO.getExpectedBondCouponPaymentsCount(),
+                fixedRateBondPackageFromResponse.getExpectedBondCouponPaymentsCount());
+        assertEquals(firstBuyFixedRateBondDTO.getBondMaturityDate(),
+                fixedRateBondPackageFromResponse.getBondMaturityDate());
+        assertEquals(10.00F, fixedRateBondPackageFromResponse.getSimpleYieldToMaturity());
+        assertEquals(7.6238F, Float.parseFloat(decimalFormat.format(
+                fixedRateBondPackageFromResponse.getMarkDementevYieldIndicator())));
+
+        /*
+        Потом проверяются поля assetRelationship внутри FixedRateBond.
+         */
         //TODO проверь внутренности assetRelationship
-        //TODO дополнительно проверь, как дела в смеэных сущностях, как минимум, уменьшились ли деньги!
+        assertNotNull(fixedRateBondPackageFromResponse.getAssetRelationship().getAssetId());
+
+        /*
+        Потом ещё что-то? Например, что суммы на денежных счетах изменились правильно?
+         */
+        //TODO дополнительно проверь, как дела в смежных сущностях, как минимум, уменьшились ли деньги!
     }
 }
