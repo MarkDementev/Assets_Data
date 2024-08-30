@@ -11,6 +11,7 @@ import fund.data.assets.repository.FixedRateBondRepository;
 import fund.data.assets.repository.RussianAssetsOwnerRepository;
 import fund.data.assets.service.FixedRateBondService;
 import fund.data.assets.utils.enums.AssetCurrency;
+import fund.data.assets.utils.enums.AssetsOwnersCountry;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,7 +37,10 @@ import java.util.concurrent.atomic.AtomicReference;
 public class FixedRateBondServiceImpl implements FixedRateBondService {
     private final FixedRateBondRepository fixedRateBondRepository;
     private final AccountRepository accountRepository;
-    //TODO Надо-бы не только чтобы с русскими ПО работало! Сделай это, добившись сначала общей функциональности класса
+    /*
+    По мере расширения странового охвата, нужно будет здесь расширить перечень разных типов репозиториев
+    для оунеров активов, чтобы обращаться к ним в методах класса.
+     */
     private final RussianAssetsOwnerRepository russianAssetsOwnerRepository;
     private final AccountCashRepository accountCashRepository;
 
@@ -78,7 +82,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
                 fixedRateBondPackageToCreate);
         Map<AccountCash, Float> accountCashAmountChanges = formAccountCashAmountChanges(
-                atomicFixedRateBondPackage.get(), accountFromDTO);
+                atomicFixedRateBondPackage.get(), firstBuyFixedRateBondDTO, accountFromDTO);
 
         changeAccountCashAmountsOfOwners(accountCashAmountChanges);
         /*
@@ -120,13 +124,15 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
      * Параллельно проводится валидация, могут ли собственники активов купить данный пакет облигаций, исходя из наличия
      * денежных средств у себя на счетах (эта информация находится в сущности {@link AccountCash}).
      * @param fixedRateBondPackageToCreate пакет облигаций с фиксированным купоном с общим ISIN, который создаётся.
+     * @param firstBuyFixedRateBondDTO DTO пакета облигаций с фиксированным купоном с общим ISIN, который создаётся.
+     * @param accountToWorkOn счёт, на котором хранятся нужные денежные средства.
      * @return мапа, где кэй - счет с денежными средствами {@link AccountCash}, вэлью - сумма, на которую надо будет
      * уменьшить соответствующий счёт.
      * @since 0.0.1-alpha
      */
-    //TODO только тут репозиторий юзеров используется!?
     private Map<AccountCash, Float> formAccountCashAmountChanges(FixedRateBondPackage fixedRateBondPackageToCreate,
-                                                      Account accountToWorkOn) {
+                                                                 FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO,
+                                                                 Account accountToWorkOn) {
         Map<AccountCash, Float> accountCashes = new HashMap<>();
         Float totalAssetPurchasePriceWithCommission = fixedRateBondPackageToCreate
                 .getTotalAssetPurchasePriceWithCommission();
@@ -135,8 +141,19 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         AssetCurrency assetCurrency = fixedRateBondPackageToCreate.getAssetCurrency();
 
         for (Map.Entry<String, Float> mapElement : assetOwnersWithAssetCounts.entrySet()) {
-            AssetsOwner assetsOwner = russianAssetsOwnerRepository.findById(Long.valueOf(mapElement.getKey()))
-                    .orElseThrow();
+            AssetsOwner assetsOwner;
+
+            /*
+            В данный момент (30.08.24) проверка ниже всегда будет верной, т.к. имплементируется поддержка работы только
+            с инвесторами с паспортом РФ. В дальнейшем, можно расширить кол-во условий в этой конструкции if-else,
+            для расширения охвата стран и инвесторов.
+             */
+            if (firstBuyFixedRateBondDTO.getAssetsOwnersCountry().equals(AssetsOwnersCountry.RUS)) {
+                assetsOwner = russianAssetsOwnerRepository.findById(Long.valueOf(mapElement.getKey())).orElseThrow();
+            } else {
+                throw new IllegalArgumentException("Work with investors from these countries is not yet supported" +
+                        " by the fund!");
+            }
             AccountCash assetsOwnerAccountCash = accountCashRepository.findByAccountAndAssetCurrencyAndAssetsOwner(
                     accountToWorkOn, assetCurrency, assetsOwner);
             Float ownerWantToBuyAssetsInCurrency = totalAssetPurchasePriceWithCommission

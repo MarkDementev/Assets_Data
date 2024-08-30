@@ -19,6 +19,7 @@ import fund.data.assets.repository.RussianAssetsOwnerRepository;
 import fund.data.assets.repository.TurnoverCommissionValueRepository;
 import fund.data.assets.repository.FinancialAssetRelationshipRepository;
 import fund.data.assets.repository.FixedRateBondRepository;
+import fund.data.assets.utils.enums.AssetsOwnersCountry;
 
 import org.openapitools.jackson.nullable.JsonNullable;
 
@@ -255,6 +256,7 @@ public class TestUtils {
                 RUSRUB,
                 "assetTitle",
                 30,
+                AssetsOwnersCountry.RUS,
                 assetOwnersWithAssetCounts,
                 accountRepository.findAll().get(0).getId(),
                 "RU000A103NZ8",

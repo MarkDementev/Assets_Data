@@ -1,6 +1,7 @@
 package fund.data.assets.dto.asset.exchange;
 
 import fund.data.assets.utils.enums.AssetCurrency;
+import fund.data.assets.utils.enums.AssetsOwnersCountry;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -39,6 +40,10 @@ public class FirstBuyFixedRateBondDTO {
     @NotNull
     @Positive
     private Integer assetCount;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private AssetsOwnersCountry assetsOwnersCountry;
 
     @NotNull
     private Map<String, Float> assetOwnersWithAssetCounts;
