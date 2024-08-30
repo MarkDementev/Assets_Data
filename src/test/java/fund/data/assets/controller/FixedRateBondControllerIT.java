@@ -7,6 +7,14 @@ import fund.data.assets.config.SpringConfigForTests;
 import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
 import fund.data.assets.model.asset.exchange.FixedRateBondPackage;
 import fund.data.assets.model.asset.relationship.FinancialAssetRelationship;
+import fund.data.assets.model.financial_entities.Account;
+import fund.data.assets.model.owner.AssetsOwner;
+import fund.data.assets.model.owner.RussianAssetsOwner;
+import fund.data.assets.repository.AccountCashRepository;
+import fund.data.assets.repository.AccountRepository;
+import fund.data.assets.repository.RussianAssetsOwnerRepository;
+import fund.data.assets.repository.TurnoverCommissionValueRepository;
+import fund.data.assets.utils.enums.AssetCurrency;
 import fund.data.assets.utils.enums.CommissionSystem;
 import fund.data.assets.utils.enums.TaxSystem;
 
@@ -19,6 +27,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.text.DecimalFormat;
+
+import java.util.Map;
+import java.util.TreeMap;
 
 import static fund.data.assets.TestUtils.asJson;
 import static fund.data.assets.TestUtils.fromJson;
@@ -39,6 +50,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class FixedRateBondControllerIT {
     @Autowired
     private TestUtils testUtils;
+    @Autowired
+    private AccountRepository accountRepository;
+    @Autowired
+    private RussianAssetsOwnerRepository russianAssetsOwnerRepository;
+    @Autowired
+    private AccountCashRepository accountCashRepository;
+    @Autowired
+    private TurnoverCommissionValueRepository turnoverCommissionValueRepository;
 
     @AfterEach
     public void clearRepositories() {
@@ -46,9 +65,8 @@ public class FixedRateBondControllerIT {
     }
 
     @Test
-    public void firstBuyFixedRateBondIT() throws Exception {
+    public void firstBuyFixedRateBondCheckBondFieldsIT() throws Exception {
         final FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO = testUtils.getFirstBuyFixedRateBondDTO();
-
         var response = testUtils.perform(
                 post("/data" + FIXED_RATE_BOND_CONTROLLER_PATH)
                         .content(asJson(firstBuyFixedRateBondDTO))
@@ -61,18 +79,12 @@ public class FixedRateBondControllerIT {
                 new TypeReference<>() {});
         DecimalFormat decimalFormat = new DecimalFormat( "#.####" );
 
-        /*
-        Сначала проверяются поля самого FixedRateBond.
-         */
         assertNotNull(fixedRateBondPackageFromResponse.getId());
         assertEquals(firstBuyFixedRateBondDTO.getAssetCurrency(), fixedRateBondPackageFromResponse.getAssetCurrency());
         assertEquals(FixedRateBondPackage.class.getTypeName(), fixedRateBondPackageFromResponse.getAssetTypeName());
         assertEquals(firstBuyFixedRateBondDTO.getAssetTitle(), fixedRateBondPackageFromResponse.getAssetTitle());
         assertEquals(firstBuyFixedRateBondDTO.getAssetCount(), fixedRateBondPackageFromResponse.getAssetCount());
         assertEquals(TaxSystem.EQUAL_COUPON_DIVIDEND_TRADE, fixedRateBondPackageFromResponse.getAssetTaxSystem());
-        assertNotNull(fixedRateBondPackageFromResponse.getAssetRelationship());
-        assertEquals(fixedRateBondPackageFromResponse.getAssetRelationship().getClass(),
-                FinancialAssetRelationship.class);
         assertNotNull(fixedRateBondPackageFromResponse.getCreatedAt());
         assertNotNull(fixedRateBondPackageFromResponse.getUpdatedAt());
         assertEquals(firstBuyFixedRateBondDTO.getISIN(), fixedRateBondPackageFromResponse.getISIN());
@@ -85,10 +97,6 @@ public class FixedRateBondControllerIT {
                 fixedRateBondPackageFromResponse.getPurchaseBondParValuePercent());
         assertEquals(firstBuyFixedRateBondDTO.getBondAccruedInterest(),
                 fixedRateBondPackageFromResponse.getBondAccruedInterest());
-        /*
-        По дефолту в тесте используется размер комиссии в размере 1% от суммы покупаемого пакета бумаг, эта сумма
-        равна 30000, потому размер комиссии равен 300.
-         */
         assertEquals(300.00F, fixedRateBondPackageFromResponse.getTotalCommissionForPurchase());
         assertEquals(30300.00F, fixedRateBondPackageFromResponse.getTotalAssetPurchasePriceWithCommission());
         assertEquals(firstBuyFixedRateBondDTO.getBondCouponValue(),
@@ -100,16 +108,102 @@ public class FixedRateBondControllerIT {
         assertEquals(10.00F, fixedRateBondPackageFromResponse.getSimpleYieldToMaturity());
         assertEquals(7.6238F, Float.parseFloat(decimalFormat.format(
                 fixedRateBondPackageFromResponse.getMarkDementevYieldIndicator())));
+    }
+
+    @Test
+    public void firstBuyFixedRateBondCheckRelationshipFieldsIT() throws Exception {
+        final FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO = testUtils.getFirstBuyFixedRateBondDTO();
+        Map<String, Float> assetOwnersWithAssetCountsMapFromDTO
+                = firstBuyFixedRateBondDTO.getAssetOwnersWithAssetCounts();
+        var response = testUtils.perform(
+                        post("/data" + FIXED_RATE_BOND_CONTROLLER_PATH)
+                                .content(asJson(firstBuyFixedRateBondDTO))
+                                .contentType(APPLICATION_JSON)
+                )
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse();
+        FixedRateBondPackage fixedRateBondPackageFromResponse = fromJson(response.getContentAsString(),
+                new TypeReference<>() {});
+
+        assertNotNull(fixedRateBondPackageFromResponse.getAssetRelationship());
+        assertEquals(fixedRateBondPackageFromResponse.getAssetRelationship().getClass(),
+                FinancialAssetRelationship.class);
+
+        FinancialAssetRelationship financialAssetRelationship
+                = (FinancialAssetRelationship) fixedRateBondPackageFromResponse.getAssetRelationship();
+
+        assertNotNull(fixedRateBondPackageFromResponse.getAssetRelationship().getId());
+        assertEquals(fixedRateBondPackageFromResponse.getId(), financialAssetRelationship.getAssetId());
+        assertNotNull(financialAssetRelationship.getAssetOwnersWithAssetCounts());
+
+        for (Map.Entry<String, Float> element : financialAssetRelationship.getAssetOwnersWithAssetCounts().entrySet()) {
+            String elementKey = element.getKey();
+            Float elementValue = element.getValue();
+
+            assertEquals(elementValue, assetOwnersWithAssetCountsMapFromDTO.get(elementKey));
+        }
+        assertNotNull(financialAssetRelationship.getCreatedAt());
+        assertNotNull(financialAssetRelationship.getUpdatedAt());
+        assertEquals(accountRepository.findAll().get(0).getId(), financialAssetRelationship.getAccount().getId());
+    }
+
+    @Test
+    public void firstBuyFixedRateBondCheckAccountCashesIT() throws Exception {
+        final FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO = testUtils.getFirstBuyFixedRateBondDTO();
+        Map<String, Float> assetOwnersWithAssetCountsMapFromDTO
+                = firstBuyFixedRateBondDTO.getAssetOwnersWithAssetCounts();
+        Map<String, Float> correctAccountCashAmounts = new TreeMap<>();
 
         /*
-        Потом проверяются поля assetRelationship внутри FixedRateBond.
+        Наполнили мапу айдишниками оунеров и значениями количества денег на нужных аккаунтах.
          */
-        //TODO проверь внутренности assetRelationship
-        assertNotNull(fixedRateBondPackageFromResponse.getAssetRelationship().getAssetId());
+        for (Map.Entry<String, Float> element : assetOwnersWithAssetCountsMapFromDTO.entrySet()) {
+            Account account = accountRepository.findById(firstBuyFixedRateBondDTO.getAccountID()).orElseThrow();
+            String assetsOwnerID = element.getKey();
+            AssetsOwner assetsOwner = russianAssetsOwnerRepository
+                    .findById(Long.parseLong(assetsOwnerID)).orElseThrow();
+            Float accountCashAmount = accountCashRepository
+                    .findByAccountAndAssetCurrencyAndAssetsOwner(account, firstBuyFixedRateBondDTO.getAssetCurrency(),
+                            assetsOwner).getAmount();
+
+            correctAccountCashAmounts.put(assetsOwnerID, accountCashAmount);
+        }
 
         /*
-        Потом ещё что-то? Например, что суммы на денежных счетах изменились правильно?
+        Вручную уменьшили значения в этой мапе, чтобы потом сверить их с теми, что получатся при запросе.
          */
-        //TODO дополнительно проверь, как дела в смежных сущностях, как минимум, уменьшились ли деньги!
+        for (Map.Entry<String, Float> element : assetOwnersWithAssetCountsMapFromDTO.entrySet()) {
+            String assetsOwnerID = element.getKey();
+            Float amountToChangeValue = element.getValue();
+            Float newValueToPreviousCreatedMap = correctAccountCashAmounts.get(assetsOwnerID)
+                    - amountToChangeValue * firstBuyFixedRateBondDTO.getBondParValue()
+                    - amountToChangeValue * firstBuyFixedRateBondDTO.getBondParValue()
+                        * turnoverCommissionValueRepository.findAll().get(0).getCommissionPercentValue();
+
+            correctAccountCashAmounts.put(assetsOwnerID, newValueToPreviousCreatedMap);
+        }
+
+        testUtils.perform(post("/data" + FIXED_RATE_BOND_CONTROLLER_PATH)
+                        .content(asJson(firstBuyFixedRateBondDTO))
+                        .contentType(APPLICATION_JSON)
+                )
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse();
+
+        /*
+        Проходимся по мапе с корректными значениями, и сверяем со значениями в репозитории, чтобы понять, корректно ли
+        изменились значения там после выполнения запроса на создание пакета облигаций.
+         */
+        for (Map.Entry<String, Float> element : correctAccountCashAmounts.entrySet()) {
+            Account account = accountRepository.findById(firstBuyFixedRateBondDTO.getAccountID()).orElseThrow();
+            AssetCurrency assetCurrency = firstBuyFixedRateBondDTO.getAssetCurrency();
+            Long accountCashOwnerID = Long.valueOf(element.getKey());
+            RussianAssetsOwner assetsOwner = russianAssetsOwnerRepository.findById(accountCashOwnerID).orElseThrow();
+
+            assertEquals(element.getValue(), accountCashRepository.findByAccountAndAssetCurrencyAndAssetsOwner(account,
+                            assetCurrency, assetsOwner).getAmount());
+        }
     }
 }

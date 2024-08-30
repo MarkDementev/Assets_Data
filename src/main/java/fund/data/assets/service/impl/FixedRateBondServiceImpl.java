@@ -124,6 +124,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
      * уменьшить соответствующий счёт.
      * @since 0.0.1-alpha
      */
+    //TODO только тут репозиторий юзеров используется!?
     private Map<AccountCash, Float> formAccountCashAmountChanges(FixedRateBondPackage fixedRateBondPackageToCreate,
                                                       Account accountToWorkOn) {
         Map<AccountCash, Float> accountCashes = new HashMap<>();
