@@ -40,9 +40,8 @@
             <column name="asset_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <!--            <column name="surname" type="varchar">-->
-            <!--                <constraints nullable="false"/>-->
-            <!--            </column>-->
+            <column name="asset_owners_with_asset_counts" type="BIGINT">
+            </column>
             <column name="created_at" type="TIMESTAMP(3) WITH TIMEZONE">
                 <constraints nullable="false"/>
             </column>
@@ -50,9 +49,23 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <createTable tableName="asset_ownership_counts">
+            <column name="abstract_asset_ownerships_with_account_placement_id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="assets_owner_id" type="varchar">
+            </column>
+            <column name="asset_count" type="FLOAT">
+            </column>
+        </createTable>
         <addForeignKeyConstraint constraintName="fk6i7kp3w5gfh4o7jgq9oy1bbxj"
                                  baseTableName="abstract_assets"
                                  baseColumnNames="asset_relationship_id"
+                                 referencedTableName="abstract_asset_ownerships_with_account_placement"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint constraintName="fkpg8nabj8k2yd8qfiep310xrqx"
+                                 baseTableName="asset_ownership_counts"
+                                 baseColumnNames="abstract_asset_ownerships_with_account_placement_id"
                                  referencedTableName="abstract_asset_ownerships_with_account_placement"
                                  referencedColumnNames="id"/>
     </changeSet>

@@ -63,7 +63,8 @@ public abstract class AssetRelationship {
      * в рамках пакета, который обслуживает данная сущность.
      */
     @ElementCollection
-    @CollectionTable(name = "asset_ownership_counts", joinColumns = @JoinColumn(name = "asset_relationship_id"))
+    @CollectionTable(name = "asset_ownership_counts",
+            joinColumns = @JoinColumn(name = "abstract_asset_ownerships_with_account_placement_id"))
     @MapKeyColumn(name = "assets_owner_id")
     @Column(name = "asset_count")
     private Map<String, Float> assetOwnersWithAssetCounts;
