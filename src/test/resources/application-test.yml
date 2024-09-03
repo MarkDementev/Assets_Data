@@ -8,9 +8,5 @@ spring:
     hibernate:
       ddl-auto: create-drop
 
-  datasource:
-    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
-    url: jdbc:tc:postgresql:16.2:///wallet_db_test
-
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master-test.xml

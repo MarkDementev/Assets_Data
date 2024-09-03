@@ -16,6 +16,8 @@ import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterAll;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -33,6 +35,7 @@ import static fund.data.assets.TestUtils.TEST_STRING_FORMAT_PERCENT_VALUE;
 import static fund.data.assets.TestUtils.TEST_FORMATTED_PERCENT_VALUE_FLOAT;
 
 import static fund.data.assets.config.SpringConfigForTests.TEST_PROFILE;
+import static fund.data.assets.config.SpringConfigForTests.postgres;
 import static fund.data.assets.controller.AccountController.ID_PATH;
 import static fund.data.assets.controller.TurnoverCommissionValueController.TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH;
 
@@ -63,6 +66,16 @@ public class TurnoverCommissionValueControllerIT {
     private AccountRepository accountRepository;
     @Autowired
     private TurnoverCommissionValueRepository turnoverCommissionValueRepository;
+
+    @BeforeAll
+    static void beforeAll() {
+        postgres.start();
+    }
+
+    @AfterAll
+    static void afterAll() {
+        postgres.stop();
+    }
 
     @AfterEach
     public void clearRepositories() {

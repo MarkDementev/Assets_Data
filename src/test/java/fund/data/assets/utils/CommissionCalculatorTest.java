@@ -10,6 +10,8 @@ import fund.data.assets.utils.enums.CommissionSystem;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -23,6 +25,7 @@ import java.util.function.Supplier;
 
 import static fund.data.assets.TestUtils.TEST_ASSET_TYPE_NAME;
 import static fund.data.assets.config.SpringConfigForTests.TEST_PROFILE;
+import static fund.data.assets.config.SpringConfigForTests.postgres;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -42,6 +45,16 @@ public class CommissionCalculatorTest {
     private TurnoverCommissionValueServiceImpl turnoverCommissionValueService;
     @Autowired
     private CommissionCalculator commissionCalculator;
+
+    @BeforeAll
+    static void beforeAll() {
+        postgres.start();
+    }
+
+    @AfterAll
+    static void afterAll() {
+        postgres.stop();
+    }
 
     @BeforeEach
     public void prepareAccountAndTurnoverCommissionValue() throws Exception {
