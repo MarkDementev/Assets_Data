@@ -18,8 +18,6 @@ import fund.data.assets.utils.enums.AssetCurrency;
 import fund.data.assets.utils.enums.CommissionSystem;
 import fund.data.assets.utils.enums.TaxSystem;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 
@@ -36,7 +34,6 @@ import java.util.TreeMap;
 import static fund.data.assets.TestUtils.asJson;
 import static fund.data.assets.TestUtils.fromJson;
 import static fund.data.assets.config.SpringConfigForTests.TEST_PROFILE;
-import static fund.data.assets.config.SpringConfigForTests.postgres;
 import static fund.data.assets.controller.FixedRateBondPackageController.FIXED_RATE_BOND_CONTROLLER_PATH;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -61,16 +58,6 @@ public class FixedRateBondControllerIT {
     private AccountCashRepository accountCashRepository;
     @Autowired
     private TurnoverCommissionValueRepository turnoverCommissionValueRepository;
-
-    @BeforeAll
-    static void beforeAll() {
-        postgres.start();
-    }
-
-    @AfterAll
-    static void afterAll() {
-        postgres.stop();
-    }
 
     @AfterEach
     public void clearRepositories() {

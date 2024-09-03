@@ -53,6 +53,83 @@ public class TestUtils {
     public static final Float TEST_FORMATTED_PERCENT_VALUE_FLOAT = 0.201234F;
     public static final Float TEST_COMMISSION_PERCENT_VALUE_FLOAT = 0.01F;
     private static final ObjectMapper MAPPER = new ObjectMapper().findAndRegisterModules();
+    private final AccountDTO accountDTO = new AccountDTO(
+            "defaultBank",
+            "1q2w3e4r5t",
+            LocalDate.of(2024, 2, 22)
+    );
+    private final AccountDTO secondAccountDTO = new AccountDTO(
+            "UPDATEDDefaultBank",
+            "UPDATED1q2w3e4r5t",
+            LocalDate.of(2024, 2, 22)
+    );
+    private final AccountDTO notValidAccountDTO = new AccountDTO(
+            " ",
+            " ",
+            null
+    );
+    private final AccountDTO anotherBankButSameAccountNumberAccountDTO = new AccountDTO(
+            "anotherBank",
+            "1q2w3e4r5t",
+            LocalDate.of(2024, 2, 22)
+    );
+    private final TurnoverCommissionValueDTO turnoverCommissionValueDTO = new TurnoverCommissionValueDTO(
+            null,
+            TEST_ASSET_TYPE_NAME,
+            TEST_COMMISSION_PERCENT_VALUE
+    );
+    private final TurnoverCommissionValueDTO notValidTurnoverCommissionValueDTO = new TurnoverCommissionValueDTO(
+            null,
+            " ",
+            null
+    );
+    private final PercentFloatValueDTO percentFloatValueDTO = new PercentFloatValueDTO(
+            TEST_STRING_FORMAT_PERCENT_VALUE
+    );
+    private final NewRussianAssetsOwnerDTO russianAssetsOwnerDTO = new NewRussianAssetsOwnerDTO(
+        "name", "surname", "25.05.1995", "Email_sur@mail.ru", "patronymic", MAN,
+            "9888888888", "2424", "111111", "placeOfBirth",
+            "placeOfPassportGiven", "24.08.2021", "377-777"
+    );
+    private final NewRussianAssetsOwnerDTO secondRussianAssetsOwnerDTO = new NewRussianAssetsOwnerDTO(
+            "ANOTHER_name", "ANOTHER_surname", "26.05.1995", "Email_mur@mail.ru",
+            "ANOTHER_patronymic", WOMAN, "9888888887", "2425",
+            "111112", "ANOTHER_placeOfBirth", "ANOTHER_placeOfPassportGiven",
+            "25.08.2021", "377-778"
+    );
+    private final NewRussianAssetsOwnerDTO notValidRussianAssetsOwnerDTO = new NewRussianAssetsOwnerDTO(
+            "", "", "25,05,1995", "Email_surmail.ru", "",
+            null, "988888888", "242", "11111", "",
+            "", "24,08,2021", "377-77"
+    );
+    private final ContactDataRussianAssetsOwnerDTO validRussianAssetsOwnerContactDataDTO =
+            new ContactDataRussianAssetsOwnerDTO(
+                    JsonNullable.of("NewEmail_sur@mail.ru"),
+                    JsonNullable.of("9888888889"));
+    private final PersonalDataRussianAssetsOwnerDTO validRussianAssetsOwnerPersonalDataDTO =
+            new PersonalDataRussianAssetsOwnerDTO(
+                    JsonNullable.of("NewName"),
+                    JsonNullable.of("NewSurname"),
+                    JsonNullable.of("NewPatronymic"),
+                    JsonNullable.of("4444"),
+                    JsonNullable.of("999999"),
+                    JsonNullable.of("NewPlaceOfPassportGiven"),
+                    JsonNullable.of("31.01.1999"),
+                    JsonNullable.of("999-999"));
+    private final ContactDataRussianAssetsOwnerDTO notValidRussianAssetsOwnerContactDataDTO =
+            new ContactDataRussianAssetsOwnerDTO(
+                    JsonNullable.of("NewEmail_surmail.ru"),
+                    JsonNullable.of("988888888"));
+    private final PersonalDataRussianAssetsOwnerDTO notValidRussianAssetsOwnerPersonalDataDTO =
+            new PersonalDataRussianAssetsOwnerDTO(
+                    JsonNullable.of(""),
+                    JsonNullable.of(""),
+                    JsonNullable.of(""),
+                    JsonNullable.of("444"),
+                    JsonNullable.of("99999"),
+                    JsonNullable.of(""),
+                    JsonNullable.of("31,01,1999"),
+                    JsonNullable.of("999-99"));
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -68,96 +145,13 @@ public class TestUtils {
     @Autowired
     private FinancialAssetRelationshipRepository financialAssetRelationshipRepository;
 
-    private final AccountDTO accountDTO = new AccountDTO(
-            "defaultBank",
-            "1q2w3e4r5t",
-            LocalDate.of(2024, 2, 22)
-    );
+    public static String asJson(final Object object) throws JsonProcessingException {
+        return MAPPER.writeValueAsString(object);
+    }
 
-    private final AccountDTO secondAccountDTO = new AccountDTO(
-            "UPDATEDDefaultBank",
-            "UPDATED1q2w3e4r5t",
-            LocalDate.of(2024, 2, 22)
-    );
-
-    private final AccountDTO notValidAccountDTO = new AccountDTO(
-            " ",
-            " ",
-            null
-    );
-
-    private final AccountDTO anotherBankButSameAccountNumberAccountDTO = new AccountDTO(
-            "anotherBank",
-            "1q2w3e4r5t",
-            LocalDate.of(2024, 2, 22)
-    );
-
-    private final TurnoverCommissionValueDTO turnoverCommissionValueDTO = new TurnoverCommissionValueDTO(
-            null,
-            TEST_ASSET_TYPE_NAME,
-            TEST_COMMISSION_PERCENT_VALUE
-    );
-
-    private final TurnoverCommissionValueDTO notValidTurnoverCommissionValueDTO = new TurnoverCommissionValueDTO(
-            null,
-            " ",
-            null
-    );
-
-    private final PercentFloatValueDTO percentFloatValueDTO = new PercentFloatValueDTO(
-            TEST_STRING_FORMAT_PERCENT_VALUE
-    );
-
-    private final NewRussianAssetsOwnerDTO russianAssetsOwnerDTO = new NewRussianAssetsOwnerDTO(
-        "name", "surname", "25.05.1995", "Email_sur@mail.ru", "patronymic", MAN,
-            "9888888888", "2424", "111111", "placeOfBirth",
-            "placeOfPassportGiven", "24.08.2021", "377-777"
-    );
-
-    private final NewRussianAssetsOwnerDTO secondRussianAssetsOwnerDTO = new NewRussianAssetsOwnerDTO(
-            "ANOTHER_name", "ANOTHER_surname", "26.05.1995", "Email_mur@mail.ru",
-            "ANOTHER_patronymic", WOMAN, "9888888887", "2425",
-            "111112", "ANOTHER_placeOfBirth", "ANOTHER_placeOfPassportGiven",
-            "25.08.2021", "377-778"
-    );
-
-    private final NewRussianAssetsOwnerDTO notValidRussianAssetsOwnerDTO = new NewRussianAssetsOwnerDTO(
-            "", "", "25,05,1995", "Email_surmail.ru", "",
-            null, "988888888", "242", "11111", "",
-            "", "24,08,2021", "377-77"
-    );
-
-    private final ContactDataRussianAssetsOwnerDTO validRussianAssetsOwnerContactDataDTO =
-            new ContactDataRussianAssetsOwnerDTO(
-                    JsonNullable.of("NewEmail_sur@mail.ru"),
-                    JsonNullable.of("9888888889"));
-
-    private final PersonalDataRussianAssetsOwnerDTO validRussianAssetsOwnerPersonalDataDTO =
-            new PersonalDataRussianAssetsOwnerDTO(
-                    JsonNullable.of("NewName"),
-                    JsonNullable.of("NewSurname"),
-                    JsonNullable.of("NewPatronymic"),
-                    JsonNullable.of("4444"),
-                    JsonNullable.of("999999"),
-                    JsonNullable.of("NewPlaceOfPassportGiven"),
-                    JsonNullable.of("31.01.1999"),
-                    JsonNullable.of("999-999"));
-
-    private final ContactDataRussianAssetsOwnerDTO notValidRussianAssetsOwnerContactDataDTO =
-            new ContactDataRussianAssetsOwnerDTO(
-                    JsonNullable.of("NewEmail_surmail.ru"),
-                    JsonNullable.of("988888888"));
-
-    private final PersonalDataRussianAssetsOwnerDTO notValidRussianAssetsOwnerPersonalDataDTO =
-            new PersonalDataRussianAssetsOwnerDTO(
-                    JsonNullable.of(""),
-                    JsonNullable.of(""),
-                    JsonNullable.of(""),
-                    JsonNullable.of("444"),
-                    JsonNullable.of("99999"),
-                    JsonNullable.of(""),
-                    JsonNullable.of("31,01,1999"),
-                    JsonNullable.of("999-99"));
+    public static <T> T fromJson(final String json, final TypeReference<T> to) throws JsonProcessingException {
+        return MAPPER.readValue(json, to);
+    }
 
     public void tearDown() {
         fixedRateBondRepository.deleteAll();
@@ -348,13 +342,5 @@ public class TestUtils {
 
     public ResultActions perform(final MockHttpServletRequestBuilder request) throws Exception {
         return mockMvc.perform(request);
-    }
-
-    public static String asJson(final Object object) throws JsonProcessingException {
-        return MAPPER.writeValueAsString(object);
-    }
-
-    public static <T> T fromJson(final String json, final TypeReference<T> to) throws JsonProcessingException {
-        return MAPPER.readValue(json, to);
     }
 }

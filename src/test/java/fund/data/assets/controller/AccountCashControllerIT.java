@@ -16,8 +16,6 @@ import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.AfterAll;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -29,7 +27,6 @@ import java.util.List;
 import static fund.data.assets.TestUtils.asJson;
 import static fund.data.assets.TestUtils.fromJson;
 import static fund.data.assets.config.SpringConfigForTests.TEST_PROFILE;
-import static fund.data.assets.config.SpringConfigForTests.postgres;
 import static fund.data.assets.controller.AccountController.ACCOUNT_CONTROLLER_PATH;
 import static fund.data.assets.controller.AccountController.ID_PATH;
 import static fund.data.assets.controller.AccountCashController.ACCOUNT_CASH_CONTROLLER_PATH;
@@ -59,16 +56,6 @@ public class AccountCashControllerIT {
     private AccountRepository accountRepository;
     @Autowired
     private RussianAssetsOwnerRepository russianAssetsOwnerRepository;
-
-    @BeforeAll
-    static void beforeAll() {
-        postgres.start();
-    }
-
-    @AfterAll
-    static void afterAll() {
-        postgres.stop();
-    }
 
     @AfterEach
     public void clearRepositories() {
