@@ -42,16 +42,18 @@ dependencies {
 
 	testImplementation (
 			'org.springframework.boot:spring-boot-starter-test',
-			'org.testcontainers:postgresql:1.19.7'
+			'org.testcontainers:testcontainers:1.20.1',
+			'org.testcontainers:postgresql:1.20.1',
+			'org.testcontainers:junit-jupiter:1.20.1'
 	)
 
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-	runtimeOnly 'com.h2database:h2'
-
 	compileOnly 'org.projectlombok:lombok'
 
 	annotationProcessor 'org.projectlombok:lombok'
+
+	runtimeOnly 'com.h2database:h2'
 }
 
 tasks.named('test') {
