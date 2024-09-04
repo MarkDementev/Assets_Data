@@ -1,5 +1,10 @@
 package fund.data.assets.dto.asset.exchange;
 
+import fund.data.assets.utils.enums.AssetsOwnersCountry;
+
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
@@ -16,6 +21,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FixedRateBondFullSellDTO {
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private AssetsOwnersCountry assetsOwnersTaxResidency;
+
     @NotNull
     @Positive
     private Float packageSellValue;

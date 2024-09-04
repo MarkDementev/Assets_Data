@@ -76,5 +76,8 @@ public class FixedRateBondPackageController {
                                             @RequestBody @Valid FixedRateBondFullSellDTO fixedRateBondFullSellDTO) {
         fixedRateBondService.sellAllPackage(id, fixedRateBondFullSellDTO);
     }
-    //TODO - Реализуй остальные контроллеры - 1) докупку бумаг в пакет и 2) частичную продажу бумаг из пакета
+    /*
+    TODO - Реализуй остальные контроллеры - 1) докупку бумаг в пакет, 2) частичную продажу бумаг из пакета,
+     3)??? погашение пакета
+     */
 }
