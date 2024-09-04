@@ -28,8 +28,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.text.DecimalFormat;
-
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -37,8 +36,10 @@ import static fund.data.assets.TestUtils.asJson;
 import static fund.data.assets.TestUtils.fromJson;
 import static fund.data.assets.TestUtils.TEST_FIRST_RUSSIAN_OWNER_CASH_AMOUNT;
 import static fund.data.assets.TestUtils.TEST_SECOND_RUSSIAN_OWNER_CASH_AMOUNT;
+import static fund.data.assets.TestUtils.TEST_DECIMAL_FORMAT;
 import static fund.data.assets.config.SpringConfigForTests.TEST_PROFILE;
 import static fund.data.assets.controller.FixedRateBondPackageController.FIXED_RATE_BOND_CONTROLLER_PATH;
+import static fund.data.assets.controller.RussianAssetsOwnerController.ID_PATH;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,6 +48,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -75,6 +77,70 @@ public class FixedRateBondControllerIT {
     }
 
     @Test
+    public void getFixedRateBondIT() throws Exception {
+        testUtils.createDefaultFixedRateBond();
+
+        FixedRateBondPackage expectedFixedRateBond = fixedRateBondRepository.findAll().get(0);
+        var response = testUtils.perform(
+                get("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH,
+                        expectedFixedRateBond.getId())
+                ).andExpect(status().isOk())
+                .andReturn()
+                .getResponse();
+        FixedRateBondPackage fixedRateBondPackageFromResponse = fromJson(response.getContentAsString(),
+                new TypeReference<>() {});
+
+        /*
+        Идёт проверка только полей созданного бонда, т.к. бонд для тестов имеет дефолтный DTO, и поля связанных с ним
+        сущностей тестируются в специализированных интеграционных тестах создания бонда.
+         */
+        assertNotNull(fixedRateBondPackageFromResponse.getId());
+        assertEquals(expectedFixedRateBond.getAssetCurrency(), fixedRateBondPackageFromResponse.getAssetCurrency());
+        assertEquals(FixedRateBondPackage.class.getTypeName(), fixedRateBondPackageFromResponse.getAssetTypeName());
+        assertEquals(expectedFixedRateBond.getAssetTitle(), fixedRateBondPackageFromResponse.getAssetTitle());
+        assertEquals(expectedFixedRateBond.getAssetCount(), fixedRateBondPackageFromResponse.getAssetCount());
+        assertEquals(TaxSystem.EQUAL_COUPON_DIVIDEND_TRADE, fixedRateBondPackageFromResponse.getAssetTaxSystem());
+        assertNotNull(fixedRateBondPackageFromResponse.getCreatedAt());
+        assertNotNull(fixedRateBondPackageFromResponse.getUpdatedAt());
+        assertEquals(expectedFixedRateBond.getISIN(), fixedRateBondPackageFromResponse.getISIN());
+        assertEquals(expectedFixedRateBond.getAssetIssuerTitle(),
+                fixedRateBondPackageFromResponse.getAssetIssuerTitle());
+        assertNotNull(fixedRateBondPackageFromResponse.getLastAssetBuyDate());
+        assertEquals(CommissionSystem.TURNOVER, fixedRateBondPackageFromResponse.getAssetCommissionSystem());
+        assertEquals(expectedFixedRateBond.getBondParValue(), fixedRateBondPackageFromResponse.getBondParValue());
+        assertEquals(expectedFixedRateBond.getPurchaseBondParValuePercent(),
+                fixedRateBondPackageFromResponse.getPurchaseBondParValuePercent());
+        assertEquals(expectedFixedRateBond.getBondAccruedInterest(),
+                fixedRateBondPackageFromResponse.getBondAccruedInterest());
+        assertEquals(300.00F, fixedRateBondPackageFromResponse.getTotalCommissionForPurchase());
+        assertEquals(30300.00F, fixedRateBondPackageFromResponse.getTotalAssetPurchasePriceWithCommission());
+        assertEquals(expectedFixedRateBond.getBondCouponValue(),
+                fixedRateBondPackageFromResponse.getBondCouponValue());
+        assertEquals(expectedFixedRateBond.getExpectedBondCouponPaymentsCount(),
+                fixedRateBondPackageFromResponse.getExpectedBondCouponPaymentsCount());
+        assertEquals(expectedFixedRateBond.getBondMaturityDate(),
+                fixedRateBondPackageFromResponse.getBondMaturityDate());
+        assertEquals(10.00F, fixedRateBondPackageFromResponse.getSimpleYieldToMaturity());
+        assertEquals(7.6238F, Float.parseFloat(TEST_DECIMAL_FORMAT.format(
+                fixedRateBondPackageFromResponse.getMarkDementevYieldIndicator())));
+    }
+
+    @Test
+    public void getAllFixedRateBondsIT() throws Exception {
+        testUtils.createDefaultFixedRateBond();
+
+        var response = testUtils.perform(
+                    get("/data" + FIXED_RATE_BOND_CONTROLLER_PATH)
+                ).andExpect(status().isOk())
+                .andReturn()
+                .getResponse();
+        List<FixedRateBondPackage> allFixedRateBondsFromResponse = fromJson(response.getContentAsString(),
+                new TypeReference<>() {});
+
+        assertThat(allFixedRateBondsFromResponse).hasSize(1);
+    }
+
+    @Test
     public void firstBuyFixedRateBondCheckBondFieldsIT() throws Exception {
         final FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO = testUtils.getFirstBuyFixedRateBondDTO();
         var response = testUtils.perform(
@@ -87,7 +153,6 @@ public class FixedRateBondControllerIT {
                 .getResponse();
         FixedRateBondPackage fixedRateBondPackageFromResponse = fromJson(response.getContentAsString(),
                 new TypeReference<>() {});
-        DecimalFormat decimalFormat = new DecimalFormat( "#.####" );
 
         assertNotNull(fixedRateBondPackageFromResponse.getId());
         assertEquals(firstBuyFixedRateBondDTO.getAssetCurrency(), fixedRateBondPackageFromResponse.getAssetCurrency());
@@ -116,7 +181,7 @@ public class FixedRateBondControllerIT {
         assertEquals(firstBuyFixedRateBondDTO.getBondMaturityDate(),
                 fixedRateBondPackageFromResponse.getBondMaturityDate());
         assertEquals(10.00F, fixedRateBondPackageFromResponse.getSimpleYieldToMaturity());
-        assertEquals(7.6238F, Float.parseFloat(decimalFormat.format(
+        assertEquals(7.6238F, Float.parseFloat(TEST_DECIMAL_FORMAT.format(
                 fixedRateBondPackageFromResponse.getMarkDementevYieldIndicator())));
     }
 
@@ -126,9 +191,9 @@ public class FixedRateBondControllerIT {
         Map<String, Float> assetOwnersWithAssetCountsMapFromDTO
                 = firstBuyFixedRateBondDTO.getAssetOwnersWithAssetCounts();
         var response = testUtils.perform(
-                        post("/data" + FIXED_RATE_BOND_CONTROLLER_PATH)
-                                .content(asJson(firstBuyFixedRateBondDTO))
-                                .contentType(APPLICATION_JSON)
+                post("/data" + FIXED_RATE_BOND_CONTROLLER_PATH)
+                        .content(asJson(firstBuyFixedRateBondDTO))
+                        .contentType(APPLICATION_JSON)
                 )
                 .andExpect(status().isCreated())
                 .andReturn()
@@ -194,7 +259,8 @@ public class FixedRateBondControllerIT {
             correctAccountCashAmounts.put(assetsOwnerID, newValueToPreviousCreatedMap);
         }
 
-        testUtils.perform(post("/data" + FIXED_RATE_BOND_CONTROLLER_PATH)
+        testUtils.perform(
+                post("/data" + FIXED_RATE_BOND_CONTROLLER_PATH)
                         .content(asJson(firstBuyFixedRateBondDTO))
                         .contentType(APPLICATION_JSON)
                 )
@@ -229,9 +295,9 @@ public class FixedRateBondControllerIT {
 
         testUtils.perform(
                 post("/data" + FIXED_RATE_BOND_CONTROLLER_PATH)
-                                .content(asJson(notValidFirstBuyFixedRateBondDTO))
-                                .contentType(APPLICATION_JSON)
-                ).andExpect(status().isBadRequest());
+                        .content(asJson(notValidFirstBuyFixedRateBondDTO))
+                        .contentType(APPLICATION_JSON)
+        ).andExpect(status().isBadRequest());
 
         assertThat(fixedRateBondRepository.findAll()).hasSize(0);
         assertThat(financialAssetRelationshipRepository.findAll()).hasSize(0);

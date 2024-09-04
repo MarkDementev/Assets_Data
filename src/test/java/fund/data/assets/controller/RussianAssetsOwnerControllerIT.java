@@ -66,7 +66,8 @@ public class RussianAssetsOwnerControllerIT {
 
         RussianAssetsOwner expectedRussianAssetsOwner = russianAssetsOwnerRepository.findAll().get(0);
         var response = testUtils.perform(
-                get("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH + ID_PATH, expectedRussianAssetsOwner.getId())
+                    get("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH + ID_PATH,
+                            expectedRussianAssetsOwner.getId())
                 ).andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
@@ -101,7 +102,7 @@ public class RussianAssetsOwnerControllerIT {
         testUtils.createDefaultRussianAssetsOwner();
 
         var response = testUtils.perform(
-                        get("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH)
+                    get("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH)
                 ).andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
@@ -156,10 +157,11 @@ public class RussianAssetsOwnerControllerIT {
 
     @Test
     public void createNotValidRussianAssetsOwnerIT() throws Exception {
-        testUtils.perform(post("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH)
+        testUtils.perform(
+                post("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH)
                         .content(asJson(testUtils.getNotValidNewRussianAssetsOwnerDTO()))
                         .contentType(APPLICATION_JSON))
-                        .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest());
         assertThat(russianAssetsOwnerRepository.findAll()).hasSize(0);
 
         testUtils.createDefaultRussianAssetsOwner();
@@ -215,10 +217,12 @@ public class RussianAssetsOwnerControllerIT {
         testUtils.createDefaultRussianAssetsOwner();
 
         Long createdRussianAssetsOwnerId = russianAssetsOwnerRepository.findAll().get(0).getId();
-        var responseUpdateContactData = testUtils.perform(put("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH
+        var responseUpdateContactData = testUtils.perform(
+                put("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH
                         + CONTACT_DATA_PATH + ID_PATH, createdRussianAssetsOwnerId)
                         .content(asJson(testUtils.getValidRussianAssetsOwnerContactDataDTO()))
-                        .contentType(APPLICATION_JSON))
+                        .contentType(APPLICATION_JSON)
+                )
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
@@ -309,20 +313,22 @@ public class RussianAssetsOwnerControllerIT {
 
         Long createdRussianAssetsOwnerId = russianAssetsOwnerRepository.findAll().get(0).getId();
 
-        testUtils.perform(put("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH
+        testUtils.perform(
+                put("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH
                 + CONTACT_DATA_PATH + ID_PATH, createdRussianAssetsOwnerId)
-                .content(asJson(testUtils.getNotValidRussianAssetsOwnerContactDataDTO()))
-                .contentType(APPLICATION_JSON));
+                        .content(asJson(testUtils.getNotValidRussianAssetsOwnerContactDataDTO()))
+                        .contentType(APPLICATION_JSON));
         assertEquals(russianAssetsOwnerRepository.findAll().get(0).getEmail(),
                 testUtils.getNewRussianAssetsOwnerDTO().getEmail());
         assertEquals(russianAssetsOwnerRepository.findAll().get(0).getMobilePhoneNumber(),
                 russianAssetsOwnerService.addRussianNumberPrefixPhoneNumber(testUtils
                         .getNewRussianAssetsOwnerDTO().getMobilePhoneNumber()));
 
-        testUtils.perform(put("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH
+        testUtils.perform(
+                put("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH
                 + PERSONAL_DATA_PATH + ID_PATH, createdRussianAssetsOwnerId)
-                .content(asJson(testUtils.getNotValidRussianAssetsOwnerPersonalDataDTO()))
-                .contentType(APPLICATION_JSON));
+                        .content(asJson(testUtils.getNotValidRussianAssetsOwnerPersonalDataDTO()))
+                        .contentType(APPLICATION_JSON));
         assertEquals(russianAssetsOwnerRepository.findAll().get(0).getName(),
                 testUtils.getNewRussianAssetsOwnerDTO().getName());
         assertEquals(russianAssetsOwnerRepository.findAll().get(0).getSurname(),
@@ -359,7 +365,8 @@ public class RussianAssetsOwnerControllerIT {
 
         Long createdRussianAssetsOwnerId = russianAssetsOwnerRepository.findAll().get(0).getId();
 
-        testUtils.perform(delete("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH + ID_PATH,
+        testUtils.perform(
+                delete("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH + ID_PATH,
                         createdRussianAssetsOwnerId))
                 .andExpect(status().isOk())
                 .andReturn()

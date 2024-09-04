@@ -100,8 +100,8 @@ class AccountControllerIT {
 	public void createAccountIT() throws Exception {
 		var response = testUtils.perform(
 				post("/data" + ACCOUNT_CONTROLLER_PATH)
-								.content(asJson(testUtils.getAccountDTO()))
-								.contentType(APPLICATION_JSON)
+						.content(asJson(testUtils.getAccountDTO()))
+						.contentType(APPLICATION_JSON)
 				)
 				.andExpect(status().isCreated())
 				.andReturn()
@@ -122,9 +122,10 @@ class AccountControllerIT {
 
 	@Test
 	public void createNotValidAccountIT() throws Exception {
-		testUtils.perform(post("/data" + ACCOUNT_CONTROLLER_PATH)
-				.content(asJson(testUtils.getNotValidAccountDTO()))
-				.contentType(APPLICATION_JSON));
+		testUtils.perform(
+				post("/data" + ACCOUNT_CONTROLLER_PATH)
+						.content(asJson(testUtils.getNotValidAccountDTO()))
+						.contentType(APPLICATION_JSON));
 
 		assertThat(accountRepository.findAll()).hasSize(0);
 
@@ -143,9 +144,10 @@ class AccountControllerIT {
 
 		Long createdAccountId = accountRepository.findByOrganisationWhereAccountOpened(
 				testUtils.getAccountDTO().getOrganisationWhereAccountOpened()).getId();
-		var response = testUtils.perform(put("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH,
-						createdAccountId)
-						.content(asJson(testUtils.getSecondAccountDTO())).contentType(APPLICATION_JSON))
+		var response = testUtils.perform(
+				put("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH, createdAccountId)
+						.content(asJson(testUtils.getSecondAccountDTO())).contentType(APPLICATION_JSON)
+				)
 				.andExpect(status().isOk())
 				.andReturn()
 				.getResponse();
@@ -170,10 +172,11 @@ class AccountControllerIT {
 
 		Long createdAccountId = accountRepository.findByOrganisationWhereAccountOpened(
 				testUtils.getAccountDTO().getOrganisationWhereAccountOpened()).getId();
-		testUtils.perform(put("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH,
+		testUtils.perform(
+				put("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH,
 				createdAccountId)
-				.content(asJson(testUtils.getNotValidAccountDTO()))
-				.contentType(APPLICATION_JSON));
+						.content(asJson(testUtils.getNotValidAccountDTO()))
+						.contentType(APPLICATION_JSON));
 
 		assertEquals(testUtils.getAccountDTO().getOrganisationWhereAccountOpened(),
 				accountRepository.findAll().get(0).getOrganisationWhereAccountOpened());
@@ -200,7 +203,8 @@ class AccountControllerIT {
 		Long createdAccountId = accountRepository.findByOrganisationWhereAccountOpened(
 				testUtils.getAccountDTO().getOrganisationWhereAccountOpened()).getId();
 
-		testUtils.perform(delete("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH, createdAccountId))
+		testUtils.perform(
+				delete("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH, createdAccountId))
 				.andExpect(status().isOk())
 				.andReturn()
 				.getResponse();

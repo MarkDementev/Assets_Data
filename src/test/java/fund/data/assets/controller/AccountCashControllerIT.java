@@ -67,8 +67,10 @@ public class AccountCashControllerIT {
         testUtils.createDefaultAccountCash();
 
         AccountCash expectedAccountCash = accountCashRepository.findAll().get(0);
-        var response = testUtils.perform(get("/data" + ACCOUNT_CASH_CONTROLLER_PATH + ID_PATH,
-                        expectedAccountCash.getId()))
+        var response = testUtils.perform(
+                get("/data" + ACCOUNT_CASH_CONTROLLER_PATH + ID_PATH,
+                        expectedAccountCash.getId())
+                )
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
@@ -87,7 +89,8 @@ public class AccountCashControllerIT {
     public void getAllCashIT() throws Exception {
         testUtils.createDefaultAccountCash();
 
-        var response = testUtils.perform(get("/data" + ACCOUNT_CASH_CONTROLLER_PATH))
+        var response = testUtils.perform(
+                get("/data" + ACCOUNT_CASH_CONTROLLER_PATH))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
@@ -131,9 +134,10 @@ public class AccountCashControllerIT {
         testUtils.createDefaultAccount();
         testUtils.createDefaultRussianAssetsOwner();
 
-        testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
-                .content(asJson(new AccountCashDTO()))
-                .contentType(APPLICATION_JSON));
+        testUtils.perform(
+                post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
+                        .content(asJson(new AccountCashDTO()))
+                        .contentType(APPLICATION_JSON));
         assertThat(accountCashRepository.findAll()).hasSize(0);
 
         float amountChangeValue = 10.00F;

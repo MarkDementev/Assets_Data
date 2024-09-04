@@ -73,8 +73,8 @@ public class TurnoverCommissionValueControllerIT {
 
         TurnoverCommissionValue expectedTurnoverCommissionValue = turnoverCommissionValueRepository.findAll().get(0);
         var response = testUtils.perform(
-                        get("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH + ID_PATH,
-                                expectedTurnoverCommissionValue.getId())
+                get("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH + ID_PATH,
+                        expectedTurnoverCommissionValue.getId())
                 ).andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
@@ -97,7 +97,7 @@ public class TurnoverCommissionValueControllerIT {
         testUtils.createDefaultTurnoverCommissionValue();
 
         var response = testUtils.perform(
-                        get("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH)
+                    get("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH)
                 )
                 .andExpect(status().isOk())
                 .andReturn()
@@ -119,9 +119,9 @@ public class TurnoverCommissionValueControllerIT {
                 TEST_COMMISSION_PERCENT_VALUE
         );
         var response = testUtils.perform(
-                        post("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH)
-                                .content(asJson(validTurnoverCommissionValueDTO))
-                                .contentType(APPLICATION_JSON)
+                post("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH)
+                        .content(asJson(validTurnoverCommissionValueDTO))
+                        .contentType(APPLICATION_JSON)
                 )
                 .andExpect(status().isCreated())
                 .andReturn()

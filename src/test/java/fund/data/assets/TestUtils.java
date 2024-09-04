@@ -29,6 +29,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
+import java.text.DecimalFormat;
+
 import java.time.LocalDate;
 
 import java.util.HashMap;
@@ -36,6 +38,7 @@ import java.util.Map;
 
 import static fund.data.assets.controller.AccountController.ACCOUNT_CONTROLLER_PATH;
 import static fund.data.assets.controller.AccountCashController.ACCOUNT_CASH_CONTROLLER_PATH;
+import static fund.data.assets.controller.FixedRateBondPackageController.FIXED_RATE_BOND_CONTROLLER_PATH;
 import static fund.data.assets.controller.RussianAssetsOwnerController.RUSSIAN_OWNERS_CONTROLLER_PATH;
 import static fund.data.assets.controller.TurnoverCommissionValueController.TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH;
 import static fund.data.assets.utils.enums.AssetCurrency.NOT_IMPLEMENTED;
@@ -55,6 +58,7 @@ public class TestUtils {
     public static final Float TEST_COMMISSION_PERCENT_VALUE_FLOAT = 0.01F;
     public static final Float TEST_FIRST_RUSSIAN_OWNER_CASH_AMOUNT = 10150.00F;
     public static final Float TEST_SECOND_RUSSIAN_OWNER_CASH_AMOUNT = 20300.00F;
+    public static final DecimalFormat TEST_DECIMAL_FORMAT = new DecimalFormat( "#.####" );
     private static final ObjectMapper MAPPER = new ObjectMapper().findAndRegisterModules();
     private final AccountDTO accountDTO = new AccountDTO(
             "defaultBank",
@@ -217,44 +221,6 @@ public class TestUtils {
         return notValidRussianAssetsOwnerPersonalDataDTO;
     }
 
-    public Map<String, Float> prepareEntitiesBeforeFirstBuyFixedRateBondThenGetAssetOwnersWithAssetCounts()
-            throws Exception {
-        Map<String, Float> assetOwnersWithAssetCounts = new HashMap<>();
-
-        createDefaultRussianAssetsOwner();
-        createSecondDefaultRussianAssetsOwner();
-        assetOwnersWithAssetCounts.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(0).getId()),
-                10.00F);
-        assetOwnersWithAssetCounts.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(1).getId()),
-                20.00F);
-        createDefaultAccount();
-
-        TurnoverCommissionValueDTO newTurnoverCommissionValueDTO = new TurnoverCommissionValueDTO(
-                accountRepository.findByOrganisationWhereAccountOpened(
-                        getAccountDTO().getOrganisationWhereAccountOpened()).getId(),
-                FixedRateBondPackage.class.getTypeName(),
-                TEST_COMMISSION_PERCENT_VALUE
-        );
-        createTurnoverCommissionValue(newTurnoverCommissionValueDTO);
-
-        AccountCashDTO firstAccountCashDTO = new AccountCashDTO(
-                accountRepository.findAll().get(0).getId(),
-                RUSRUB,
-                russianAssetsOwnerRepository.findAll().get(0).getId(),
-                TEST_FIRST_RUSSIAN_OWNER_CASH_AMOUNT
-        );
-        AccountCashDTO secondAccountCashDTO = new AccountCashDTO(
-                accountRepository.findAll().get(0).getId(),
-                RUSRUB,
-                russianAssetsOwnerRepository.findAll().get(1).getId(),
-                TEST_SECOND_RUSSIAN_OWNER_CASH_AMOUNT
-        );
-        createAccountCash(firstAccountCashDTO);
-        createAccountCash(secondAccountCashDTO);
-
-        return assetOwnersWithAssetCounts;
-    }
-
     public FirstBuyFixedRateBondDTO getFirstBuyFixedRateBondDTO() throws Exception {
         Map<String, Float> assetOwnersWithAssetCounts
                 = prepareEntitiesBeforeFirstBuyFixedRateBondThenGetAssetOwnersWithAssetCounts();
@@ -342,6 +308,30 @@ public class TestUtils {
         return createAccountCash(accountCashDTO);
     }
 
+    public ResultActions createDefaultFixedRateBond() throws Exception {
+        Map<String, Float> assetOwnersWithAssetCounts
+                = prepareEntitiesBeforeFirstBuyFixedRateBondThenGetAssetOwnersWithAssetCounts();
+
+        FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO = new FirstBuyFixedRateBondDTO(
+                RUSRUB,
+                "assetTitle",
+                30,
+                AssetsOwnersCountry.RUS,
+                assetOwnersWithAssetCounts,
+                accountRepository.findAll().get(0).getId(),
+                "RU000A103NZ8",
+                "assetIssuerTitle",
+                LocalDate.of(2024, 2, 23),
+                1000,
+                100.00F,
+                0.00F,
+                100.00F,
+                1,
+                LocalDate.of(2025, 2, 22)
+        );
+        return createFixedRateBond(firstBuyFixedRateBondDTO);
+    }
+
     public ResultActions createAccount(final AccountDTO accountDTO) throws Exception {
         final var request = post("/data" + ACCOUNT_CONTROLLER_PATH)
                 .content(asJson(accountDTO))
@@ -374,6 +364,53 @@ public class TestUtils {
                 .contentType(APPLICATION_JSON);
 
         return perform(request);
+    }
+
+    public ResultActions createFixedRateBond(final FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO)
+            throws Exception {
+        final var request = post("/data" + FIXED_RATE_BOND_CONTROLLER_PATH)
+                .content(asJson(firstBuyFixedRateBondDTO))
+                .contentType(APPLICATION_JSON);
+
+        return perform(request);
+    }
+
+    public Map<String, Float> prepareEntitiesBeforeFirstBuyFixedRateBondThenGetAssetOwnersWithAssetCounts()
+            throws Exception {
+        Map<String, Float> assetOwnersWithAssetCounts = new HashMap<>();
+
+        createDefaultRussianAssetsOwner();
+        createSecondDefaultRussianAssetsOwner();
+        assetOwnersWithAssetCounts.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(0).getId()),
+                10.00F);
+        assetOwnersWithAssetCounts.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(1).getId()),
+                20.00F);
+        createDefaultAccount();
+
+        TurnoverCommissionValueDTO newTurnoverCommissionValueDTO = new TurnoverCommissionValueDTO(
+                accountRepository.findByOrganisationWhereAccountOpened(
+                        getAccountDTO().getOrganisationWhereAccountOpened()).getId(),
+                FixedRateBondPackage.class.getTypeName(),
+                TEST_COMMISSION_PERCENT_VALUE
+        );
+        createTurnoverCommissionValue(newTurnoverCommissionValueDTO);
+
+        AccountCashDTO firstAccountCashDTO = new AccountCashDTO(
+                accountRepository.findAll().get(0).getId(),
+                RUSRUB,
+                russianAssetsOwnerRepository.findAll().get(0).getId(),
+                TEST_FIRST_RUSSIAN_OWNER_CASH_AMOUNT
+        );
+        AccountCashDTO secondAccountCashDTO = new AccountCashDTO(
+                accountRepository.findAll().get(0).getId(),
+                RUSRUB,
+                russianAssetsOwnerRepository.findAll().get(1).getId(),
+                TEST_SECOND_RUSSIAN_OWNER_CASH_AMOUNT
+        );
+        createAccountCash(firstAccountCashDTO);
+        createAccountCash(secondAccountCashDTO);
+
+        return assetOwnersWithAssetCounts;
     }
 
     public ResultActions perform(final MockHttpServletRequestBuilder request) throws Exception {
