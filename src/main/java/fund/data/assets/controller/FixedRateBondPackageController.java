@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.util.List;
 
@@ -67,5 +68,11 @@ public class FixedRateBondPackageController {
                 fixedRateBondService.firstBuyFixedRateBond(firstBuyFixedRateBondDTO));
     }
 
-    //TODO - Реализуй остальные контроллеры
+    @Operation(summary = "Sell all fixed rate bond package")
+    @ApiResponse(responseCode = "200", description = "All package is sold")
+    @DeleteMapping(ID_PATH)
+    public void sellAllPackageFixedRateBond(@PathVariable Long id) {
+        fixedRateBondService.sellAllPackage(id);
+    }
+    //TODO - Реализуй остальные контроллеры - 1) докупку бумаг в пакет и 2) частичную продажу бумаг из пакета
 }
