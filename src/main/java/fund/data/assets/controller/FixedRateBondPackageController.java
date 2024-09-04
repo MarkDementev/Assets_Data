@@ -1,6 +1,7 @@
 package fund.data.assets.controller;
 
 import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
+import fund.data.assets.dto.asset.exchange.FixedRateBondFullSellDTO;
 import fund.data.assets.model.asset.exchange.FixedRateBondPackage;
 import fund.data.assets.service.FixedRateBondService;
 
@@ -71,8 +72,9 @@ public class FixedRateBondPackageController {
     @Operation(summary = "Sell all fixed rate bond package")
     @ApiResponse(responseCode = "200", description = "All package is sold")
     @DeleteMapping(ID_PATH)
-    public void sellAllPackageFixedRateBond(@PathVariable Long id) {
-        fixedRateBondService.sellAllPackage(id);
+    public void sellAllPackageFixedRateBond(@PathVariable Long id,
+                                            @RequestBody @Valid FixedRateBondFullSellDTO fixedRateBondFullSellDTO) {
+        fixedRateBondService.sellAllPackage(id, fixedRateBondFullSellDTO);
     }
     //TODO - Реализуй остальные контроллеры - 1) докупку бумаг в пакет и 2) частичную продажу бумаг из пакета
 }

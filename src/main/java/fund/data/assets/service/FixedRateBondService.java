@@ -1,6 +1,7 @@
 package fund.data.assets.service;
 
 import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
+import fund.data.assets.dto.asset.exchange.FixedRateBondFullSellDTO;
 import fund.data.assets.model.asset.exchange.FixedRateBondPackage;
 
 import java.util.List;
@@ -15,5 +16,5 @@ public interface FixedRateBondService {
     FixedRateBondPackage getFixedRateBond(Long id);
     List<FixedRateBondPackage> getFixedRateBonds();
     FixedRateBondPackage firstBuyFixedRateBond(FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO);
-    void sellAllPackage(Long id);
+    void sellAllPackage(Long id, FixedRateBondFullSellDTO fixedRateBondFullSellDTO);
 }

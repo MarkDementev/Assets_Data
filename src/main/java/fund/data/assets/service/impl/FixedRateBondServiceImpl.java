@@ -1,6 +1,7 @@
 package fund.data.assets.service.impl;
 
 import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
+import fund.data.assets.dto.asset.exchange.FixedRateBondFullSellDTO;
 import fund.data.assets.model.asset.exchange.FixedRateBondPackage;
 import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.model.financial_entities.AccountCash;
@@ -96,7 +97,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
 
     //TODO раз идёт работа с несколькими сущностями, надо подумать о добавлении уровня изоляции транзакции
     @Override
-    public void sellAllPackage(Long id) {
+    public void sellAllPackage(Long id, FixedRateBondFullSellDTO fixedRateBondFullSellDTO) {
         //получить assetOwnersWithAssetCounts из релатионшипа бонда - это будет информация о пропорциях
         //надо принести сюда инфу о стоимости продажи пакета! (частично вбиваю вручную, частично - насчитываю сверху ко
         //миссию, если она будет, ещё налог возможный надо-бы учесть!
