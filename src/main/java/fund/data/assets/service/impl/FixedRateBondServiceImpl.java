@@ -94,6 +94,19 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         return fixedRateBondRepository.save(atomicFixedRateBondPackage.get());
     }
 
+    //TODO раз идёт работа с несколькими сущностями, надо подумать о добавлении уровня изоляции транзакции
+    @Override
+    public void sellAllPackage(Long id) {
+        //получить assetOwnersWithAssetCounts из релатионшипа бонда - это будет информация о пропорциях
+        //надо принести сюда инфу о стоимости продажи пакета! (частично вбиваю вручную, частично - насчитываю сверху ко
+        //миссию, если она будет, ещё налог возможный надо-бы учесть!
+        //распредели деньги от продажи за минусом пропорции, используя первую строку
+        //вот наконец можно и удалить бонд, деньги оунерам вернутся!
+        //ещё должно удалиться релатионшип
+
+        fixedRateBondRepository.deleteById(id);
+    }
+
     /**
      * Проводится валидация - сумма выльюс в assetOwnersWithAssetCounts, приведённая к Integer, должна быть равна
      * значению assetCount. Аргументы метода берутся из DTO {@link FirstBuyFixedRateBondDTO}.
