@@ -14,6 +14,8 @@ import fund.data.assets.repository.AccountCashRepository;
 import fund.data.assets.repository.AccountRepository;
 import fund.data.assets.repository.RussianAssetsOwnerRepository;
 import fund.data.assets.repository.TurnoverCommissionValueRepository;
+import fund.data.assets.repository.FixedRateBondRepository;
+import fund.data.assets.repository.FinancialAssetRelationshipRepository;
 import fund.data.assets.utils.enums.AssetCurrency;
 import fund.data.assets.utils.enums.CommissionSystem;
 import fund.data.assets.utils.enums.TaxSystem;
@@ -33,8 +35,12 @@ import java.util.TreeMap;
 
 import static fund.data.assets.TestUtils.asJson;
 import static fund.data.assets.TestUtils.fromJson;
+import static fund.data.assets.TestUtils.TEST_FIRST_RUSSIAN_OWNER_CASH_AMOUNT;
+import static fund.data.assets.TestUtils.TEST_SECOND_RUSSIAN_OWNER_CASH_AMOUNT;
 import static fund.data.assets.config.SpringConfigForTests.TEST_PROFILE;
 import static fund.data.assets.controller.FixedRateBondPackageController.FIXED_RATE_BOND_CONTROLLER_PATH;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -58,6 +64,10 @@ public class FixedRateBondControllerIT {
     private AccountCashRepository accountCashRepository;
     @Autowired
     private TurnoverCommissionValueRepository turnoverCommissionValueRepository;
+    @Autowired
+    private FixedRateBondRepository fixedRateBondRepository;
+    @Autowired
+    private FinancialAssetRelationshipRepository financialAssetRelationshipRepository;
 
     @AfterEach
     public void clearRepositories() {
@@ -205,5 +215,27 @@ public class FixedRateBondControllerIT {
             assertEquals(element.getValue(), accountCashRepository.findByAccountAndAssetCurrencyAndAssetsOwner(account,
                             assetCurrency, assetsOwner).getAmount());
         }
+    }
+
+    @Test
+    public void firstBuyNotValidFixedRateBond() throws Exception {
+        final FirstBuyFixedRateBondDTO notValidFirstBuyFixedRateBondDTO
+                = testUtils.getNotValidFirstBuyFixedRateBondDTO();
+
+        assertThat(fixedRateBondRepository.findAll()).hasSize(0);
+        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(0);
+        assertEquals(TEST_FIRST_RUSSIAN_OWNER_CASH_AMOUNT, accountCashRepository.findAll().get(0).getAmount());
+        assertEquals(TEST_SECOND_RUSSIAN_OWNER_CASH_AMOUNT, accountCashRepository.findAll().get(1).getAmount());
+
+        testUtils.perform(
+                post("/data" + FIXED_RATE_BOND_CONTROLLER_PATH)
+                                .content(asJson(notValidFirstBuyFixedRateBondDTO))
+                                .contentType(APPLICATION_JSON)
+                ).andExpect(status().isBadRequest());
+
+        assertThat(fixedRateBondRepository.findAll()).hasSize(0);
+        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(0);
+        assertEquals(TEST_FIRST_RUSSIAN_OWNER_CASH_AMOUNT, accountCashRepository.findAll().get(0).getAmount());
+        assertEquals(TEST_SECOND_RUSSIAN_OWNER_CASH_AMOUNT, accountCashRepository.findAll().get(1).getAmount());
     }
 }

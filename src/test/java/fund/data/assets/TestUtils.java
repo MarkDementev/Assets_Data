@@ -38,6 +38,7 @@ import static fund.data.assets.controller.AccountController.ACCOUNT_CONTROLLER_P
 import static fund.data.assets.controller.AccountCashController.ACCOUNT_CASH_CONTROLLER_PATH;
 import static fund.data.assets.controller.RussianAssetsOwnerController.RUSSIAN_OWNERS_CONTROLLER_PATH;
 import static fund.data.assets.controller.TurnoverCommissionValueController.TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH;
+import static fund.data.assets.utils.enums.AssetCurrency.NOT_IMPLEMENTED;
 import static fund.data.assets.utils.enums.AssetCurrency.RUSRUB;
 import static fund.data.assets.utils.enums.RussianSexEnum.MAN;
 import static fund.data.assets.utils.enums.RussianSexEnum.WOMAN;
@@ -52,6 +53,8 @@ public class TestUtils {
     public static final String TEST_STRING_FORMAT_PERCENT_VALUE = "20,1234";
     public static final Float TEST_FORMATTED_PERCENT_VALUE_FLOAT = 0.201234F;
     public static final Float TEST_COMMISSION_PERCENT_VALUE_FLOAT = 0.01F;
+    public static final Float TEST_FIRST_RUSSIAN_OWNER_CASH_AMOUNT = 10150.00F;
+    public static final Float TEST_SECOND_RUSSIAN_OWNER_CASH_AMOUNT = 20300.00F;
     private static final ObjectMapper MAPPER = new ObjectMapper().findAndRegisterModules();
     private final AccountDTO accountDTO = new AccountDTO(
             "defaultBank",
@@ -214,13 +217,16 @@ public class TestUtils {
         return notValidRussianAssetsOwnerPersonalDataDTO;
     }
 
-    public FirstBuyFixedRateBondDTO getFirstBuyFixedRateBondDTO() throws Exception {
+    public Map<String, Float> prepareEntitiesBeforeFirstBuyFixedRateBondThenGetAssetOwnersWithAssetCounts()
+            throws Exception {
         Map<String, Float> assetOwnersWithAssetCounts = new HashMap<>();
 
         createDefaultRussianAssetsOwner();
         createSecondDefaultRussianAssetsOwner();
-        assetOwnersWithAssetCounts.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(0).getId()), 10.0F);
-        assetOwnersWithAssetCounts.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(1).getId()), 20.0F);
+        assetOwnersWithAssetCounts.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(0).getId()),
+                10.00F);
+        assetOwnersWithAssetCounts.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(1).getId()),
+                20.00F);
         createDefaultAccount();
 
         TurnoverCommissionValueDTO newTurnoverCommissionValueDTO = new TurnoverCommissionValueDTO(
@@ -235,16 +241,23 @@ public class TestUtils {
                 accountRepository.findAll().get(0).getId(),
                 RUSRUB,
                 russianAssetsOwnerRepository.findAll().get(0).getId(),
-                10150.0F
+                TEST_FIRST_RUSSIAN_OWNER_CASH_AMOUNT
         );
         AccountCashDTO secondAccountCashDTO = new AccountCashDTO(
                 accountRepository.findAll().get(0).getId(),
                 RUSRUB,
                 russianAssetsOwnerRepository.findAll().get(1).getId(),
-                20300.0F
+                TEST_SECOND_RUSSIAN_OWNER_CASH_AMOUNT
         );
         createAccountCash(firstAccountCashDTO);
         createAccountCash(secondAccountCashDTO);
+
+        return assetOwnersWithAssetCounts;
+    }
+
+    public FirstBuyFixedRateBondDTO getFirstBuyFixedRateBondDTO() throws Exception {
+        Map<String, Float> assetOwnersWithAssetCounts
+                = prepareEntitiesBeforeFirstBuyFixedRateBondThenGetAssetOwnersWithAssetCounts();
 
         return new FirstBuyFixedRateBondDTO(
                 RUSRUB,
@@ -255,6 +268,29 @@ public class TestUtils {
                 accountRepository.findAll().get(0).getId(),
                 "RU000A103NZ8",
                 "assetIssuerTitle",
+                LocalDate.of(2024, 2, 23),
+                1000,
+                100.00F,
+                0.00F,
+                100.00F,
+                1,
+                LocalDate.of(2025, 2, 22)
+        );
+    }
+
+    public FirstBuyFixedRateBondDTO getNotValidFirstBuyFixedRateBondDTO() throws Exception {
+        Map<String, Float> assetOwnersWithAssetCounts
+                = prepareEntitiesBeforeFirstBuyFixedRateBondThenGetAssetOwnersWithAssetCounts();
+
+        return new FirstBuyFixedRateBondDTO(
+                NOT_IMPLEMENTED,
+                "",
+                -30,
+                null,
+                assetOwnersWithAssetCounts,
+                accountRepository.findAll().get(0).getId(),
+                "",
+                "",
                 LocalDate.of(2024, 2, 23),
                 1000,
                 100.00F,
