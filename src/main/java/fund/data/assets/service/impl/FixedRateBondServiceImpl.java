@@ -31,6 +31,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -270,14 +271,15 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         Integer assetCount = fixedRateBondPackageToWorkWith.getAssetCount();
         Map<String, Float> assetOwnersWithAssetCounts = fixedRateBondPackageToWorkWith.getAssetRelationship()
                 .getAssetOwnersWithAssetCounts();
+        Map<String, Float> assetOwnersWithAccountCashAmountDiffsMap = new TreeMap<>();
 
         for (Map.Entry<String, Float> mapElement : assetOwnersWithAssetCounts.entrySet()) {
                 Float ownerAssetCount = mapElement.getValue();
                 Float ownerAccountCashDiff = (ownerAssetCount / assetCount) * sellValue;
 
-                mapElement.setValue(ownerAccountCashDiff);
+                assetOwnersWithAccountCashAmountDiffsMap.put(mapElement.getKey(), ownerAccountCashDiff);
         }
-        return assetOwnersWithAssetCounts;
+        return assetOwnersWithAccountCashAmountDiffsMap;
     }
 
     /**

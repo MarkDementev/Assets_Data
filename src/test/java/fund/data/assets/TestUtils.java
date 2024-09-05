@@ -275,6 +275,20 @@ public class TestUtils {
         );
     }
 
+    public FixedRateBondFullSellDTO getFixedRateBondFullSellDTODiffWithoutTaxes() {
+        return new FixedRateBondFullSellDTO(
+                AssetsOwnersCountry.RUS,
+                9900.00F
+        );
+    }
+
+    public FixedRateBondFullSellDTO getNotValidCountryFixedRateBondFullSellDTO() {
+        return new FixedRateBondFullSellDTO(
+                AssetsOwnersCountry.USA,
+                33000.00F
+        );
+    }
+
     public ResultActions createDefaultAccount() throws Exception {
         return createAccount(accountDTO);
     }

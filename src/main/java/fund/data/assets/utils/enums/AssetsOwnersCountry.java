@@ -6,7 +6,8 @@ package fund.data.assets.utils.enums;
  * @author MarkDementev a.k.a JavaMarkDem
  */
 public enum AssetsOwnersCountry {
-    RUS("Russian assets owners");
+    RUS("Russian assets owners"),
+    USA("American assets owners");
 
     private final String title;
 

@@ -20,6 +20,8 @@ import fund.data.assets.utils.enums.AssetCurrency;
 import fund.data.assets.utils.enums.CommissionSystem;
 import fund.data.assets.utils.enums.TaxSystem;
 
+import jakarta.servlet.ServletException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 
@@ -41,6 +43,7 @@ import static fund.data.assets.config.SpringConfigForTests.TEST_PROFILE;
 import static fund.data.assets.controller.FixedRateBondPackageController.FIXED_RATE_BOND_CONTROLLER_PATH;
 import static fund.data.assets.controller.RussianAssetsOwnerController.ID_PATH;
 
+import static fund.data.assets.controller.RussianAssetsOwnerController.RUSSIAN_OWNERS_CONTROLLER_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -322,9 +325,43 @@ public class FixedRateBondControllerIT {
         assertThat(financialAssetRelationshipRepository.findAll()).hasSize(0);
         assertEquals(10837.301F, accountCashRepository.findAll().get(0).getAmount());
         assertEquals(21674.602F, accountCashRepository.findAll().get(1).getAmount());
-
-        //TODO дополни тест проверкой, когда продаётся по цене, ниже покупной!!!
     }
 
-    //TODO добавь тест на проверку невалидного гражданства/резиденства при полной продаже пакета!
+    @Test
+    public void sellAllPackageWithoutTaxesIT() throws Exception {
+        testUtils.createDefaultFixedRateBond();
+        assertThat(fixedRateBondRepository.findAll()).hasSize(1);
+        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
+
+        Long createdFixedRateBondID = fixedRateBondRepository.findAll().get(0).getId();
+
+        testUtils.perform(
+                        delete("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH,
+                                createdFixedRateBondID)
+                                .content(asJson(testUtils.getFixedRateBondFullSellDTODiffWithoutTaxes()))
+                                .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk());
+        assertThat(fixedRateBondRepository.findAll()).hasSize(0);
+        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(0);
+        assertEquals(3317.00F, accountCashRepository.findAll().get(0).getAmount());
+        assertEquals(6634.00F, accountCashRepository.findAll().get(1).getAmount());
+    }
+
+    @Test
+    public void sellAllPackageNotSupportedTaxResidencyIT() throws Exception {
+        testUtils.createDefaultFixedRateBond();
+        assertThat(fixedRateBondRepository.findAll()).hasSize(1);
+        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
+
+        Long createdFixedRateBondID = fixedRateBondRepository.findAll().get(0).getId();
+
+        Assertions.assertThrows(ServletException.class, () -> testUtils.perform(
+                delete("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH,
+                        createdFixedRateBondID)
+                        .content(asJson(testUtils.getNotValidCountryFixedRateBondFullSellDTO()))
+                        .contentType(APPLICATION_JSON)
+        ));
+        assertThat(fixedRateBondRepository.findAll()).hasSize(1);
+        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
+    }
 }
