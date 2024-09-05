@@ -3,7 +3,6 @@ package fund.data.assets.service.impl;
 import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
 import fund.data.assets.dto.asset.exchange.FixedRateBondFullSellDTO;
 import fund.data.assets.model.asset.exchange.FixedRateBondPackage;
-import fund.data.assets.model.asset.relationship.FinancialAssetRelationship;
 import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.model.financial_entities.AccountCash;
 import fund.data.assets.model.owner.AssetsOwner;
@@ -13,6 +12,7 @@ import fund.data.assets.repository.AccountRepository;
 import fund.data.assets.repository.FixedRateBondRepository;
 import fund.data.assets.repository.RussianAssetsOwnerRepository;
 import fund.data.assets.repository.TurnoverCommissionValueRepository;
+import fund.data.assets.repository.FinancialAssetRelationshipRepository;
 import fund.data.assets.service.FixedRateBondService;
 import fund.data.assets.utils.FinancialAndAnotherConstants;
 import fund.data.assets.utils.enums.AssetCurrency;
@@ -42,6 +42,8 @@ import java.util.concurrent.atomic.AtomicReference;
 @Service
 @RequiredArgsConstructor
 public class FixedRateBondServiceImpl implements FixedRateBondService {
+    private static final String ERROR_OWNER_COUNTRY = "Work with investors from these countries is not yet supported"
+            + "by the fund!";
     private final FixedRateBondRepository fixedRateBondRepository;
     private final AccountRepository accountRepository;
     /* TODO - По мере расширения странового охвата, нужно будет здесь расширить перечень разных типов репозиториев
@@ -51,6 +53,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     private final RussianAssetsOwnerRepository russianAssetsOwnerRepository;
     private final AccountCashRepository accountCashRepository;
     private final TurnoverCommissionValueRepository turnoverCommissionValueRepository;
+    private final FinancialAssetRelationshipRepository financialAssetRelationshipRepository;
 
     @Override
     public FixedRateBondPackage getFixedRateBond(Long id) {
@@ -113,10 +116,9 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
                 correctedPackageSellValue);
         Map<String, Float> assetOwnersWithAccountCashAmountDiffs = formAssetOwnersWithAccountCashAmountDiffsMap(
                 atomicFixedRateBondPackage.get(), correctedPackageSellValue);
+
         addMoneyToPreviousOwners(fixedRateBondFullSellDTO, atomicFixedRateBondPackage.get(),
                 assetOwnersWithAccountCashAmountDiffs);
-
-        //TODO Проверь в тесте, что релатионшип создаётся, а потом схлопывается. Если что, пропиши удаление тут!
         fixedRateBondRepository.deleteById(id);
     }
 
@@ -172,8 +174,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
             if (firstBuyFixedRateBondDTO.getAssetsOwnersCountry().equals(AssetsOwnersCountry.RUS)) {
                 assetsOwner = russianAssetsOwnerRepository.findById(Long.valueOf(mapElement.getKey())).orElseThrow();
             } else {
-                throw new IllegalArgumentException("Work with investors from these countries is not yet supported" +
-                        " by the fund!");
+                throw new IllegalArgumentException(ERROR_OWNER_COUNTRY);
             }
             AccountCash assetsOwnerAccountCash = accountCashRepository.findByAccountAndAssetCurrencyAndAssetsOwner(
                     accountToWorkOn, assetCurrency, assetsOwner);
@@ -218,9 +219,8 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         float packageSellValue = fixedRateBondFullSellDTO.getPackageSellValue();
 
         if (fixedRateBondPackageToWorkWith.getAssetCommissionSystem().equals(CommissionSystem.TURNOVER)) {
-            FinancialAssetRelationship financialAssetRelationship
-                    = (FinancialAssetRelationship) fixedRateBondPackageToWorkWith.getAssetRelationship();
-            Account account = financialAssetRelationship.getAccount();
+            Account account = financialAssetRelationshipRepository.findById(
+                    fixedRateBondPackageToWorkWith.getAssetRelationship().getId()).orElseThrow().getAccount();
             String assetTypeName = fixedRateBondPackageToWorkWith.getAssetTypeName();
             float commissionPercentValue = turnoverCommissionValueRepository.findByAccountAndAssetTypeName(account,
                     assetTypeName).getCommissionPercentValue();
@@ -250,6 +250,8 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
                 correctSellValueByCommission = diffBetweenSellBuyCommissions > 0 ? correctSellValueByCommission
                         - (1.00F - FinancialAndAnotherConstants.RUSSIAN_TAX_SYSTEM_CORRECTION_VALUE)
                         * diffBetweenSellBuyCommissions : correctSellValueByCommission;
+            } else {
+                throw new IllegalArgumentException(ERROR_OWNER_COUNTRY);
             }
         }
         return correctSellValueByCommission;
@@ -290,15 +292,16 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
                                           FixedRateBondPackage fixedRateBondPackageToWorkWith,
                                           Map<String, Float> assetOwnersWithAccountCashAmountDiffs) {
         for (Map.Entry<String, Float> mapElement : assetOwnersWithAccountCashAmountDiffs.entrySet()) {
-            FinancialAssetRelationship financialAssetRelationship
-                    = (FinancialAssetRelationship) fixedRateBondPackageToWorkWith.getAssetRelationship();
-            Account account = financialAssetRelationship.getAccount();
+            Account account = financialAssetRelationshipRepository.findById(
+                    fixedRateBondPackageToWorkWith.getAssetRelationship().getId()).orElseThrow().getAccount();
             AssetCurrency assetCurrency = fixedRateBondPackageToWorkWith.getAssetCurrency();
-            RussianAssetsOwner russianAssetsOwner = null;
+            RussianAssetsOwner russianAssetsOwner;
 
             if (fixedRateBondFullSellDTO.getAssetsOwnersTaxResidency().equals(AssetsOwnersCountry.RUS)) {
                 russianAssetsOwner = russianAssetsOwnerRepository.findById(Long.parseLong(mapElement.getKey()))
                         .orElseThrow();
+            } else {
+                throw new IllegalArgumentException(ERROR_OWNER_COUNTRY);
             }
             AccountCash accountCash = accountCashRepository.findByAccountAndAssetCurrencyAndAssetsOwner(account,
                     assetCurrency, russianAssetsOwner);

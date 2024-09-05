@@ -223,9 +223,7 @@ public class TurnoverCommissionValueControllerIT {
 
         testUtils.perform(delete("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH + ID_PATH,
                         createdTurnoverCommissionValueId))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse();
+                .andExpect(status().isOk());
 
         assertNull(turnoverCommissionValueRepository.findByAccountAndAssetTypeName(
                 accountRepository.findAll().get(0), TEST_ASSET_TYPE_NAME));

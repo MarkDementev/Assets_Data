@@ -50,6 +50,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = SpringConfigForTests.class, webEnvironment = RANDOM_PORT)
@@ -264,9 +265,7 @@ public class FixedRateBondControllerIT {
                         .content(asJson(firstBuyFixedRateBondDTO))
                         .contentType(APPLICATION_JSON)
                 )
-                .andExpect(status().isCreated())
-                .andReturn()
-                .getResponse();
+                .andExpect(status().isCreated());
 
         /*
         Проходимся по мапе с корректными значениями, и сверяем со значениями в репозитории, чтобы понять, корректно ли
@@ -284,7 +283,7 @@ public class FixedRateBondControllerIT {
     }
 
     @Test
-    public void firstBuyNotValidFixedRateBond() throws Exception {
+    public void firstBuyNotValidFixedRateBondIT() throws Exception {
         final FirstBuyFixedRateBondDTO notValidFirstBuyFixedRateBondDTO
                 = testUtils.getNotValidFirstBuyFixedRateBondDTO();
 
@@ -304,4 +303,28 @@ public class FixedRateBondControllerIT {
         assertEquals(TEST_FIRST_RUSSIAN_OWNER_CASH_AMOUNT, accountCashRepository.findAll().get(0).getAmount());
         assertEquals(TEST_SECOND_RUSSIAN_OWNER_CASH_AMOUNT, accountCashRepository.findAll().get(1).getAmount());
     }
+
+    @Test
+    public void sellAllPackageIT() throws Exception {
+        testUtils.createDefaultFixedRateBond();
+        assertThat(fixedRateBondRepository.findAll()).hasSize(1);
+        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
+
+        Long createdFixedRateBondID = fixedRateBondRepository.findAll().get(0).getId();
+
+        testUtils.perform(
+                delete("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH,
+                        createdFixedRateBondID)
+                        .content(asJson(testUtils.getFixedRateBondFullSellDTO()))
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk());
+        assertThat(fixedRateBondRepository.findAll()).hasSize(0);
+        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(0);
+        assertEquals(10837.301F, accountCashRepository.findAll().get(0).getAmount());
+        assertEquals(21674.602F, accountCashRepository.findAll().get(1).getAmount());
+
+        //TODO дополни тест проверкой, когда продаётся по цене, ниже покупной!!!
+    }
+
+    //TODO добавь тест на проверку невалидного гражданства/резиденства при полной продаже пакета!
 }

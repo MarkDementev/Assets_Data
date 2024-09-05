@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
+import fund.data.assets.dto.asset.exchange.FixedRateBondFullSellDTO;
 import fund.data.assets.dto.financial_entities.AccountDTO;
 import fund.data.assets.dto.financial_entities.AccountCashDTO;
 import fund.data.assets.dto.financial_entities.TurnoverCommissionValueDTO;
@@ -264,6 +265,13 @@ public class TestUtils {
                 100.00F,
                 1,
                 LocalDate.of(2025, 2, 22)
+        );
+    }
+
+    public FixedRateBondFullSellDTO getFixedRateBondFullSellDTO() {
+        return new FixedRateBondFullSellDTO(
+             AssetsOwnersCountry.RUS,
+             33000.00F
         );
     }
 

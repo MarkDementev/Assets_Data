@@ -231,9 +231,7 @@ public class AccountCashControllerIT {
 
         Long createdAccountId = accountRepository.findAll().get(0).getId();
         testUtils.perform(delete("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH, createdAccountId))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse();
+                .andExpect(status().isOk());
         assertThat(accountCashRepository.findAll()).hasSize(0);
 
         testUtils.createDefaultAccountCash();
@@ -241,9 +239,7 @@ public class AccountCashControllerIT {
 
         Long createdOwnerId = russianAssetsOwnerRepository.findAll().get(0).getId();
         testUtils.perform(delete("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH + ID_PATH, createdOwnerId))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse();
+                .andExpect(status().isOk());
         assertThat(accountCashRepository.findAll()).hasSize(0);
     }
 }

@@ -205,9 +205,7 @@ class AccountControllerIT {
 
 		testUtils.perform(
 				delete("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH, createdAccountId))
-				.andExpect(status().isOk())
-				.andReturn()
-				.getResponse();
+				.andExpect(status().isOk());
 
 		assertNull(accountRepository.findByOrganisationWhereAccountOpened(
 				testUtils.getAccountDTO().getOrganisationWhereAccountOpened()));

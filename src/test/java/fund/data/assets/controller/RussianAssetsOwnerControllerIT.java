@@ -368,9 +368,7 @@ public class RussianAssetsOwnerControllerIT {
         testUtils.perform(
                 delete("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH + ID_PATH,
                         createdRussianAssetsOwnerId))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse();
+                .andExpect(status().isOk());
 
         assertThat(russianAssetsOwnerRepository.findAll()).hasSize(0);
     }
