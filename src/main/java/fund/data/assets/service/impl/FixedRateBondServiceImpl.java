@@ -127,8 +127,15 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     @Override
     //TODO продумай уровень изоляции
     public void redeemBonds(Long id, AssetsOwnersCountryDTO assetsOwnersCountryDTO) {
-        AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
-                fixedRateBondRepository.findById(id).orElseThrow());
+//        AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
+//                fixedRateBondRepository.findById(id).orElseThrow());
+//
+//        checkIsBondsCanRedeemByDate(atomicFixedRateBondPackage);
+//
+//        float correctedByTaxesPackageRedeemValue
+//
+//        //нашли облигу, проверили, не раньше ли текущая дата, чем погашение, скорректировали возврат суммы на
+//        //возможный налог, раскидали оунерам лавэ, удалили пакет облиг
 
     }
 
