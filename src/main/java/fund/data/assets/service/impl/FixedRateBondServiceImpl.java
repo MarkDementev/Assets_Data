@@ -46,6 +46,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class FixedRateBondServiceImpl implements FixedRateBondService {
     private static final String ERROR_OWNER_COUNTRY = "Work with investors from these countries is not yet supported"
             + "by the fund!";
+    private static final String ERROR_DATE_REDEEM = "The bonds haven't matured yet, it's too early to write them down!";
     private final FixedRateBondRepository fixedRateBondRepository;
     private final AccountRepository accountRepository;
     /* TODO - По мере расширения странового охвата, нужно будет здесь расширить перечень разных типов репозиториев
@@ -114,7 +115,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
                 fixedRateBondRepository.findById(id).orElseThrow());
         float correctedPackageSellValue = correctSellValueByCommission(fixedRateBondFullSellDTO,
                 atomicFixedRateBondPackage.get());
-        correctedPackageSellValue = correctSellValueByTaxes(fixedRateBondFullSellDTO, atomicFixedRateBondPackage.get(),
+        correctedPackageSellValue = correctValueByTaxes(fixedRateBondFullSellDTO, atomicFixedRateBondPackage.get(),
                 correctedPackageSellValue);
         Map<String, Float> assetOwnersWithAccountCashAmountDiffs = formAssetOwnersWithAccountCashAmountDiffsMap(
                 atomicFixedRateBondPackage.get(), correctedPackageSellValue);
@@ -125,18 +126,25 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     }
 
     @Override
-    //TODO продумай уровень изоляции
+    @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = {Exception.class})
     public void redeemBonds(Long id, AssetsOwnersCountryDTO assetsOwnersCountryDTO) {
-//        AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
-//                fixedRateBondRepository.findById(id).orElseThrow());
-//
-//        checkIsBondsCanRedeemByDate(atomicFixedRateBondPackage);
-//
-//        float correctedByTaxesPackageRedeemValue
-//
-//        //нашли облигу, проверили, не раньше ли текущая дата, чем погашение, скорректировали возврат суммы на
-//        //возможный налог, раскидали оунерам лавэ, удалили пакет облиг
+        AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
+                fixedRateBondRepository.findById(id).orElseThrow());
 
+        if (LocalDate.now().toEpochDay() < atomicFixedRateBondPackage.get().getBondMaturityDate().toEpochDay()) {
+            throw new IllegalArgumentException(ERROR_DATE_REDEEM);
+        }
+
+        float redeemedBondsParValuesSum = atomicFixedRateBondPackage.get().getBondParValue()
+                * atomicFixedRateBondPackage.get().getAssetCount();
+        float correctedByTaxesPackageRedeemValue = correctValueByTaxes(assetsOwnersCountryDTO,
+                atomicFixedRateBondPackage.get(), redeemedBondsParValuesSum);
+        Map<String, Float> assetOwnersWithAccountCashAmountDiffs = formAssetOwnersWithAccountCashAmountDiffsMap(
+                atomicFixedRateBondPackage.get(), correctedByTaxesPackageRedeemValue);
+
+        addMoneyToPreviousOwners(assetsOwnersCountryDTO, atomicFixedRateBondPackage.get(),
+                assetOwnersWithAccountCashAmountDiffs);
+        fixedRateBondRepository.deleteById(id);
     }
 
     /**
@@ -225,15 +233,15 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     /**
      * При полной продаже пакета определяем, платится ли комиссия. Если да - уменьшаем продажную сумму и возвращаем её,
      * если нет - возвращаем без изменений.
-     * @param fixedRateBondFullSellDTO DTO с информаций о продажной стоимости при полной продаже пакета облигаций
-     * с фиксированным купоном.
+     * @param dTO DTO с информаций о гражданстве собственников активов и о продажной стоимости при полной продаже
+     * пакета облигаций с фиксированным купоном.
      * @param fixedRateBondPackageToWorkWith пакет облигаций, для которого проводятся расчёты.
      * @return скорректированная или оставленная без изменений сумма.
      * @since 0.0.1-alpha
      */
-    private Float correctSellValueByCommission(FixedRateBondFullSellDTO fixedRateBondFullSellDTO,
+    private Float correctSellValueByCommission(FixedRateBondFullSellDTO dTO ,
                                                FixedRateBondPackage fixedRateBondPackageToWorkWith) {
-        float packageSellValue = fixedRateBondFullSellDTO.getPackageSellValue();
+        float packageSellValue = dTO.getPackageSellValue();
 
         if (fixedRateBondPackageToWorkWith.getAssetCommissionSystem().equals(CommissionSystem.TURNOVER)) {
             Account account = financialAssetRelationshipRepository.findById(
@@ -247,31 +255,31 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     }
 
     /**
-     * При полной продаже пакета определяем, платится ли НДФЛ. Если да - уменьшаем продажную сумму и возвращаем её,
-     * если нет - возвращаем без изменений.
-     * @param fixedRateBondFullSellDTO DTO с информаций о налоговом резидентстве при полной продаже пакета облигаций.
+     * При полной продаже пакета или при его погашении определяем, платится ли НДФЛ. Если да - уменьшаем получаемую
+     * сумму и возвращаем её, если нет - возвращаем без изменений.
+     * @param dTO DTO с информаций о гражданстве собственников активов, также может содержать информацию о продажной
+     * стоимости при полной продаже пакета облигаций с фиксированным купоном.
      * @param fixedRateBondPackageToWorkWith пакет облигаций, для которого проводятся расчёты.
-     * @param correctSellValueByCommission продажная цена пакета бумаг, ранее уже возможно уменьшенная на комиссию
-     * при продаже.
+     * @param valueToCorrect возвращаемая цена пакета бумаг, ранее уже, возможно, уменьшенная на комиссию при продаже.
      * @return скорректированная или оставленная без изменений сумма.
      * @since 0.0.1-alpha
      */
-    private Float correctSellValueByTaxes(FixedRateBondFullSellDTO fixedRateBondFullSellDTO,
-                                          FixedRateBondPackage fixedRateBondPackageToWorkWith,
-                                          float correctSellValueByCommission) {
+    private Float correctValueByTaxes(AssetsOwnersCountryDTO dTO,
+                                      FixedRateBondPackage fixedRateBondPackageToWorkWith, float valueToCorrect) {
         if (fixedRateBondPackageToWorkWith.getAssetTaxSystem().equals(TaxSystem.EQUAL_COUPON_DIVIDEND_TRADE)) {
-            if (fixedRateBondFullSellDTO.getAssetsOwnersTaxResidency().equals(AssetsOwnersCountry.RUS)) {
-                float diffBetweenSellBuyCommissions = correctSellValueByCommission
+            if (dTO.getAssetsOwnersTaxResidency().equals(AssetsOwnersCountry.RUS)) {
+                float diffBetweenSellBuyCommissions = valueToCorrect
                         - fixedRateBondPackageToWorkWith.getTotalAssetPurchasePriceWithCommission();
 
-                correctSellValueByCommission = diffBetweenSellBuyCommissions > 0 ? correctSellValueByCommission
-                        - (1.00F - FinancialAndAnotherConstants.RUSSIAN_TAX_SYSTEM_CORRECTION_VALUE)
-                        * diffBetweenSellBuyCommissions : correctSellValueByCommission;
+                valueToCorrect = diffBetweenSellBuyCommissions > 0 ?
+                        valueToCorrect - (1.00F - FinancialAndAnotherConstants.RUSSIAN_TAX_SYSTEM_CORRECTION_VALUE)
+                        * diffBetweenSellBuyCommissions
+                        : valueToCorrect;
             } else {
                 throw new IllegalArgumentException(ERROR_OWNER_COUNTRY);
             }
         }
-        return correctSellValueByCommission;
+        return valueToCorrect;
     }
 
     /**
@@ -300,13 +308,13 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
 
     /**
      * Перед удалением пакета облигаций бывшие собственники получают на счета денежные средства от продажи.
-     * @param fixedRateBondFullSellDTO DTO с информаций о налоговом резидентстве при полной продаже пакета облигаций.
+     * @param dTO DTO с информаций о налоговом резидентстве при полной продаже пакета облигаций.
      * @param fixedRateBondPackageToWorkWith пакет облигаций, для которого проводятся расчёты.
      * @param assetOwnersWithAccountCashAmountDiffs мапа, где кей - id оунеров продаваемых облигаций, вэлью - размер их
      * доли в валюте от суммы продажи пакета.
      * @since 0.0.1-alpha
      */
-    private void addMoneyToPreviousOwners(FixedRateBondFullSellDTO fixedRateBondFullSellDTO,
+    private void addMoneyToPreviousOwners(AssetsOwnersCountryDTO dTO,
                                           FixedRateBondPackage fixedRateBondPackageToWorkWith,
                                           Map<String, Float> assetOwnersWithAccountCashAmountDiffs) {
         for (Map.Entry<String, Float> mapElement : assetOwnersWithAccountCashAmountDiffs.entrySet()) {
@@ -315,7 +323,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
             AssetCurrency assetCurrency = fixedRateBondPackageToWorkWith.getAssetCurrency();
             RussianAssetsOwner russianAssetsOwner;
 
-            if (fixedRateBondFullSellDTO.getAssetsOwnersTaxResidency().equals(AssetsOwnersCountry.RUS)) {
+            if (dTO.getAssetsOwnersTaxResidency().equals(AssetsOwnersCountry.RUS)) {
                 russianAssetsOwner = russianAssetsOwnerRepository.findById(Long.parseLong(mapElement.getKey()))
                         .orElseThrow();
             } else {
