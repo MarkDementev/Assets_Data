@@ -40,6 +40,7 @@ import static fund.data.assets.controller.FixedRateBondPackageController.FIXED_R
 public class FixedRateBondPackageController {
     public static final String FIXED_RATE_BOND_CONTROLLER_PATH = "/bonds/simple";
     public static final String ID_PATH = "/{id}";
+    public static final String REDEEM_PATH = "/redeem";
     private final FixedRateBondService fixedRateBondService;
 
     @Operation(summary = "Get fixed rate bond by id")
@@ -76,8 +77,17 @@ public class FixedRateBondPackageController {
                                             @RequestBody @Valid FixedRateBondFullSellDTO fixedRateBondFullSellDTO) {
         fixedRateBondService.sellAllPackage(id, fixedRateBondFullSellDTO);
     }
+
+    @Operation(summary = "Redeem fixed rate bond package")
+    @ApiResponse(responseCode = "200", description = "Package is redeemed")
+    @DeleteMapping(ID_PATH + REDEEM_PATH)
+    public void redeemBonds(@PathVariable Long id,
+                            @RequestBody @Valid FixedRateBondFullSellDTO fixedRateBondFullSellDTO) {
+        fixedRateBondService.redeemBonds(id, fixedRateBondFullSellDTO);
+    }
+
+
     /*
-    TODO - Реализуй остальные контроллеры - 1) докупку бумаг в пакет, 2) частичную продажу бумаг из пакета,
-     3)??? погашение пакета
+    TODO - Реализуй остальные контроллеры - 1) докупку бумаг в пакет, 2) частичную продажу бумаг из пакета
      */
 }
