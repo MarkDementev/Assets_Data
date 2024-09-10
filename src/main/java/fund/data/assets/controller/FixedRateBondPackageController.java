@@ -1,5 +1,6 @@
 package fund.data.assets.controller;
 
+import fund.data.assets.dto.asset.exchange.AssetsOwnersCountryDTO;
 import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
 import fund.data.assets.dto.asset.exchange.FixedRateBondFullSellDTO;
 import fund.data.assets.model.asset.exchange.FixedRateBondPackage;
@@ -82,8 +83,8 @@ public class FixedRateBondPackageController {
     @ApiResponse(responseCode = "200", description = "Package is redeemed")
     @DeleteMapping(ID_PATH + REDEEM_PATH)
     public void redeemBonds(@PathVariable Long id,
-                            @RequestBody @Valid FixedRateBondFullSellDTO fixedRateBondFullSellDTO) {
-        fixedRateBondService.redeemBonds(id, fixedRateBondFullSellDTO);
+                            @RequestBody @Valid AssetsOwnersCountryDTO assetsOwnersCountryDTO) {
+        fixedRateBondService.redeemBonds(id, assetsOwnersCountryDTO);
     }
 
 

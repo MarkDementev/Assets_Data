@@ -1,5 +1,6 @@
 package fund.data.assets.service.impl;
 
+import fund.data.assets.dto.asset.exchange.AssetsOwnersCountryDTO;
 import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
 import fund.data.assets.dto.asset.exchange.FixedRateBondFullSellDTO;
 import fund.data.assets.model.asset.exchange.FixedRateBondPackage;
@@ -121,6 +122,14 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         addMoneyToPreviousOwners(fixedRateBondFullSellDTO, atomicFixedRateBondPackage.get(),
                 assetOwnersWithAccountCashAmountDiffs);
         fixedRateBondRepository.deleteById(id);
+    }
+
+    @Override
+    //TODO продумай уровень изоляции
+    public void redeemBonds(Long id, AssetsOwnersCountryDTO assetsOwnersCountryDTO) {
+        AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
+                fixedRateBondRepository.findById(id).orElseThrow());
+
     }
 
     /**
