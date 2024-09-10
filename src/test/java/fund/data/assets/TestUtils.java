@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fund.data.assets.dto.asset.exchange.AssetsOwnersCountryDTO;
 import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
 import fund.data.assets.dto.asset.exchange.FixedRateBondFullSellDTO;
 import fund.data.assets.dto.financial_entities.AccountDTO;
@@ -60,16 +61,21 @@ public class TestUtils {
     public static final Float TEST_FIRST_RUSSIAN_OWNER_CASH_AMOUNT = 10150.00F;
     public static final Float TEST_SECOND_RUSSIAN_OWNER_CASH_AMOUNT = 20300.00F;
     public static final DecimalFormat TEST_DECIMAL_FORMAT = new DecimalFormat( "#.####" );
+    public static final LocalDate TEST_ACCOUNT_OPENING_DATE = LocalDate.of(2000, 1, 1);
+    public static final LocalDate TEST_FIXED_RATE_BOND_LAST_ASSET_BUY_DATE = LocalDate.of(
+            2024, 2, 23);
+    public static final LocalDate TEST_FIXED_RATE_BOND_MATURITY_DATE = LocalDate.of(
+            2025, 2, 22);
     private static final ObjectMapper MAPPER = new ObjectMapper().findAndRegisterModules();
     private final AccountDTO accountDTO = new AccountDTO(
             "defaultBank",
             "1q2w3e4r5t",
-            LocalDate.of(2024, 2, 22)
+            TEST_ACCOUNT_OPENING_DATE
     );
     private final AccountDTO secondAccountDTO = new AccountDTO(
             "UPDATEDDefaultBank",
             "UPDATED1q2w3e4r5t",
-            LocalDate.of(2024, 2, 22)
+            TEST_ACCOUNT_OPENING_DATE
     );
     private final AccountDTO notValidAccountDTO = new AccountDTO(
             " ",
@@ -79,7 +85,7 @@ public class TestUtils {
     private final AccountDTO anotherBankButSameAccountNumberAccountDTO = new AccountDTO(
             "anotherBank",
             "1q2w3e4r5t",
-            LocalDate.of(2024, 2, 22)
+            TEST_ACCOUNT_OPENING_DATE
     );
     private final TurnoverCommissionValueDTO turnoverCommissionValueDTO = new TurnoverCommissionValueDTO(
             null,
@@ -235,13 +241,13 @@ public class TestUtils {
                 accountRepository.findAll().get(0).getId(),
                 "RU000A103NZ8",
                 "assetIssuerTitle",
-                LocalDate.of(2024, 2, 23),
+                TEST_FIXED_RATE_BOND_LAST_ASSET_BUY_DATE,
                 1000,
                 100.00F,
                 0.00F,
                 100.00F,
                 1,
-                LocalDate.of(2025, 2, 22)
+                TEST_FIXED_RATE_BOND_MATURITY_DATE
         );
     }
 
@@ -258,13 +264,13 @@ public class TestUtils {
                 accountRepository.findAll().get(0).getId(),
                 "",
                 "",
-                LocalDate.of(2024, 2, 23),
+                TEST_FIXED_RATE_BOND_LAST_ASSET_BUY_DATE,
                 1000,
                 100.00F,
                 0.00F,
                 100.00F,
                 1,
-                LocalDate.of(2025, 2, 22)
+                TEST_FIXED_RATE_BOND_MATURITY_DATE
         );
     }
 
@@ -286,6 +292,18 @@ public class TestUtils {
         return new FixedRateBondFullSellDTO(
                 AssetsOwnersCountry.USA,
                 33000.00F
+        );
+    }
+
+    public AssetsOwnersCountryDTO getAssetsOwnersCountryDTO() {
+        return new AssetsOwnersCountryDTO(
+                AssetsOwnersCountry.RUS
+        );
+    }
+
+    public AssetsOwnersCountryDTO getNotValidAssetsOwnersCountryDTO() {
+        return new AssetsOwnersCountryDTO(
+                AssetsOwnersCountry.USA
         );
     }
 
@@ -343,13 +361,13 @@ public class TestUtils {
                 accountRepository.findAll().get(0).getId(),
                 "RU000A103NZ8",
                 "assetIssuerTitle",
-                LocalDate.of(2024, 2, 23),
+                TEST_FIXED_RATE_BOND_LAST_ASSET_BUY_DATE,
                 1000,
                 100.00F,
                 0.00F,
                 100.00F,
                 1,
-                LocalDate.of(2025, 2, 22)
+                TEST_FIXED_RATE_BOND_MATURITY_DATE
         );
         return createFixedRateBond(firstBuyFixedRateBondDTO);
     }

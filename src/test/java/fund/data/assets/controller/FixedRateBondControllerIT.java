@@ -43,6 +43,7 @@ import static fund.data.assets.TestUtils.TEST_DECIMAL_FORMAT;
 import static fund.data.assets.config.SpringConfigForTests.TEST_PROFILE;
 import static fund.data.assets.controller.FixedRateBondPackageController.FIXED_RATE_BOND_CONTROLLER_PATH;
 import static fund.data.assets.controller.RussianAssetsOwnerController.ID_PATH;
+import static fund.data.assets.controller.FixedRateBondPackageController.REDEEM_PATH;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -359,6 +360,66 @@ public class FixedRateBondControllerIT {
                 delete("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH,
                         createdFixedRateBondID)
                         .content(asJson(testUtils.getNotValidCountryFixedRateBondFullSellDTO()))
+                        .contentType(APPLICATION_JSON)
+        ));
+        assertThat(fixedRateBondRepository.findAll()).hasSize(1);
+        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
+    }
+
+//    @Test
+//    public void redeemBondsIT() throws Exception {
+//        //TODO нужно прописать создание пакета с ценой ниже, чем при погашении, чтобы просчитать налог тут!
+//
+////        testUtils.createDefaultFixedRateBond();
+//        assertThat(fixedRateBondRepository.findAll()).hasSize(1);
+//        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
+//
+//        Long createdFixedRateBondID = fixedRateBondRepository.findAll().get(0).getId();
+//
+//        testUtils.perform(
+//                        delete("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH + REDEEM_PATH,
+//                                createdFixedRateBondID)
+//                                .content(asJson(testUtils.getAssetsOwnersCountryDTO()))
+//                                .contentType(APPLICATION_JSON))
+//                .andExpect(status().isOk());
+//        assertThat(fixedRateBondRepository.findAll()).hasSize(0);
+//        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(0);
+////        assertEquals(10050.00F, accountCashRepository.findAll().get(0).getAmount());
+////        assertEquals(20100.00F, accountCashRepository.findAll().get(1).getAmount());
+//    }
+
+    @Test
+    public void redeemBondsWithoutTaxesIT() throws Exception {
+        testUtils.createDefaultFixedRateBond();
+        assertThat(fixedRateBondRepository.findAll()).hasSize(1);
+        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
+
+        Long createdFixedRateBondID = fixedRateBondRepository.findAll().get(0).getId();
+
+        testUtils.perform(
+                        delete("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH + REDEEM_PATH,
+                                createdFixedRateBondID)
+                                .content(asJson(testUtils.getAssetsOwnersCountryDTO()))
+                                .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk());
+        assertThat(fixedRateBondRepository.findAll()).hasSize(0);
+        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(0);
+        assertEquals(10050.00F, accountCashRepository.findAll().get(0).getAmount());
+        assertEquals(20100.00F, accountCashRepository.findAll().get(1).getAmount());
+    }
+
+    @Test
+    public void redeemBondsNotSupportedTaxResidencyIT() throws Exception {
+        testUtils.createDefaultFixedRateBond();
+        assertThat(fixedRateBondRepository.findAll()).hasSize(1);
+        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
+
+        Long createdFixedRateBondID = fixedRateBondRepository.findAll().get(0).getId();
+
+        Assertions.assertThrows(ServletException.class, () -> testUtils.perform(
+                delete("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH + REDEEM_PATH,
+                        createdFixedRateBondID)
+                        .content(asJson(testUtils.getNotValidAssetsOwnersCountryDTO()))
                         .contentType(APPLICATION_JSON)
         ));
         assertThat(fixedRateBondRepository.findAll()).hasSize(1);

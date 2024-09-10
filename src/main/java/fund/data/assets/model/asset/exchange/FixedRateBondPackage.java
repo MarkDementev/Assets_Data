@@ -194,6 +194,7 @@ public class FixedRateBondPackage extends ExchangeAsset {
      */
     private Float calculateMarkDementevYieldIndicator() {
         //TODO - возможно, стоит потом рефакторить метод, чтобы учесть работу с налоговыми резидентами НЕ РФ!
+        //TODO - формула падает при работе с разными годами - високосными и нет. ПРАВЬ!
         float expectedBondCouponPaymentsSum = bondCouponValue * expectedBondCouponPaymentsCount;
         float incomeTaxCorrection = FinancialAndAnotherConstants.RUSSIAN_TAX_SYSTEM_CORRECTION_VALUE;
         float oneBondValueSummedWithHisCommission = (totalAssetPurchasePriceWithCommission / getAssetCount());
