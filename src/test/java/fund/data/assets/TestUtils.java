@@ -35,7 +35,7 @@ import java.text.DecimalFormat;
 
 import java.time.LocalDate;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static fund.data.assets.controller.AccountController.ACCOUNT_CONTROLLER_PATH;
@@ -348,6 +348,30 @@ public class TestUtils {
         return createAccountCash(accountCashDTO);
     }
 
+    public ResultActions createCheapFixedRateBond() throws Exception {
+        Map<String, Float> assetOwnersWithAssetCounts
+                = prepareEntitiesBeforeFirstBuyFixedRateBondThenGetAssetOwnersWithAssetCounts();
+
+        FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO = new FirstBuyFixedRateBondDTO(
+                RUSRUB,
+                "assetTitle",
+                30,
+                AssetsOwnersCountry.RUS,
+                assetOwnersWithAssetCounts,
+                accountRepository.findAll().get(0).getId(),
+                "RU000A103NZ8",
+                "assetIssuerTitle",
+                TEST_FIXED_RATE_BOND_LAST_ASSET_BUY_DATE,
+                1000,
+                90.00F,
+                0.00F,
+                100.00F,
+                1,
+                TEST_FIXED_RATE_BOND_MATURITY_DATE
+        );
+        return createFixedRateBond(firstBuyFixedRateBondDTO);
+    }
+
     public ResultActions createDefaultFixedRateBond() throws Exception {
         Map<String, Float> assetOwnersWithAssetCounts
                 = prepareEntitiesBeforeFirstBuyFixedRateBondThenGetAssetOwnersWithAssetCounts();
@@ -417,7 +441,7 @@ public class TestUtils {
 
     public Map<String, Float> prepareEntitiesBeforeFirstBuyFixedRateBondThenGetAssetOwnersWithAssetCounts()
             throws Exception {
-        Map<String, Float> assetOwnersWithAssetCounts = new HashMap<>();
+        Map<String, Float> assetOwnersWithAssetCounts = new LinkedHashMap<>();
 
         createDefaultRussianAssetsOwner();
         createSecondDefaultRussianAssetsOwner();

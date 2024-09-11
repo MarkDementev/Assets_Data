@@ -366,27 +366,25 @@ public class FixedRateBondControllerIT {
         assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
     }
 
-//    @Test
-//    public void redeemBondsIT() throws Exception {
-//        //TODO нужно прописать создание пакета с ценой ниже, чем при погашении, чтобы просчитать налог тут!
-//
-////        testUtils.createDefaultFixedRateBond();
-//        assertThat(fixedRateBondRepository.findAll()).hasSize(1);
-//        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
-//
-//        Long createdFixedRateBondID = fixedRateBondRepository.findAll().get(0).getId();
-//
-//        testUtils.perform(
-//                        delete("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH + REDEEM_PATH,
-//                                createdFixedRateBondID)
-//                                .content(asJson(testUtils.getAssetsOwnersCountryDTO()))
-//                                .contentType(APPLICATION_JSON))
-//                .andExpect(status().isOk());
-//        assertThat(fixedRateBondRepository.findAll()).hasSize(0);
-//        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(0);
-////        assertEquals(10050.00F, accountCashRepository.findAll().get(0).getAmount());
-////        assertEquals(20100.00F, accountCashRepository.findAll().get(1).getAmount());
-//    }
+    @Test
+    public void redeemBondsIT() throws Exception {
+        testUtils.createCheapFixedRateBond();
+        assertThat(fixedRateBondRepository.findAll()).hasSize(1);
+        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
+
+        Long createdFixedRateBondID = fixedRateBondRepository.findAll().get(0).getId();
+
+        testUtils.perform(
+                        delete("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH + REDEEM_PATH,
+                                createdFixedRateBondID)
+                                .content(asJson(testUtils.getAssetsOwnersCountryDTO()))
+                                .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk());
+        assertThat(fixedRateBondRepository.findAll()).hasSize(0);
+        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(0);
+        assertEquals(10941.70F, accountCashRepository.findAll().get(0).getAmount());
+        assertEquals(21883.40F, accountCashRepository.findAll().get(1).getAmount());
+    }
 
     @Test
     public void redeemBondsWithoutTaxesIT() throws Exception {
