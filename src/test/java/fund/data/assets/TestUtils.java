@@ -63,9 +63,13 @@ public class TestUtils {
     public static final DecimalFormat TEST_DECIMAL_FORMAT = new DecimalFormat( "#.####" );
     public static final LocalDate TEST_ACCOUNT_OPENING_DATE = LocalDate.of(2000, 1, 1);
     public static final LocalDate TEST_FIXED_RATE_BOND_LAST_ASSET_BUY_DATE = LocalDate.of(
-            2024, 2, 23);
+            2021, 1, 1);
     public static final LocalDate TEST_FIXED_RATE_BOND_MATURITY_DATE = LocalDate.of(
-            2025, 2, 22);
+            2022, 1, 1);
+    public static final LocalDate TEST_FIXED_RATE_BOND_LAST_ASSET_BUY_DATE_NOT_MATURED = LocalDate.of(
+            2024, 1, 1);
+    public static final LocalDate TEST_FIXED_RATE_BOND_MATURITY_DATE_NOT_MATURED = LocalDate.of(
+            2025, 1, 1);
     private static final ObjectMapper MAPPER = new ObjectMapper().findAndRegisterModules();
     private final AccountDTO accountDTO = new AccountDTO(
             "defaultBank",
@@ -392,6 +396,30 @@ public class TestUtils {
                 100.00F,
                 1,
                 TEST_FIXED_RATE_BOND_MATURITY_DATE
+        );
+        return createFixedRateBond(firstBuyFixedRateBondDTO);
+    }
+
+    public ResultActions createNotYetMaturedFixedRateBond() throws Exception {
+        Map<String, Float> assetOwnersWithAssetCounts
+                = prepareEntitiesBeforeFirstBuyFixedRateBondThenGetAssetOwnersWithAssetCounts();
+
+        FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO = new FirstBuyFixedRateBondDTO(
+                RUSRUB,
+                "assetTitle",
+                30,
+                AssetsOwnersCountry.RUS,
+                assetOwnersWithAssetCounts,
+                accountRepository.findAll().get(0).getId(),
+                "RU000A103NZ8",
+                "assetIssuerTitle",
+                TEST_FIXED_RATE_BOND_LAST_ASSET_BUY_DATE_NOT_MATURED,
+                1000,
+                100.00F,
+                0.00F,
+                100.00F,
+                1,
+                TEST_FIXED_RATE_BOND_MATURITY_DATE_NOT_MATURED
         );
         return createFixedRateBond(firstBuyFixedRateBondDTO);
     }

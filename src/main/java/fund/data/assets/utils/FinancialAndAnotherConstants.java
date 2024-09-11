@@ -7,5 +7,6 @@ package fund.data.assets.utils;
  */
 public class FinancialAndAnotherConstants {
     public static final int YEAR_DAYS_COUNT = 365;
+    public static final int LEAP_YEAR_DAYS_COUNT = 366;
     public static final float RUSSIAN_TAX_SYSTEM_CORRECTION_VALUE = 0.87F;
 }

@@ -178,10 +178,11 @@ public class FixedRateBondPackage extends ExchangeAsset {
     private Float calculateSimpleYieldToMaturity() {
         float marketClearPriceInCurrency = purchaseBondParValuePercent * bondParValue / 100.00F;
         float allExpectedCouponPaymentsSum = bondCouponValue * expectedBondCouponPaymentsCount;
+        int daysInYear = getDaysInYear();
         int daysBeforeMaturity = calculateDaysBeforeMaturity();
 
         return  (((bondParValue - marketClearPriceInCurrency + (allExpectedCouponPaymentsSum - bondAccruedInterest))
-                / marketClearPriceInCurrency) * (FinancialAndAnotherConstants.YEAR_DAYS_COUNT / daysBeforeMaturity))
+                / marketClearPriceInCurrency) * (daysInYear / daysBeforeMaturity))
                 * 100.00F;
     }
 
@@ -194,11 +195,11 @@ public class FixedRateBondPackage extends ExchangeAsset {
      */
     private Float calculateMarkDementevYieldIndicator() {
         //TODO - возможно, стоит потом рефакторить метод, чтобы учесть работу с налоговыми резидентами НЕ РФ!
-        //TODO - формула падает при работе с разными годами - високосными и нет. ПРАВЬ!
         float expectedBondCouponPaymentsSum = bondCouponValue * expectedBondCouponPaymentsCount;
         float incomeTaxCorrection = FinancialAndAnotherConstants.RUSSIAN_TAX_SYSTEM_CORRECTION_VALUE;
         float oneBondValueSummedWithHisCommission = (totalAssetPurchasePriceWithCommission / getAssetCount());
         float taxValueOfMaturityIncome = 0.00F;
+        int daysInYear = getDaysInYear();
         int daysBeforeMaturity = calculateDaysBeforeMaturity();
 
         if (bondParValue > oneBondValueSummedWithHisCommission) {
@@ -206,7 +207,26 @@ public class FixedRateBondPackage extends ExchangeAsset {
         }
         return (((expectedBondCouponPaymentsSum * incomeTaxCorrection + bondParValue + taxValueOfMaturityIncome)
                 / oneBondValueSummedWithHisCommission - 1) / (daysBeforeMaturity
-                / FinancialAndAnotherConstants.YEAR_DAYS_COUNT)) * 100.00F;
+                / daysInYear)) * 100.00F;
+    }
+
+    /**
+     * Если год високосный, это влияет на формулы выше. Поэтому, необходимо делать на это поправку, и возвращать либо
+     * 365 дней в году, либо 366.
+     * @return количество дней в году.
+     * @since 0.0.1-alpha
+     */
+    private int getDaysInYear() {
+        boolean firstLeapYearCheck = getLastAssetBuyDate().isLeapYear();
+        boolean secondLeapYearCheck = (bondMaturityDate.getYear() - getLastAssetBuyDate().getYear()) >= 4
+                && ChronoUnit.DAYS.between(getLastAssetBuyDate(), bondMaturityDate)
+                >= (FinancialAndAnotherConstants.LEAP_YEAR_DAYS_COUNT
+                + 3 * FinancialAndAnotherConstants.YEAR_DAYS_COUNT);
+
+        if (firstLeapYearCheck || secondLeapYearCheck) {
+            return FinancialAndAnotherConstants.LEAP_YEAR_DAYS_COUNT;
+        }
+        return FinancialAndAnotherConstants.YEAR_DAYS_COUNT;
     }
 
     /**

@@ -46,7 +46,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class FixedRateBondServiceImpl implements FixedRateBondService {
     private static final String ERROR_OWNER_COUNTRY = "Work with investors from these countries is not yet supported"
             + "by the fund!";
-//    private static final String ERROR_DATE_REDEEM = "The bonds haven't matured yet, it's too early to write them down!";
+    private static final String ERROR_DATE_REDEEM = "The bonds haven't matured yet, it's too early to write them down!";
     private final FixedRateBondRepository fixedRateBondRepository;
     private final AccountRepository accountRepository;
     /* TODO - По мере расширения странового охвата, нужно будет здесь расширить перечень разных типов репозиториев
@@ -131,11 +131,9 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
                 fixedRateBondRepository.findById(id).orElseThrow());
 
-        //TODO - разобравшись с високосными годами и своим параметром, верни это, и поправь тесты, чтобы это не падало
-        //TODO - а ещё протестируй сценарии с этим выпадением!
-//        if (LocalDate.now().toEpochDay() < atomicFixedRateBondPackage.get().getBondMaturityDate().toEpochDay()) {
-//            throw new IllegalArgumentException(ERROR_DATE_REDEEM);
-//        }
+        if (LocalDate.now().toEpochDay() < atomicFixedRateBondPackage.get().getBondMaturityDate().toEpochDay()) {
+            throw new IllegalArgumentException(ERROR_DATE_REDEEM);
+        }
 
         float redeemedBondsParValuesSum = atomicFixedRateBondPackage.get().getBondParValue()
                 * atomicFixedRateBondPackage.get().getAssetCount();

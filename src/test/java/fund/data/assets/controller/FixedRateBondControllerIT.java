@@ -423,4 +423,22 @@ public class FixedRateBondControllerIT {
         assertThat(fixedRateBondRepository.findAll()).hasSize(1);
         assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
     }
+
+    @Test
+    public void redeemBondsNotYetMaturedBondsIT() throws Exception {
+        testUtils.createNotYetMaturedFixedRateBond();
+        assertThat(fixedRateBondRepository.findAll()).hasSize(1);
+        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
+
+        Long createdFixedRateBondID = fixedRateBondRepository.findAll().get(0).getId();
+
+        Assertions.assertThrows(ServletException.class, () -> testUtils.perform(
+                delete("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH + REDEEM_PATH,
+                        createdFixedRateBondID)
+                        .content(asJson(testUtils.getAssetsOwnersCountryDTO()))
+                        .contentType(APPLICATION_JSON)
+        ));
+        assertThat(fixedRateBondRepository.findAll()).hasSize(1);
+        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
+    }
 }
