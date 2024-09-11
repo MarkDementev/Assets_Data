@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
@@ -71,6 +72,15 @@ public class FixedRateBondPackageController {
                 fixedRateBondService.firstBuyFixedRateBond(firstBuyFixedRateBondDTO));
     }
 
+    @Operation(summary = "Update fixed rate bond package - sell package part")
+    @ApiResponse(responseCode = "200", description = "Fixed rate bond package part sold")
+    @PutMapping(ID_PATH)
+    public ResponseEntity<FixedRateBondPackage> sellFixedRateBondPackagePartial(@PathVariable Long id,
+        @RequestBody @Valid FixedRateBondPartialSellDTO fixedRateBondPartialSellDTO) {
+        return ResponseEntity.ok().body(fixedRateBondService.sellFixedRateBondPackagePartial(id,
+                fixedRateBondPartialSellDTO));
+    }
+
     @Operation(summary = "Sell all fixed rate bond package")
     @ApiResponse(responseCode = "200", description = "All package is sold")
     @DeleteMapping(ID_PATH)
@@ -87,8 +97,7 @@ public class FixedRateBondPackageController {
         fixedRateBondService.redeemBonds(id, assetsOwnersCountryDTO);
     }
 
-
     /*
-    TODO - Реализуй остальные контроллеры - 1) докупку бумаг в пакет, 2) частичную продажу бумаг из пакета
+    TODO - Реализуй остальные контроллеры - 1) докупку бумаг в пакет
      */
 }
