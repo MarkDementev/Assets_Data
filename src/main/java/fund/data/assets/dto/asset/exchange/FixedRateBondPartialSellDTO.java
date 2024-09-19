@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.util.Map;
 
 /**
- * DTO для обслуживания внесения в систему данных о докупке облигаций в пакет бумаг данного выпуска облигаций.
+ * DTO для обслуживания внесения в систему данных о продаже части облигаций в пакет бумаг данного выпуска облигаций.
  * @version 0.0.1-alpha
  * @author MarkDementev a.k.a JavaMarkDem
  */
