@@ -72,8 +72,8 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = {Exception.class})
     public FixedRateBondPackage firstBuyFixedRateBond(FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO) {
-        isAssetOwnersWithAssetCountsValid(firstBuyFixedRateBondDTO.getAssetCount(),
-                firstBuyFixedRateBondDTO.getAssetOwnersWithAssetCounts());
+        isOwnershipMapValuesSumEqualsAssetCount(firstBuyFixedRateBondDTO.getAssetOwnersWithAssetCounts(),
+                firstBuyFixedRateBondDTO.getAssetCount());
 
         AssetCurrency assetCurrency = firstBuyFixedRateBondDTO.getAssetCurrency();
         String assetTitle = firstBuyFixedRateBondDTO.getAssetTitle();
@@ -113,6 +113,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     //TODO изоляция
     public FixedRateBondPackage sellFixedRateBondPackagePartial(Long id,
         FixedRateBondPartialSellDTO fixedRateBondPartialSellDTO) {
+
         //валидировать мапу изменений из ДТО - все ли кэи есть как айди оунеров, потом есть ли у этих оунеров минимум
         //такие вэлью как количество ценных бумаг.
         //на основе мэпы из ДТО сформировать мэпу с такими же кеями, но вэлью теперь - свежее лавэ, которое надо
@@ -167,14 +168,13 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     /**
      * Проводится валидация - сумма выльюс в assetOwnersWithAssetCounts, приведённая к Integer, должна быть равна
      * значению assetCount. Аргументы метода берутся из DTO {@link FirstBuyFixedRateBondDTO}.
-     @param assetCount количество бумаг в пакете ценных бумаг.
      @param assetOwnersWithAssetCounts мапа, где кей - это владелец актива, вэлью - количество ценных бумаг оунера
      в рамках данного пакета ценных бумаг.
+     @param assetCount количество бумаг в пакете ценных бумаг.
      @since 0.0.1-alpha
      */
-    //TODO переименуй метод
-    private void isAssetOwnersWithAssetCountsValid(Integer assetCount,
-                                                   Map<String, Float> assetOwnersWithAssetCounts) {
+    private void isOwnershipMapValuesSumEqualsAssetCount(Map<String, Float> assetOwnersWithAssetCounts,
+                                                         Integer assetCount) {
         Float mapValuesSum = 0.0F;
 
         for (Map.Entry<String, Float> mapElement : assetOwnersWithAssetCounts.entrySet()) {
@@ -249,6 +249,8 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
             mapElement.getKey().setAmount(mapElementAccountCashAmount - mapElement.getValue());
         }
     }
+
+    //TODO начало новых методов тут
 
     /**
      * При полной продаже пакета определяем, платится ли комиссия. Если да - уменьшаем продажную сумму и возвращаем её,
