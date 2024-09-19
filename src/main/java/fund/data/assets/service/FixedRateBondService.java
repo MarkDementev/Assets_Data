@@ -3,6 +3,7 @@ package fund.data.assets.service;
 import fund.data.assets.dto.asset.exchange.AssetsOwnersCountryDTO;
 import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
 import fund.data.assets.dto.asset.exchange.FixedRateBondFullSellDTO;
+import fund.data.assets.dto.asset.exchange.FixedRateBondPartialSellDTO;
 import fund.data.assets.model.asset.exchange.FixedRateBondPackage;
 
 import java.util.List;

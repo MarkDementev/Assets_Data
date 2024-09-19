@@ -3,6 +3,7 @@ package fund.data.assets.service.impl;
 import fund.data.assets.dto.asset.exchange.AssetsOwnersCountryDTO;
 import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
 import fund.data.assets.dto.asset.exchange.FixedRateBondFullSellDTO;
+import fund.data.assets.dto.asset.exchange.FixedRateBondPartialSellDTO;
 import fund.data.assets.model.asset.exchange.FixedRateBondPackage;
 import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.model.financial_entities.AccountCash;
@@ -109,6 +110,22 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     }
 
     @Override
+    //TODO изоляция
+    public FixedRateBondPackage sellFixedRateBondPackagePartial(Long id,
+        FixedRateBondPartialSellDTO fixedRateBondPartialSellDTO) {
+        //валидировать мапу изменений из ДТО - все ли кэи есть как айди оунеров, потом есть ли у этих оунеров минимум
+        //такие вэлью как количество ценных бумаг.
+        //на основе мэпы из ДТО сформировать мэпу с такими же кеями, но вэлью теперь - свежее лавэ, которое надо
+        //добавить оунерам. УЧТИ КОМИССИИ И НАЛОГИ !
+        //М.б. стоит в кеи поместить таки кеи принадлежности бумаг, чтобы сразу туда тыкать?
+        //добавить лавэ оунерам
+        //уменьшить кол-во бумаг у оунеров
+        //уменьшить кол-во бумаг в сущности бумаги
+        //найти бонд
+        //сохранить и вернуть измененый бонд!
+    }
+
+    @Override
     @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = {Exception.class})
     public void sellAllPackage(Long id, FixedRateBondFullSellDTO fixedRateBondFullSellDTO) {
         AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
@@ -155,6 +172,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
      в рамках данного пакета ценных бумаг.
      @since 0.0.1-alpha
      */
+    //TODO переименуй метод
     private void isAssetOwnersWithAssetCountsValid(Integer assetCount,
                                                    Map<String, Float> assetOwnersWithAssetCounts) {
         Float mapValuesSum = 0.0F;
@@ -183,6 +201,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
      * уменьшить соответствующий счёт.
      * @since 0.0.1-alpha
      */
+    //TODO переименуй метод
     private Map<AccountCash, Float> formAccountCashAmountChanges(FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO,
                                                                  FixedRateBondPackage fixedRateBondPackageToCreate,
                                                                  Account accountToWorkOn) {
@@ -222,6 +241,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
      * на которую надо будет уменьшить соответствующий счёт.
      * @since 0.0.1-alpha
      */
+    //TODO возможно, надо переписать полиморфизма для!
     private void changeAccountCashAmountsOfOwners(Map<AccountCash, Float> accountCashAmountChanges) {
         for (Map.Entry<AccountCash, Float> mapElement : accountCashAmountChanges.entrySet()) {
             Float mapElementAccountCashAmount = mapElement.getKey().getAmount();
@@ -290,6 +310,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
      * суммы продажи пакета.
      * @since 0.0.1-alpha
      */
+    //TODO возможно полиморфизм?
     private Map<String, Float> formAssetOwnersWithAccountCashAmountDiffsMap(
             FixedRateBondPackage fixedRateBondPackageToWorkWith, float sellValue) {
         Integer assetCount = fixedRateBondPackageToWorkWith.getAssetCount();
@@ -314,6 +335,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
      * доли в валюте от суммы продажи пакета.
      * @since 0.0.1-alpha
      */
+    //TODO возможно полиморфизм?
     private void addMoneyToPreviousOwners(AssetsOwnersCountryDTO dTO,
                                           FixedRateBondPackage fixedRateBondPackageToWorkWith,
                                           Map<String, Float> assetOwnersWithAccountCashAmountDiffs) {
