@@ -111,7 +111,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
 
     @Override
     //TODO изоляция
-    public FixedRateBondPackage sellFixedRateBondPackagePartial(Long id,
+    public FixedRateBondPackage partialSellFixedRateBondPackage(Long id,
         FixedRateBondPartialSellDTO fixedRateBondPartialSellDTO) {
         AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
                 fixedRateBondRepository.findById(id).orElseThrow());
@@ -121,7 +121,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         //на основе мэпы из ДТО сформировать мэпу с такими же кеями, но вэлью теперь - свежее лавэ, которое надо
         //добавить оунерам. УЧТИ КОМИССИИ И НАЛОГИ !
         //М.б. стоит в кеи поместить таки кеи принадлежности бумаг, чтобы сразу туда тыкать?
-        //добавить лавэ оунерам
+        //добавить лавэ оунерам - м.б. использовать метод changeAccountCashAmountsOfOwners?
         //уменьшить кол-во бумаг у оунеров
         //уменьшить кол-во бумаг в сущности бумаги
         //найти бонд
@@ -243,7 +243,8 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
      * на которую надо будет уменьшить соответствующий счёт.
      * @since 0.0.1-alpha
      */
-    //TODO возможно, надо переписать полиморфизма для!
+    //TODO возможно, надо переписать полиморфизма для! Добавить какой-то модификатор, чтобы и уменьшал, и увеличивал
+    //данный метод
     private void changeAccountCashAmountsOfOwners(Map<AccountCash, Float> accountCashAmountChanges) {
         for (Map.Entry<AccountCash, Float> mapElement : accountCashAmountChanges.entrySet()) {
             Float mapElementAccountCashAmount = mapElement.getKey().getAmount();
@@ -252,7 +253,13 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         }
     }
 
-    //TODO докуха
+    /**
+     * Проводится валидация, все ли владельцы активов могут продать данное количество облигаций.
+     * @param fixedRateBondPackage пакет облигаций, для которого проводится валидация.
+     * @param dTO DTO для обслуживания внесения в систему данных о продаже части облигаций из пакета бумаг выпуска
+     облигаций.
+     * @since 0.0.1-alpha
+     */
     private void isAssetsOwnersHaveThisAssetsAmounts(FixedRateBondPackage fixedRateBondPackage,
                                                      FixedRateBondPartialSellDTO dTO) {
         Map<String, Integer> assetOwnersWithAssetCountsToSell = dTO.getAssetOwnersWithAssetCountsToSell();
@@ -261,11 +268,10 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
             Float assetsOwnerAssetCount = financialAssetRelationshipRepository.findById(
                     fixedRateBondPackage.getAssetRelationship().getId()).orElseThrow()
                     .getAssetOwnersWithAssetCounts().get(mapElement.getKey());
-            Integer assetCountToSell = mapElement.getValue();
+            Integer assetToSellCount = mapElement.getValue();
 
-            //в релатионшипе должно быть не меньше!
-            if () {
-
+            if (assetsOwnerAssetCount < assetToSellCount) {
+                throw new IllegalArgumentException("At least one assets owner cannot sell so many bonds!");
             }
         }
     }

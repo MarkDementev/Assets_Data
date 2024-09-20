@@ -18,7 +18,7 @@ public interface FixedRateBondService {
     FixedRateBondPackage getFixedRateBond(Long id);
     List<FixedRateBondPackage> getFixedRateBonds();
     FixedRateBondPackage firstBuyFixedRateBond(FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO);
-    FixedRateBondPackage sellFixedRateBondPackagePartial(Long id,
+    FixedRateBondPackage partialSellFixedRateBondPackage(Long id,
                                                          FixedRateBondPartialSellDTO fixedRateBondPartialSellDTO);
     void sellAllPackage(Long id, FixedRateBondFullSellDTO fixedRateBondFullSellDTO);
     void redeemBonds(Long id, AssetsOwnersCountryDTO assetsOwnersCountryDTO);

@@ -78,7 +78,7 @@ public class FixedRateBondPackageController {
     @PutMapping(ID_PATH)
     public ResponseEntity<FixedRateBondPackage> sellFixedRateBondPackagePartial(@PathVariable Long id,
         @RequestBody @Valid FixedRateBondPartialSellDTO fixedRateBondPartialSellDTO) {
-        return ResponseEntity.ok().body(fixedRateBondService.sellFixedRateBondPackagePartial(id,
+        return ResponseEntity.ok().body(fixedRateBondService.partialSellFixedRateBondPackage(id,
                 fixedRateBondPartialSellDTO));
     }
 
