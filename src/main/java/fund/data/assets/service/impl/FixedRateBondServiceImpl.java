@@ -128,14 +128,11 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         packagePartSellValue = correctValueByTaxes(fixedRateBondPartialSellDTO, atomicFixedRateBondPackage.get(),
                 packagePartSellValue);
         //4 - сумму, полученную выше, распределить в мапу для раскидывания оунерам.
+        Map<String, Float> ownersMoneyDistribution = formOwnersMoneyDistributionMap(atomicFixedRateBondPackage.get(),
+                packagePartSellValue);
 
 
 
-
-        //на основе мэпы из ДТО сформировать мэпу с такими же кеями, но вэлью теперь - свежее лавэ, которое надо
-        //добавить оунерам. УЧТИ КОМИССИИ И НАЛОГИ ! - м.б. использовать formAssetOwnersWithAccountCashAmountDiffsMap
-//        Map<String, Float> ownersMoneyDistribution = formAssetOwnersWithAccountCashAmountDiffsMap(
-//                atomicFixedRateBondPackage.get(), correctedPackagePartSellValue);
 
         //добавить лавэ оунерам - м.б. использовать метод changeAccountCashAmountsOfOwners?
 
@@ -157,11 +154,11 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         packageSellValue = correctSellValueByCommission(packageSellValue, atomicFixedRateBondPackage.get());
         packageSellValue = correctValueByTaxes(fixedRateBondFullSellDTO, atomicFixedRateBondPackage.get(),
                 packageSellValue);
-        Map<String, Float> assetOwnersWithAccountCashAmountDiffs = formAssetOwnersWithAccountCashAmountDiffsMap(
-                atomicFixedRateBondPackage.get(), packageSellValue);
+        Map<String, Float> ownersMoneyDistribution = formOwnersMoneyDistributionMap(atomicFixedRateBondPackage.get(),
+                packageSellValue);
 
         addMoneyToPreviousOwners(fixedRateBondFullSellDTO, atomicFixedRateBondPackage.get(),
-                assetOwnersWithAccountCashAmountDiffs);
+                ownersMoneyDistribution);
         fixedRateBondRepository.deleteById(id);
     }
 
@@ -179,11 +176,11 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
                 * atomicFixedRateBondPackage.get().getAssetCount();
         float correctedByTaxesPackageRedeemValue = correctValueByTaxes(assetsOwnersCountryDTO,
                 atomicFixedRateBondPackage.get(), redeemedBondsParValuesSum);
-        Map<String, Float> assetOwnersWithAccountCashAmountDiffs = formAssetOwnersWithAccountCashAmountDiffsMap(
-                atomicFixedRateBondPackage.get(), correctedByTaxesPackageRedeemValue);
+        Map<String, Float> ownersMoneyDistribution = formOwnersMoneyDistributionMap(atomicFixedRateBondPackage.get(),
+                correctedByTaxesPackageRedeemValue);
 
         addMoneyToPreviousOwners(assetsOwnersCountryDTO, atomicFixedRateBondPackage.get(),
-                assetOwnersWithAccountCashAmountDiffs);
+                ownersMoneyDistribution);
         fixedRateBondRepository.deleteById(id);
     }
 
@@ -368,52 +365,29 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         throw new IllegalArgumentException(ERROR_WRONG_DTO);
     }
 
-//    /**
-//     * Формируется мапа при продаже пакета облигаций для распределения денежных средств между бывшими собственниками.
-//     * @param fixedRateBondPackageToWorkWith пакет облигаций, для которого проводятся расчёты.
-//     * @param sellValue продажная цена пакета бумаг, возможно, скорректированная ранее на налог и комиссии.
-//     * @return мапа, где кей - id оунеров продаваемых облигаций, вэлью - размер их доли в валюте от
-//     * суммы продажи пакета.
-//     * @since 0.0.1-alpha
-//     */
-//    private Map<String, Float> formAssetOwnersWithAccountCashAmountDiffsMap(
-//            FixedRateBondPackage fixedRateBondPackageToWorkWith, float sellValue) {
-//        Integer assetCount = fixedRateBondPackageToWorkWith.getAssetCount();
-//        Map<String, Float> assetOwnersWithAssetCounts = fixedRateBondPackageToWorkWith.getAssetRelationship()
-//                .getAssetOwnersWithAssetCounts();
-//        Map<String, Float> assetOwnersWithAccountCashAmountDiffsMap = new TreeMap<>();
-//
-//        for (Map.Entry<String, Float> mapElement : assetOwnersWithAssetCounts.entrySet()) {
-//                Float ownerAssetCount = mapElement.getValue();
-//                Float ownerAccountCashDiff = (ownerAssetCount / assetCount) * sellValue;
-//
-//                assetOwnersWithAccountCashAmountDiffsMap.put(mapElement.getKey(), ownerAccountCashDiff);
-//        }
-//        return assetOwnersWithAccountCashAmountDiffsMap;
-//    }
-
     /**
-     * Формируется мапа при продаже пакета облигаций для распределения денежных средств между бывшими собственниками.
-     * @param fixedRateBondPackageToWorkWith пакет облигаций, для которого проводятся расчёты.
+     * Формируется мапа при полной или частичной продаже пакета облигаций для распределения денежных средств между
+     * бывшими собственниками.
+     * @param fixedRateBondPackage пакет облигаций, для которого проводятся расчёты.
      * @param sellValue продажная цена пакета бумаг, возможно, скорректированная ранее на налог и комиссии.
-     * @return мапа, где кей - id оунеров продаваемых облигаций, вэлью - размер их доли в валюте от
+     * @return мапа, где кей - id оунеров продаваемых облигаций, вэлью - размер их доли в валюте эмиссии от
      * суммы продажи пакета.
      * @since 0.0.1-alpha
      */
-    private Map<String, Float> formAssetOwnersWithAccountCashAmountDiffsMap(
-            FixedRateBondPackage fixedRateBondPackageToWorkWith, float sellValue) {
-        Integer assetCount = fixedRateBondPackageToWorkWith.getAssetCount();
-        Map<String, Float> assetOwnersWithAssetCounts = fixedRateBondPackageToWorkWith.getAssetRelationship()
+    private Map<String, Float> formOwnersMoneyDistributionMap(FixedRateBondPackage fixedRateBondPackage,
+                                                              float sellValue) {
+        Integer assetCount = fixedRateBondPackage.getAssetCount();
+        Map<String, Float> assetOwnersWithAssetCounts = fixedRateBondPackage.getAssetRelationship()
                 .getAssetOwnersWithAssetCounts();
-        Map<String, Float> assetOwnersWithAccountCashAmountDiffsMap = new TreeMap<>();
+        Map<String, Float> ownersMoneyDistributionMap = new TreeMap<>();
 
         for (Map.Entry<String, Float> mapElement : assetOwnersWithAssetCounts.entrySet()) {
             Float ownerAssetCount = mapElement.getValue();
             Float ownerAccountCashDiff = (ownerAssetCount / assetCount) * sellValue;
 
-            assetOwnersWithAccountCashAmountDiffsMap.put(mapElement.getKey(), ownerAccountCashDiff);
+            ownersMoneyDistributionMap.put(mapElement.getKey(), ownerAccountCashDiff);
         }
-        return assetOwnersWithAccountCashAmountDiffsMap;
+        return ownersMoneyDistributionMap;
     }
 
     /**
