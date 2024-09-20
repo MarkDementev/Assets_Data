@@ -1,10 +1,12 @@
 package fund.data.assets.dto.asset.exchange;
 
+import fund.data.assets.utils.enums.AssetsOwnersCountry;
+
 import jakarta.validation.constraints.NotNull;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Map;
 
@@ -13,10 +15,17 @@ import java.util.Map;
  * @version 0.0.1-alpha
  * @author MarkDementev a.k.a JavaMarkDem
  */
-@Data
 @NoArgsConstructor
-@AllArgsConstructor
-public class FixedRateBondPartialSellDTO {
+@Getter
+@Setter
+public class FixedRateBondPartialSellDTO extends FixedRateBondFullSellDTO {
     @NotNull
     private Map<String, Integer> assetOwnersWithAssetCountsToSell;
+
+    public FixedRateBondPartialSellDTO(AssetsOwnersCountry assetsOwnersTaxResidency, Float packageSellValue,
+                                       Map<String, Integer> assetOwnersWithAssetCountsToSell) {
+        super(assetsOwnersTaxResidency, packageSellValue);
+
+        this.assetOwnersWithAssetCountsToSell = assetOwnersWithAssetCountsToSell;
+    }
 }

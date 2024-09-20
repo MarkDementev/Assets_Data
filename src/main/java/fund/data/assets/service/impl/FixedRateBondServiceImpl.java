@@ -45,9 +45,11 @@ import java.util.concurrent.atomic.AtomicReference;
 @Service
 @RequiredArgsConstructor
 public class FixedRateBondServiceImpl implements FixedRateBondService {
-    private static final String ERROR_OWNER_COUNTRY = "Work with investors from these countries is not yet supported"
-            + "by the fund!";
     private static final String ERROR_DATE_REDEEM = "The bonds haven't matured yet, it's too early to write them down!";
+    private static final String ERROR_OWNER_COUNTRY = "Work with investors from these countries is not yet supported"
+            + " by the fund!";
+    private static final String ERROR_WRONG_DTO = "DTO has an invalid class!";
+    //TODO весь текст перенеси в константы
     private final FixedRateBondRepository fixedRateBondRepository;
     private final AccountRepository accountRepository;
     /* TODO - По мере расширения странового охвата, нужно будет здесь расширить перечень разных типов репозиториев
@@ -113,19 +115,37 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     //TODO изоляция
     public FixedRateBondPackage partialSellFixedRateBondPackage(Long id,
         FixedRateBondPartialSellDTO fixedRateBondPartialSellDTO) {
+        //1 - ищем бонд, часть которого проверяем - ОК
         AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
                 fixedRateBondRepository.findById(id).orElseThrow());
 
+        //2 - проверяем, у всех ли оунеров есть указанное к продаже кол-во бондов - ОК
         isAssetsOwnersHaveThisAssetsAmounts(atomicFixedRateBondPackage.get(), fixedRateBondPartialSellDTO);
 
+        //3 - сумму, которая стоимость продажи, нужно скорректировать на размер комиссии и налога - ОК
+        float packagePartSellValue = fixedRateBondPartialSellDTO.getPackageSellValue();
+        packagePartSellValue = correctSellValueByCommission(packagePartSellValue, atomicFixedRateBondPackage.get());
+        packagePartSellValue = correctValueByTaxes(fixedRateBondPartialSellDTO, atomicFixedRateBondPackage.get(),
+                packagePartSellValue);
+        //4 - сумму, полученную выше, распределить в мапу для раскидывания оунерам.
+
+
+
+
         //на основе мэпы из ДТО сформировать мэпу с такими же кеями, но вэлью теперь - свежее лавэ, которое надо
-        //добавить оунерам. УЧТИ КОМИССИИ И НАЛОГИ !
-        //М.б. стоит в кеи поместить таки кеи принадлежности бумаг, чтобы сразу туда тыкать?
+        //добавить оунерам. УЧТИ КОМИССИИ И НАЛОГИ ! - м.б. использовать formAssetOwnersWithAccountCashAmountDiffsMap
+//        Map<String, Float> ownersMoneyDistribution = formAssetOwnersWithAccountCashAmountDiffsMap(
+//                atomicFixedRateBondPackage.get(), correctedPackagePartSellValue);
+
         //добавить лавэ оунерам - м.б. использовать метод changeAccountCashAmountsOfOwners?
+
         //уменьшить кол-во бумаг у оунеров
+
         //уменьшить кол-во бумаг в сущности бумаги
-        //найти бонд
+
         //сохранить и вернуть измененый бонд!
+        //TODO - метод ниже - временный.
+        return fixedRateBondRepository.save(atomicFixedRateBondPackage.get());
     }
 
     @Override
@@ -133,12 +153,12 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     public void sellAllPackage(Long id, FixedRateBondFullSellDTO fixedRateBondFullSellDTO) {
         AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
                 fixedRateBondRepository.findById(id).orElseThrow());
-        float correctedPackageSellValue = correctSellValueByCommission(fixedRateBondFullSellDTO,
-                atomicFixedRateBondPackage.get());
-        correctedPackageSellValue = correctValueByTaxes(fixedRateBondFullSellDTO, atomicFixedRateBondPackage.get(),
-                correctedPackageSellValue);
+        float packageSellValue = fixedRateBondFullSellDTO.getPackageSellValue();
+        packageSellValue = correctSellValueByCommission(packageSellValue, atomicFixedRateBondPackage.get());
+        packageSellValue = correctValueByTaxes(fixedRateBondFullSellDTO, atomicFixedRateBondPackage.get(),
+                packageSellValue);
         Map<String, Float> assetOwnersWithAccountCashAmountDiffs = formAssetOwnersWithAccountCashAmountDiffsMap(
-                atomicFixedRateBondPackage.get(), correctedPackageSellValue);
+                atomicFixedRateBondPackage.get(), packageSellValue);
 
         addMoneyToPreviousOwners(fixedRateBondFullSellDTO, atomicFixedRateBondPackage.get(),
                 assetOwnersWithAccountCashAmountDiffs);
@@ -277,49 +297,44 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     }
 
     /**
-     * При полной продаже пакета определяем, платится ли комиссия. Если да - уменьшаем продажную сумму и возвращаем её,
-     * если нет - возвращаем без изменений.
-     * @param dTO DTO с информаций о гражданстве собственников активов и о продажной стоимости при полной продаже
-     * пакета облигаций с фиксированным купоном.
-     * @param fixedRateBondPackageToWorkWith пакет облигаций, для которого проводятся расчёты.
+     * При полной или частичной продаже пакета определяем, платится ли комиссия. Если да - уменьшаем продажную сумму
+     * и возвращаем её, если нет - возвращаем без изменений.
+     * @param sellValue продажная цена облигаций в валюте эмиссии.
+     * @param fixedRateBondPackage пакет облигаций, для работы с которым проводятся расчёты.
      * @return скорректированная или оставленная без изменений сумма.
      * @since 0.0.1-alpha
      */
-    private Float correctSellValueByCommission(FixedRateBondFullSellDTO dTO ,
-                                               FixedRateBondPackage fixedRateBondPackageToWorkWith) {
-        float packageSellValue = dTO.getPackageSellValue();
-
-        if (fixedRateBondPackageToWorkWith.getAssetCommissionSystem().equals(CommissionSystem.TURNOVER)) {
+    private Float correctSellValueByCommission(float sellValue, FixedRateBondPackage fixedRateBondPackage) {
+        if (fixedRateBondPackage.getAssetCommissionSystem().equals(CommissionSystem.TURNOVER)) {
             Account account = financialAssetRelationshipRepository.findById(
-                    fixedRateBondPackageToWorkWith.getAssetRelationship().getId()).orElseThrow().getAccount();
-            String assetTypeName = fixedRateBondPackageToWorkWith.getAssetTypeName();
+                    fixedRateBondPackage.getAssetRelationship().getId())
+                    .orElseThrow().getAccount();
+            String assetTypeName = fixedRateBondPackage.getAssetTypeName();
             float commissionPercentValue = turnoverCommissionValueRepository.findByAccountAndAssetTypeName(account,
                     assetTypeName).getCommissionPercentValue();
-            packageSellValue = packageSellValue - packageSellValue * commissionPercentValue;
+            sellValue = sellValue - sellValue * commissionPercentValue;
         }
-        return packageSellValue;
+        return sellValue;
     }
 
     /**
-     * При полной продаже пакета или при его погашении определяем, платится ли НДФЛ. Если да - уменьшаем получаемую
-     * сумму и возвращаем её, если нет - возвращаем без изменений.
-     * @param dTO DTO с информаций о гражданстве собственников активов, также может содержать информацию о продажной
-     * стоимости при полной продаже пакета облигаций с фиксированным купоном.
-     * @param fixedRateBondPackageToWorkWith пакет облигаций, для которого проводятся расчёты.
-     * @param valueToCorrect возвращаемая цена пакета бумаг, ранее уже, возможно, уменьшенная на комиссию при продаже.
-     * @return скорректированная или оставленная без изменений сумма.
+     * При полной, частичной продаже пакета или при его погашении определяем, платится ли НДФЛ. Если
+     * да - уменьшаем получаемую сумму и возвращаем её, если нет - возвращаем без изменений.
+     * @param dTO DTO с информаций о гражданстве собственников активов.
+     * @param fixedRateBondPackage пакет облигаций, для работы с которым проводятся расчёты.
+     * @param valueToCorrect возвращаемая цена пакета бумаг с возможной коррекцией.
+     * @return скорректированная на НДФЛ или оставленная без изменений сумма.
      * @since 0.0.1-alpha
      */
-    private Float correctValueByTaxes(AssetsOwnersCountryDTO dTO,
-                                      FixedRateBondPackage fixedRateBondPackageToWorkWith, float valueToCorrect) {
-        if (fixedRateBondPackageToWorkWith.getAssetTaxSystem().equals(TaxSystem.EQUAL_COUPON_DIVIDEND_TRADE)) {
+    private Float correctValueByTaxes(AssetsOwnersCountryDTO dTO, FixedRateBondPackage fixedRateBondPackage,
+                                      float valueToCorrect) {
+        if (fixedRateBondPackage.getAssetTaxSystem().equals(TaxSystem.EQUAL_COUPON_DIVIDEND_TRADE)) {
             if (dTO.getAssetsOwnersTaxResidency().equals(AssetsOwnersCountry.RUS)) {
-                float diffBetweenSellBuyCommissions = valueToCorrect
-                        - fixedRateBondPackageToWorkWith.getTotalAssetPurchasePriceWithCommission();
-
-                valueToCorrect = diffBetweenSellBuyCommissions > 0 ?
+                float valueToCompared = getValueToCompared(dTO, fixedRateBondPackage);
+                float diffBetweenSellAndBuyCommissions = valueToCorrect - valueToCompared;
+                valueToCorrect = diffBetweenSellAndBuyCommissions > 0 ?
                         valueToCorrect - (1.00F - FinancialAndAnotherConstants.RUSSIAN_TAX_SYSTEM_CORRECTION_VALUE)
-                        * diffBetweenSellBuyCommissions
+                        * diffBetweenSellAndBuyCommissions
                         : valueToCorrect;
             } else {
                 throw new IllegalArgumentException(ERROR_OWNER_COUNTRY);
@@ -329,6 +344,55 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     }
 
     /**
+     * В зависимости от того, идёт продажа всего пакета облигаций или только его части, возвращается определённая
+     * пропорция от общей стоимости пакета с НКД и комиссиями.
+     * @param dTO DTO для выбора одного из алгоритмов расчёта размера возвращаемой пропорции.
+     * @param fixedRateBondPackage пакет облигаций, для работы с которым проводятся расчёты.
+     * @return определённая пропорция от общей стоимости пакета с НКД и комиссиями.
+     * @since 0.0.1-alpha
+     */
+    private float getValueToCompared(AssetsOwnersCountryDTO dTO, FixedRateBondPackage fixedRateBondPackage) {
+        if (dTO.getClass().equals(AssetsOwnersCountryDTO.class)
+                || dTO.getClass().equals(FixedRateBondFullSellDTO.class)) {
+            return fixedRateBondPackage.getTotalAssetPurchasePriceWithCommission();
+        } else if (dTO.getClass().equals(FixedRateBondPartialSellDTO.class)) {
+            int bondsToSellCount = 0;
+
+            for (Map.Entry<String, Integer> mapElement :
+                    ((FixedRateBondPartialSellDTO) dTO).getAssetOwnersWithAssetCountsToSell().entrySet()) {
+                bondsToSellCount += mapElement.getValue();
+            }
+            return fixedRateBondPackage.getTotalAssetPurchasePriceWithCommission() * ((float) bondsToSellCount
+                    / fixedRateBondPackage.getAssetCount());
+        }
+        throw new IllegalArgumentException(ERROR_WRONG_DTO);
+    }
+
+//    /**
+//     * Формируется мапа при продаже пакета облигаций для распределения денежных средств между бывшими собственниками.
+//     * @param fixedRateBondPackageToWorkWith пакет облигаций, для которого проводятся расчёты.
+//     * @param sellValue продажная цена пакета бумаг, возможно, скорректированная ранее на налог и комиссии.
+//     * @return мапа, где кей - id оунеров продаваемых облигаций, вэлью - размер их доли в валюте от
+//     * суммы продажи пакета.
+//     * @since 0.0.1-alpha
+//     */
+//    private Map<String, Float> formAssetOwnersWithAccountCashAmountDiffsMap(
+//            FixedRateBondPackage fixedRateBondPackageToWorkWith, float sellValue) {
+//        Integer assetCount = fixedRateBondPackageToWorkWith.getAssetCount();
+//        Map<String, Float> assetOwnersWithAssetCounts = fixedRateBondPackageToWorkWith.getAssetRelationship()
+//                .getAssetOwnersWithAssetCounts();
+//        Map<String, Float> assetOwnersWithAccountCashAmountDiffsMap = new TreeMap<>();
+//
+//        for (Map.Entry<String, Float> mapElement : assetOwnersWithAssetCounts.entrySet()) {
+//                Float ownerAssetCount = mapElement.getValue();
+//                Float ownerAccountCashDiff = (ownerAssetCount / assetCount) * sellValue;
+//
+//                assetOwnersWithAccountCashAmountDiffsMap.put(mapElement.getKey(), ownerAccountCashDiff);
+//        }
+//        return assetOwnersWithAccountCashAmountDiffsMap;
+//    }
+
+    /**
      * Формируется мапа при продаже пакета облигаций для распределения денежных средств между бывшими собственниками.
      * @param fixedRateBondPackageToWorkWith пакет облигаций, для которого проводятся расчёты.
      * @param sellValue продажная цена пакета бумаг, возможно, скорректированная ранее на налог и комиссии.
@@ -336,7 +400,6 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
      * суммы продажи пакета.
      * @since 0.0.1-alpha
      */
-    //TODO возможно полиморфизм?
     private Map<String, Float> formAssetOwnersWithAccountCashAmountDiffsMap(
             FixedRateBondPackage fixedRateBondPackageToWorkWith, float sellValue) {
         Integer assetCount = fixedRateBondPackageToWorkWith.getAssetCount();
@@ -345,10 +408,10 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         Map<String, Float> assetOwnersWithAccountCashAmountDiffsMap = new TreeMap<>();
 
         for (Map.Entry<String, Float> mapElement : assetOwnersWithAssetCounts.entrySet()) {
-                Float ownerAssetCount = mapElement.getValue();
-                Float ownerAccountCashDiff = (ownerAssetCount / assetCount) * sellValue;
+            Float ownerAssetCount = mapElement.getValue();
+            Float ownerAccountCashDiff = (ownerAssetCount / assetCount) * sellValue;
 
-                assetOwnersWithAccountCashAmountDiffsMap.put(mapElement.getKey(), ownerAccountCashDiff);
+            assetOwnersWithAccountCashAmountDiffsMap.put(mapElement.getKey(), ownerAccountCashDiff);
         }
         return assetOwnersWithAccountCashAmountDiffsMap;
     }
