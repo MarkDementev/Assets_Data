@@ -83,32 +83,13 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         isOwnershipMapValuesSumEqualsAssetCount(firstBuyFixedRateBondDTO.getAssetOwnersWithAssetCounts(),
                 firstBuyFixedRateBondDTO.getAssetCount());
 
-        AssetCurrency assetCurrency = firstBuyFixedRateBondDTO.getAssetCurrency();
-        String assetTitle = firstBuyFixedRateBondDTO.getAssetTitle();
-        Integer assetCount = firstBuyFixedRateBondDTO.getAssetCount();
-        Map<String, Float> assetOwnersWithAssetCounts = firstBuyFixedRateBondDTO.getAssetOwnersWithAssetCounts();
-        Account accountFromDTO = accountRepository.findById(firstBuyFixedRateBondDTO.getAccountID()).orElseThrow();
-        String iSIN = firstBuyFixedRateBondDTO.getISIN();
-        String assetIssuerTitle = firstBuyFixedRateBondDTO.getAssetIssuerTitle();
-        LocalDate lastAssetBuyDate = firstBuyFixedRateBondDTO.getLastAssetBuyDate();
-        Integer bondParValue = firstBuyFixedRateBondDTO.getBondParValue();
-        Float purchaseBondParValuePercent = firstBuyFixedRateBondDTO.getPurchaseBondParValuePercent();
-        Float bondAccruedInterest = firstBuyFixedRateBondDTO.getBondAccruedInterest();
-        Float bondCouponValue = firstBuyFixedRateBondDTO.getBondCouponValue();
-        Integer expectedBondCouponPaymentsCount = firstBuyFixedRateBondDTO.getExpectedBondCouponPaymentsCount();
-        LocalDate bondMaturityDate = firstBuyFixedRateBondDTO.getBondMaturityDate();
-
-        FixedRateBondPackage fixedRateBondPackageToCreate = new FixedRateBondPackage(assetCurrency, assetTitle,
-                assetCount, assetOwnersWithAssetCounts, accountFromDTO, iSIN, assetIssuerTitle, lastAssetBuyDate,
-                bondParValue, purchaseBondParValuePercent, bondAccruedInterest, bondCouponValue,
-                expectedBondCouponPaymentsCount, bondMaturityDate);
+        FixedRateBondPackage fixedRateBondPackageToCreate = getNewFixedRateBondByDTO(firstBuyFixedRateBondDTO);
         AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
                 fixedRateBondPackageToCreate);
         Map<AccountCash, Float> accountCashAmountChanges = formAccountCashAmountChangesMap(firstBuyFixedRateBondDTO,
                 atomicFixedRateBondPackage.get());
 
         changeAccountCashAmountsOfOwners(accountCashAmountChanges);
-//        changeAccountCashAmountsOfOwners(accountCashAmountChanges, false);
         /*
          * Сущность сохраняется, а потом снова сохраняется. Это нужно, чтобы инициализировать поле assetId
          * в сущности AssetRelationship, которое заполняется значением из поля id из сохранённой в БД ранее сущности.
@@ -177,6 +158,32 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         addMoneyToPreviousOwners(assetsOwnersCountryDTO, atomicFixedRateBondPackage.get(),
                 ownersMoneyDistribution);
         fixedRateBondRepository.deleteById(id);
+    }
+
+    /**
+     * Возвращается новый объект FixedRateBondPackage с использованием данных из DTO класса FirstBuyFixedRateBondDTO.
+     * @param firstBuyFixedRateBondDTO DTO с данными для создания нового объекта.
+     * @return новый объект FixedRateBondPackage.
+     */
+    private FixedRateBondPackage getNewFixedRateBondByDTO(FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO) {
+        AssetCurrency assetCurrency = firstBuyFixedRateBondDTO.getAssetCurrency();
+        String assetTitle = firstBuyFixedRateBondDTO.getAssetTitle();
+        Integer assetCount = firstBuyFixedRateBondDTO.getAssetCount();
+        Map<String, Float> assetOwnersWithAssetCounts = firstBuyFixedRateBondDTO.getAssetOwnersWithAssetCounts();
+        Account accountFromDTO = accountRepository.findById(firstBuyFixedRateBondDTO.getAccountID()).orElseThrow();
+        String iSIN = firstBuyFixedRateBondDTO.getISIN();
+        String assetIssuerTitle = firstBuyFixedRateBondDTO.getAssetIssuerTitle();
+        LocalDate lastAssetBuyDate = firstBuyFixedRateBondDTO.getLastAssetBuyDate();
+        Integer bondParValue = firstBuyFixedRateBondDTO.getBondParValue();
+        Float purchaseBondParValuePercent = firstBuyFixedRateBondDTO.getPurchaseBondParValuePercent();
+        Float bondAccruedInterest = firstBuyFixedRateBondDTO.getBondAccruedInterest();
+        Float bondCouponValue = firstBuyFixedRateBondDTO.getBondCouponValue();
+        Integer expectedBondCouponPaymentsCount = firstBuyFixedRateBondDTO.getExpectedBondCouponPaymentsCount();
+        LocalDate bondMaturityDate = firstBuyFixedRateBondDTO.getBondMaturityDate();
+
+        return new FixedRateBondPackage(assetCurrency, assetTitle, assetCount, assetOwnersWithAssetCounts,
+                accountFromDTO, iSIN, assetIssuerTitle, lastAssetBuyDate, bondParValue, purchaseBondParValuePercent,
+                bondAccruedInterest, bondCouponValue, expectedBondCouponPaymentsCount, bondMaturityDate);
     }
 
     /**
