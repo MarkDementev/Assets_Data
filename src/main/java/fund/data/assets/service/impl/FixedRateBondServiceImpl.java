@@ -46,10 +46,14 @@ import java.util.concurrent.atomic.AtomicReference;
 @RequiredArgsConstructor
 public class FixedRateBondServiceImpl implements FixedRateBondService {
     private static final String ERROR_DATE_REDEEM = "The bonds haven't matured yet, it's too early to write them down!";
+    private static final String SUM_ASSET_COUNT_NOT_EQUALS = "Field assetOwnersWithAssetCounts in DTO is not"
+            + " correct - sum of values are not equals field assetCount!";
     private static final String ERROR_OWNER_COUNTRY = "Work with investors from these countries is not yet supported"
             + " by the fund!";
+    private static final String ONE_OWNER_NOT_ENOUGH_MONEY = "At least one of the owners does not have enough money"
+            + " to buy!";
+    private static final String ONE_OWNER_CANNOT_SELL_SO_MUCH = "At least one assets owner cannot sell so many bonds!";
     private static final String ERROR_WRONG_DTO = "DTO has an invalid class!";
-    //TODO весь текст перенеси в константы
     private final FixedRateBondRepository fixedRateBondRepository;
     private final AccountRepository accountRepository;
     /* TODO - По мере расширения странового охвата, нужно будет здесь расширить перечень разных типов репозиториев
@@ -115,36 +119,24 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     }
 
     @Override
-    //TODO изоляция
+    @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = {Exception.class})
     public FixedRateBondPackage partialSellFixedRateBondPackage(Long id,
         FixedRateBondPartialSellDTO fixedRateBondPartialSellDTO) {
-        //TODO проверь в DTO и методах, могут ли не все владельцы облиг их продавать!?
-        //1 - ищем бонд, часть которого проверяем
         AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
                 fixedRateBondRepository.findById(id).orElseThrow());
 
-        //2 - проверяем, у всех ли оунеров есть указанное к продаже кол-во бондов
         isAssetsOwnersHaveThisAssetsAmounts(atomicFixedRateBondPackage.get(), fixedRateBondPartialSellDTO);
 
-        //3 - сумму, которая стоимость продажи, нужно скорректировать на размер комиссии и налога
         float packagePartSellValue = fixedRateBondPartialSellDTO.getPackageSellValue();
         packagePartSellValue = correctSellValueByCommission(packagePartSellValue, atomicFixedRateBondPackage.get());
         packagePartSellValue = correctValueByTaxes(fixedRateBondPartialSellDTO, atomicFixedRateBondPackage.get(),
                 packagePartSellValue);
-        //4 - сумму, полученную выше, распределить в мапу для раскидывания оунерам.
         Map<String, Float> ownersMoneyDistribution = formOwnersMoneyDistributionMap(atomicFixedRateBondPackage.get(),
                 packagePartSellValue, fixedRateBondPartialSellDTO);
 
-        //5 - раскидай деньги оунерам
         addMoneyToPreviousOwners(fixedRateBondPartialSellDTO, atomicFixedRateBondPackage.get(),
                 ownersMoneyDistribution);
-
-        //TODO 6 - уменьшить кол-во бумаг у оунеров
-
-        //TODO 7 - уменьшить кол-во бумаг в сущности бумаги
-
-        //TODO 8 - сохранить и вернуть измененный бонд!
-        //TODO - метод ниже - временный.
+        updateAssetOwnersWithAssetCounts(atomicFixedRateBondPackage.get(), fixedRateBondPartialSellDTO, true);
         return fixedRateBondRepository.save(atomicFixedRateBondPackage.get());
     }
 
@@ -204,10 +196,8 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         }
         Integer mapValuesSumToInteger = mapValuesSum.intValue();
 
-        if ((Math.ceil(mapValuesSum) != Math.floor(mapValuesSum))
-                || (!mapValuesSumToInteger.equals(assetCount))) {
-            throw new IllegalArgumentException("Field assetOwnersWithAssetCounts in DTO is not correct - sum of values"
-                    + " are not equals field assetCount!");
+        if ((Math.ceil(mapValuesSum) != Math.floor(mapValuesSum)) || (!mapValuesSumToInteger.equals(assetCount))) {
+            throw new IllegalArgumentException(SUM_ASSET_COUNT_NOT_EQUALS);
         }
     }
 
@@ -246,7 +236,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
                     * (mapElement.getValue() / Float.valueOf(fixedRateBondPackage.getAssetCount()));
 
             if (ownerWantToBuyAssetsInCurrency > assetsOwnerAccountCash.getAmount()) {
-                throw new IllegalArgumentException("At least one of the owners does not have enough money to buy!");
+                throw new IllegalArgumentException(ONE_OWNER_NOT_ENOUGH_MONEY);
             } else {
                 accountCashes.put(assetsOwnerAccountCash, ownerWantToBuyAssetsInCurrency);
             }
@@ -310,7 +300,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
             Integer assetToSellCount = mapElement.getValue();
 
             if (assetsOwnerAssetCount < assetToSellCount) {
-                throw new IllegalArgumentException("At least one assets owner cannot sell so many bonds!");
+                throw new IllegalArgumentException(ONE_OWNER_CANNOT_SELL_SO_MUCH);
             }
         }
     }
@@ -460,6 +450,33 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
             AccountCash accountCash = accountCashRepository.findByAccountAndAssetCurrencyAndAssetsOwner(account,
                     assetCurrency, assetsOwner);
             accountCash.setAmount(accountCash.getAmount() + mapElement.getValue());
+        }
+    }
+
+    /**
+     * При частичных продаже и покупке облигаций надо уменьшать количество облигаций во владении, для чего используется
+     * этот метод.
+     * @param fixedRateBondPackage пакет облигаций, который затрагивают изменения.
+     * @param dTO DTO с информацией о том, сколько и чьи облигации продаются/покупаются.
+     * @param isSell если true, то идёт частичная продажа облигаций, если false, то идёт частичная покупка.
+     * @since 0.0.1-alpha
+     */
+    private void updateAssetOwnersWithAssetCounts(FixedRateBondPackage fixedRateBondPackage,
+                                                  FixedRateBondPartialSellDTO dTO, boolean isSell) {
+        Map<String, Float> assetOwnersWithAssetCounts = fixedRateBondPackage.getAssetRelationship()
+                .getAssetOwnersWithAssetCounts();
+
+        for (Map.Entry<String, Integer> mapElement : dTO.getAssetOwnersWithAssetCountsToSell().entrySet()) {
+            float newAssetCount;
+            String assetsOwnerID = mapElement.getKey();
+            Integer assetCountDiff = mapElement.getValue();
+
+            if (isSell) {
+                newAssetCount = assetOwnersWithAssetCounts.get(assetsOwnerID) - assetCountDiff;
+            } else {
+                newAssetCount = assetOwnersWithAssetCounts.get(assetsOwnerID) + assetCountDiff;
+            }
+            assetOwnersWithAssetCounts.put(assetsOwnerID, newAssetCount);
         }
     }
 }
