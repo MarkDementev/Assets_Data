@@ -118,6 +118,17 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         addMoneyToPreviousOwners(fixedRateBondPartialSellDTO, atomicFixedRateBondPackage.get(),
                 ownersMoneyDistribution);
         updateAssetOwnersWithAssetCounts(atomicFixedRateBondPackage.get(), fixedRateBondPartialSellDTO, true);
+        //TODO надо поменять многие значения в самом бонде!
+        /*
+            lastAssetBuyDate - ExchangeAsset - м.б. удалить и заменить везде на креэйтэд эт/апдейтед эт?
+            bondAccruedInterest - FixedRateBondPackage
+            totalCommissionForPurchase - FixedRateBondPackage
+            totalAssetPurchasePriceWithCommission - FixedRateBondPackage
+            expectedBondCouponPaymentsCount - FixedRateBondPackage
+            simpleYieldToMaturity - FixedRateBondPackage
+            markDementevYieldIndicator - FixedRateBondPackage
+         */
+//        updateFixedRateBondFields();
         return fixedRateBondRepository.save(atomicFixedRateBondPackage.get());
     }
 
@@ -409,7 +420,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         }
 
         for (Map.Entry<String, ? extends Number> mapElement : assetOwnersWithAssetCounts.entrySet()) {
-            Float ownerAssetCountToSell = (Float) mapElement.getValue();
+            float ownerAssetCountToSell = mapElement.getValue().floatValue();
             Float ownerAccountCashDiff = (ownerAssetCountToSell / assetCountToSell) * sellValue;
 
             ownersMoneyDistributionMap.put(mapElement.getKey(), ownerAccountCashDiff);
@@ -480,8 +491,10 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
 
             if (isSell) {
                 newAssetCount = assetOwnersWithAssetCounts.get(assetsOwnerID) - assetCountDiff;
+                fixedRateBondPackage.setAssetCount(fixedRateBondPackage.getAssetCount() - assetCountDiff);
             } else {
                 newAssetCount = assetOwnersWithAssetCounts.get(assetsOwnerID) + assetCountDiff;
+                fixedRateBondPackage.setAssetCount(fixedRateBondPackage.getAssetCount() + assetCountDiff);
             }
             assetOwnersWithAssetCounts.put(assetsOwnerID, newAssetCount);
         }

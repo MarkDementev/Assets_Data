@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fund.data.assets.dto.asset.exchange.AssetsOwnersCountryDTO;
 import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
 import fund.data.assets.dto.asset.exchange.FixedRateBondFullSellDTO;
+import fund.data.assets.dto.asset.exchange.FixedRateBondPartialSellDTO;
 import fund.data.assets.dto.financial_entities.AccountDTO;
 import fund.data.assets.dto.financial_entities.AccountCashDTO;
 import fund.data.assets.dto.financial_entities.TurnoverCommissionValueDTO;
@@ -58,6 +59,8 @@ public class TestUtils {
     public static final String TEST_STRING_FORMAT_PERCENT_VALUE = "20,1234";
     public static final Float TEST_FORMATTED_PERCENT_VALUE_FLOAT = 0.201234F;
     public static final Float TEST_COMMISSION_PERCENT_VALUE_FLOAT = 0.01F;
+    public static final Float TEST_NORMAL_PACKAGE_SELL_VALUE = 33000.00F;
+    public static final Float TEST_SMALL_PACKAGE_SELL_VALUE = 9900.00F;
     public static final Float TEST_FIRST_RUSSIAN_OWNER_CASH_AMOUNT = 10150.00F;
     public static final Float TEST_SECOND_RUSSIAN_OWNER_CASH_AMOUNT = 20300.00F;
     public static final DecimalFormat TEST_DECIMAL_FORMAT = new DecimalFormat( "#.####" );
@@ -278,24 +281,39 @@ public class TestUtils {
         );
     }
 
+    public FixedRateBondPartialSellDTO getPartialSellFixedRateBondPackageFirst() throws Exception {
+        Map<String, Integer> assetOwnersWithAssetCountsToSell = new LinkedHashMap<>();
+
+        assetOwnersWithAssetCountsToSell.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(0).getId()),
+                5);
+        assetOwnersWithAssetCountsToSell.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(1).getId()),
+                10);
+
+        return new FixedRateBondPartialSellDTO(
+                AssetsOwnersCountry.RUS,
+                TEST_NORMAL_PACKAGE_SELL_VALUE,
+                assetOwnersWithAssetCountsToSell
+        );
+    }
+
     public FixedRateBondFullSellDTO getFixedRateBondFullSellDTO() {
         return new FixedRateBondFullSellDTO(
              AssetsOwnersCountry.RUS,
-             33000.00F
+                TEST_NORMAL_PACKAGE_SELL_VALUE
         );
     }
 
     public FixedRateBondFullSellDTO getFixedRateBondFullSellDTODiffWithoutTaxes() {
         return new FixedRateBondFullSellDTO(
                 AssetsOwnersCountry.RUS,
-                9900.00F
+                TEST_SMALL_PACKAGE_SELL_VALUE
         );
     }
 
     public FixedRateBondFullSellDTO getNotValidCountryFixedRateBondFullSellDTO() {
         return new FixedRateBondFullSellDTO(
                 AssetsOwnersCountry.USA,
-                33000.00F
+                TEST_NORMAL_PACKAGE_SELL_VALUE
         );
     }
 
