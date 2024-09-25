@@ -3,6 +3,7 @@ package fund.data.assets.dto.asset.exchange;
 import fund.data.assets.utils.enums.AssetsOwnersCountry;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import lombok.NoArgsConstructor;
 import lombok.Getter;
@@ -27,12 +28,17 @@ public class FixedRateBondPartialSellDTO extends FixedRateBondFullSellDTO {
     @NotNull
     private LocalDate lastAssetSellDate;
 
+    @NotNull
+    @PositiveOrZero
+    private Integer expectedBondCouponPaymentsCount;
+
     public FixedRateBondPartialSellDTO(AssetsOwnersCountry assetsOwnersTaxResidency, Float packageSellValue,
                                        Map<String, Integer> assetOwnersWithAssetCountsToSell,
-                                       LocalDate lastAssetSellDate) {
+                                       LocalDate lastAssetSellDate, Integer expectedBondCouponPaymentsCount) {
         super(assetsOwnersTaxResidency, packageSellValue);
 
         this.assetOwnersWithAssetCountsToSell = assetOwnersWithAssetCountsToSell;
         this.lastAssetSellDate = lastAssetSellDate;
+        this.expectedBondCouponPaymentsCount = expectedBondCouponPaymentsCount;
     }
 }

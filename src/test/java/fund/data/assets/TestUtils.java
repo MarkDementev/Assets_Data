@@ -295,7 +295,8 @@ public class TestUtils {
                 AssetsOwnersCountry.RUS,
                 TEST_NORMAL_PACKAGE_SELL_VALUE,
                 assetOwnersWithAssetCountsToSell,
-                TEST_FIXED_RATE_BOND_LAST_ASSET_SELL_DATE
+                TEST_FIXED_RATE_BOND_LAST_ASSET_SELL_DATE,
+                0
         );
     }
 

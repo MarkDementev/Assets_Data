@@ -40,6 +40,7 @@ import static fund.data.assets.TestUtils.fromJson;
 import static fund.data.assets.TestUtils.TEST_FIRST_RUSSIAN_OWNER_CASH_AMOUNT;
 import static fund.data.assets.TestUtils.TEST_SECOND_RUSSIAN_OWNER_CASH_AMOUNT;
 import static fund.data.assets.TestUtils.TEST_DECIMAL_FORMAT;
+import static fund.data.assets.TestUtils.TEST_FIXED_RATE_BOND_LAST_ASSET_SELL_DATE;
 import static fund.data.assets.config.SpringConfigForTests.TEST_PROFILE;
 import static fund.data.assets.controller.FixedRateBondPackageController.FIXED_RATE_BOND_CONTROLLER_PATH;
 import static fund.data.assets.controller.RussianAssetsOwnerController.ID_PATH;
@@ -338,11 +339,14 @@ public class FixedRateBondControllerIT {
                 .get(String.valueOf(russianAssetsOwnerRepository.findAll().get(0).getId())));
         assertEquals(10, fixedRateBondPackageFromResponse.getAssetRelationship().getAssetOwnersWithAssetCounts()
                 .get(String.valueOf(russianAssetsOwnerRepository.findAll().get(1).getId())));
-        assertEquals(10180.8010F, accountCashRepository.findAll().get(0).getAmount());
-        assertEquals(20361.6020F, accountCashRepository.findAll().get(1).getAmount());
+        assertEquals(TEST_FIXED_RATE_BOND_LAST_ASSET_SELL_DATE,
+                fixedRateBondPackageFromResponse.getLastAssetBuyOrSellDate());
+        assertEquals(0, fixedRateBondPackageFromResponse.getExpectedBondCouponPaymentsCount());
         //TODO проверь, какие поля могут поменяться, и протестируй их все!
         assertNotEquals(fixedRateBondPackageFromResponse.getCreatedAt(),
                 fixedRateBondPackageFromResponse.getUpdatedAt());
+        assertEquals(10180.8010F, accountCashRepository.findAll().get(0).getAmount());
+        assertEquals(20361.6020F, accountCashRepository.findAll().get(1).getAmount());
     }
 
 //    @Test

@@ -107,6 +107,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
                 fixedRateBondRepository.findById(id).orElseThrow());
 
         isAssetsOwnersHaveThisAssetsAmounts(atomicFixedRateBondPackage.get(), fixedRateBondPartialSellDTO);
+        updateFixedRateBondFieldsByDTO(atomicFixedRateBondPackage.get(), fixedRateBondPartialSellDTO);
 
         float packagePartSellValue = fixedRateBondPartialSellDTO.getPackageSellValue();
         packagePartSellValue = correctSellValueByCommission(packagePartSellValue, atomicFixedRateBondPackage.get());
@@ -120,15 +121,13 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         updateAssetOwnersWithAssetCounts(atomicFixedRateBondPackage.get(), fixedRateBondPartialSellDTO, true);
         //TODO надо поменять многие значения в самом бонде!
         /*
-            lastAssetBuyOrSellDate - ExchangeAsset - м.б. удалить и заменить везде на креэйтэд эт/апдейтед эт?
-            bondAccruedInterest - FixedRateBondPackage
-            totalCommissionForPurchase - FixedRateBondPackage
-            totalAssetPurchasePriceWithCommission - FixedRateBondPackage
-            expectedBondCouponPaymentsCount - FixedRateBondPackage
-            simpleYieldToMaturity - FixedRateBondPackage
-            markDementevYieldIndicator - FixedRateBondPackage
+            bondAccruedInterest - FixedRateBondPackage - РАСЧ
+            totalCommissionForPurchase - FixedRateBondPackage - РАСЧ
+            totalAssetPurchasePriceWithCommission - FixedRateBondPackage - РАСЧ
+            simpleYieldToMaturity - FixedRateBondPackage - РАСЧ
+            markDementevYieldIndicator - FixedRateBondPackage - РАСЧ
          */
-//        updateFixedRateBondFields();
+//        recalculationSomeFixedRateBondFields();
         return fixedRateBondRepository.save(atomicFixedRateBondPackage.get());
     }
 
@@ -300,6 +299,19 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
 //            }
 //        }
 //    }
+
+    /**
+     * При частичных продаже или покупке пакета облигаций ряд полей сущности нужно просто перезаполнить
+     * без проведения дополнительных расчётов.
+     * @param fixedRateBondPackage пакет облигаций, поля которого перезаполняются.
+     * @param dTO DTO с информацией о новых значениях полей.
+     * @since 0.0.1-alpha
+     */
+    private void updateFixedRateBondFieldsByDTO(FixedRateBondPackage fixedRateBondPackage,
+                                                FixedRateBondPartialSellDTO dTO) {
+        fixedRateBondPackage.setLastAssetBuyOrSellDate(dTO.getLastAssetSellDate());
+        fixedRateBondPackage.setExpectedBondCouponPaymentsCount(dTO.getExpectedBondCouponPaymentsCount());
+    }
 
     /**
      * Проводится валидация, все ли владельцы активов могут продать данное количество облигаций.
