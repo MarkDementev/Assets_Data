@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 import java.util.Map;
 
 /**
@@ -22,10 +24,15 @@ public class FixedRateBondPartialSellDTO extends FixedRateBondFullSellDTO {
     @NotNull
     private Map<String, Integer> assetOwnersWithAssetCountsToSell;
 
+    @NotNull
+    private LocalDate lastAssetSellDate;
+
     public FixedRateBondPartialSellDTO(AssetsOwnersCountry assetsOwnersTaxResidency, Float packageSellValue,
-                                       Map<String, Integer> assetOwnersWithAssetCountsToSell) {
+                                       Map<String, Integer> assetOwnersWithAssetCountsToSell,
+                                       LocalDate lastAssetSellDate) {
         super(assetsOwnersTaxResidency, packageSellValue);
 
         this.assetOwnersWithAssetCountsToSell = assetOwnersWithAssetCountsToSell;
+        this.lastAssetSellDate = lastAssetSellDate;
     }
 }

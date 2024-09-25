@@ -67,6 +67,8 @@ public class TestUtils {
     public static final LocalDate TEST_ACCOUNT_OPENING_DATE = LocalDate.of(2000, 1, 1);
     public static final LocalDate TEST_FIXED_RATE_BOND_LAST_ASSET_BUY_DATE = LocalDate.of(
             2021, 1, 1);
+    public static final LocalDate TEST_FIXED_RATE_BOND_LAST_ASSET_SELL_DATE = LocalDate.of(
+            2021, 6, 1);
     public static final LocalDate TEST_FIXED_RATE_BOND_MATURITY_DATE = LocalDate.of(
             2022, 1, 1);
     public static final LocalDate TEST_FIXED_RATE_BOND_LAST_ASSET_BUY_DATE_NOT_MATURED = LocalDate.of(
@@ -292,7 +294,8 @@ public class TestUtils {
         return new FixedRateBondPartialSellDTO(
                 AssetsOwnersCountry.RUS,
                 TEST_NORMAL_PACKAGE_SELL_VALUE,
-                assetOwnersWithAssetCountsToSell
+                assetOwnersWithAssetCountsToSell,
+                TEST_FIXED_RATE_BOND_LAST_ASSET_SELL_DATE
         );
     }
 
