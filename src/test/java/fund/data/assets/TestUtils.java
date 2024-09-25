@@ -283,7 +283,7 @@ public class TestUtils {
         );
     }
 
-    public FixedRateBondPartialSellDTO getPartialSellFixedRateBondPackageFirst() throws Exception {
+    public FixedRateBondPartialSellDTO getPartialSellFixedRateBondPackageFirst() {
         Map<String, Integer> assetOwnersWithAssetCountsToSell = new LinkedHashMap<>();
 
         assetOwnersWithAssetCountsToSell.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(0).getId()),
@@ -300,7 +300,7 @@ public class TestUtils {
         );
     }
 
-    public FixedRateBondPartialSellDTO getPartialSellFixedRateBondPackageSecond() throws Exception {
+    public FixedRateBondPartialSellDTO getPartialSellFixedRateBondPackageSecond() {
         Map<String, Integer> assetOwnersWithAssetCountsToSell = new LinkedHashMap<>();
 
         assetOwnersWithAssetCountsToSell.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(0).getId()),
@@ -310,6 +310,40 @@ public class TestUtils {
 
         return new FixedRateBondPartialSellDTO(
                 AssetsOwnersCountry.RUS,
+                TEST_SMALL_PACKAGE_SELL_VALUE,
+                assetOwnersWithAssetCountsToSell,
+                TEST_FIXED_RATE_BOND_LAST_ASSET_SELL_DATE,
+                1
+        );
+    }
+
+    public FixedRateBondPartialSellDTO getPartialSellFixedRateBondPackageNotEnoughAssets() {
+        Map<String, Integer> assetOwnersWithAssetCountsToSell = new LinkedHashMap<>();
+
+        assetOwnersWithAssetCountsToSell.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(0).getId()),
+                11);
+        assetOwnersWithAssetCountsToSell.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(1).getId()),
+                21);
+
+        return new FixedRateBondPartialSellDTO(
+                AssetsOwnersCountry.RUS,
+                TEST_SMALL_PACKAGE_SELL_VALUE,
+                assetOwnersWithAssetCountsToSell,
+                TEST_FIXED_RATE_BOND_LAST_ASSET_SELL_DATE,
+                1
+        );
+    }
+
+    public FixedRateBondPartialSellDTO getPartialSellFixedRateBondPackageNotValidTaxResidency() {
+        Map<String, Integer> assetOwnersWithAssetCountsToSell = new LinkedHashMap<>();
+
+        assetOwnersWithAssetCountsToSell.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(0).getId()),
+                6);
+        assetOwnersWithAssetCountsToSell.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(1).getId()),
+                12);
+
+        return new FixedRateBondPartialSellDTO(
+                AssetsOwnersCountry.USA,
                 TEST_SMALL_PACKAGE_SELL_VALUE,
                 assetOwnersWithAssetCountsToSell,
                 TEST_FIXED_RATE_BOND_LAST_ASSET_SELL_DATE,

@@ -397,25 +397,45 @@ public class FixedRateBondControllerIT {
         assertEquals(6634.00F, accountCashRepository.findAll().get(1).getAmount());
     }
 
-//    @Test
-//    public void partialSellFixedRateBondPackageNotEnoughAssetsIT() throws Exception {
-//        testUtils.createDefaultFixedRateBond();
-//
-//        Long createdFixedRateBondPackageId = fixedRateBondRepository.findAll().get(0).getId();
-//        //мокаем запрос на апдейт с продажей для части оунеров
-//        //ловим, что у кого-то из оунеров не хватает бондов на продажу
-//        //чекаем, что бонд не изменился
-//    }
-//
-//    @Test
-//    public void partialSellFixedRateBondPackageNotValidTaxResidencyIT() throws Exception {
-//        testUtils.createDefaultFixedRateBond();
-//
-//        Long createdFixedRateBondPackageId = fixedRateBondRepository.findAll().get(0).getId();
-//        //мокаем запрос на апдейт с продажей для части оунеров
-//        //ловим, что некорректное налоговое резиденство
-//        //чекаем, что бонд не изменился
-//    }
+    @Test
+    public void partialSellFixedRateBondPackageNotEnoughAssetsIT() throws Exception {
+        testUtils.createDefaultFixedRateBond();
+
+        assertThat(fixedRateBondRepository.findAll()).hasSize(1);
+        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
+        assertEquals(30, fixedRateBondRepository.findAll().get(0).getAssetCount());
+
+        Long createdFixedRateBondPackageId = fixedRateBondRepository.findAll().get(0).getId();
+
+        Assertions.assertThrows(ServletException.class, () -> testUtils.perform(
+                put("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH, createdFixedRateBondPackageId)
+                        .content(asJson(testUtils.getPartialSellFixedRateBondPackageNotEnoughAssets()))
+                        .contentType(APPLICATION_JSON)
+        ));
+        assertThat(fixedRateBondRepository.findAll()).hasSize(1);
+        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
+        assertEquals(30, fixedRateBondRepository.findAll().get(0).getAssetCount());
+    }
+
+    @Test
+    public void partialSellFixedRateBondPackageNotValidTaxResidencyIT() throws Exception {
+        testUtils.createDefaultFixedRateBond();
+
+        assertThat(fixedRateBondRepository.findAll()).hasSize(1);
+        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
+        assertEquals(30, fixedRateBondRepository.findAll().get(0).getAssetCount());
+
+        Long createdFixedRateBondPackageId = fixedRateBondRepository.findAll().get(0).getId();
+
+        Assertions.assertThrows(ServletException.class, () -> testUtils.perform(
+                put("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH, createdFixedRateBondPackageId)
+                        .content(asJson(testUtils.getPartialSellFixedRateBondPackageNotValidTaxResidency()))
+                        .contentType(APPLICATION_JSON)
+        ));
+        assertThat(fixedRateBondRepository.findAll()).hasSize(1);
+        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
+        assertEquals(30, fixedRateBondRepository.findAll().get(0).getAssetCount());
+    }
 
     @Test
     public void sellAllPackageIT() throws Exception {
