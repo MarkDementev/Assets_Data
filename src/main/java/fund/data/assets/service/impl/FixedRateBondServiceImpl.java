@@ -105,6 +105,8 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         FixedRateBondPartialSellDTO fixedRateBondPartialSellDTO) {
         AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
                 fixedRateBondRepository.findById(id).orElseThrow());
+        int[] oldNewAssetCount = new int[2];
+        oldNewAssetCount[0] = atomicFixedRateBondPackage.get().getAssetCount();
 
         isAssetsOwnersHaveThisAssetsAmounts(atomicFixedRateBondPackage.get(), fixedRateBondPartialSellDTO);
         updateFixedRateBondFieldsByDTO(atomicFixedRateBondPackage.get(), fixedRateBondPartialSellDTO);
@@ -119,15 +121,10 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         addMoneyToPreviousOwners(fixedRateBondPartialSellDTO, atomicFixedRateBondPackage.get(),
                 ownersMoneyDistribution);
         updateAssetOwnersWithAssetCounts(atomicFixedRateBondPackage.get(), fixedRateBondPartialSellDTO, true);
-        //TODO надо поменять многие значения в самом бонде!
-        /*
-            bondAccruedInterest - FixedRateBondPackage - РАСЧ
-            totalCommissionForPurchase - FixedRateBondPackage - РАСЧ
-            totalAssetPurchasePriceWithCommission - FixedRateBondPackage - РАСЧ
-            simpleYieldToMaturity - FixedRateBondPackage - РАСЧ
-            markDementevYieldIndicator - FixedRateBondPackage - РАСЧ
-         */
-//        recalculationSomeFixedRateBondFields();
+
+        oldNewAssetCount[1] = atomicFixedRateBondPackage.get().getAssetCount();
+
+        recalculateSomeFixedRateBondFieldsAtSell(atomicFixedRateBondPackage.get(), oldNewAssetCount);
         return fixedRateBondRepository.save(atomicFixedRateBondPackage.get());
     }
 
@@ -511,5 +508,24 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
             }
             assetOwnersWithAssetCounts.put(assetsOwnerID, newAssetCount);
         }
+    }
+
+    /**
+     * При частичной продаже пакета облигаций, часть значений полей необходимо пересчитать. При этом, показатели
+     * доходности меняться не будут, т.к. при продаже не меняются параметры, влияющие на них!
+     * @param fixedRateBondPackage пакет облигаций, для которого проводятся расчёты.
+     * @param oldNewAssetCount массив со старым [0] и новым [1] количествами облигаций в пакете.
+     * @since 0.0.1-alpha
+     */
+    private void recalculateSomeFixedRateBondFieldsAtSell(FixedRateBondPackage fixedRateBondPackage,
+                                                          int[] oldNewAssetCount) {
+        float assetCountDiffProportion = (float) oldNewAssetCount[1] / (float) oldNewAssetCount[0];
+
+        fixedRateBondPackage.setBondAccruedInterest(fixedRateBondPackage.getBondAccruedInterest()
+                * assetCountDiffProportion);
+        fixedRateBondPackage.setTotalCommissionForPurchase(fixedRateBondPackage.getTotalCommissionForPurchase()
+                * assetCountDiffProportion);
+        fixedRateBondPackage.setTotalAssetPurchasePriceWithCommission(fixedRateBondPackage
+                .getTotalAssetPurchasePriceWithCommission() * assetCountDiffProportion);
     }
 }

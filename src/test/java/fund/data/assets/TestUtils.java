@@ -278,7 +278,7 @@ public class TestUtils {
                 100.00F,
                 0.00F,
                 100.00F,
-                1,
+                0,
                 TEST_FIXED_RATE_BOND_MATURITY_DATE
         );
     }
@@ -296,7 +296,7 @@ public class TestUtils {
                 TEST_NORMAL_PACKAGE_SELL_VALUE,
                 assetOwnersWithAssetCountsToSell,
                 TEST_FIXED_RATE_BOND_LAST_ASSET_SELL_DATE,
-                0
+                1
         );
     }
 

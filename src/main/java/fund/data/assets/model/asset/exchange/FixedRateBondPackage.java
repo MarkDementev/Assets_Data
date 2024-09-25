@@ -48,7 +48,7 @@ public class FixedRateBondPackage extends ExchangeAsset {
             " redeemed bond";
 
     /**
-     * Номинальная стоимость облигации, определённая эмитентом. Обычно в РФ равна 1000 рублей.
+     * Номинальная стоимость одной облигации, определённая эмитентом. Обычно в РФ равна 1000 рублей.
      */
     @NotNull
     @Positive
@@ -63,14 +63,14 @@ public class FixedRateBondPackage extends ExchangeAsset {
     private Float purchaseBondParValuePercent;
 
     /**
-     * НКД облигации. НКД - накопленный купонный доход.
+     * Совокупный НКД пакета облигаций. НКД - это накопленный купонный доход.
      */
     @NotNull
     @PositiveOrZero
     private Float bondAccruedInterest;
 
     /**
-     * Совокупная комиссия при покупке облигации.
+     * Совокупная комиссия при покупке облигаций.
      */
     @PositiveOrZero
     private Float totalCommissionForPurchase;
@@ -84,17 +84,18 @@ public class FixedRateBondPackage extends ExchangeAsset {
     private Float totalAssetPurchasePriceWithCommission;
 
     /**
-     * Размер купонной выплаты в валюте.
+     * Размер купонной выплаты по одной облигации в валюте.
      */
     @NotNull
     @PositiveOrZero
     private Float bondCouponValue;
 
     /**
-     * Ожидаемое количество купонных выплат на момент покупки до даты погашения облигации.
+     * Ожидаемое количество купонных выплат на момент последней покупки/продажи до даты погашения облигации.
+     * Данный тип облигаций всегда имеет минимум одну ожидаемую купонную выплату, иначе это был бы иной тип облигаций.
      */
     @NotNull
-    @PositiveOrZero
+    @Positive
     private Integer expectedBondCouponPaymentsCount;
 
     /**
@@ -159,23 +160,12 @@ public class FixedRateBondPackage extends ExchangeAsset {
     }
 
     /**
-     * Умножает количество облигаций на их цену в валюте с учётом НКД, после чего суммирует с комиссией за покупку
-     * данных облигаций при данных параметрах.
-     * @return Сколько надо конкретно заплатить за облигации в реальности в валюте.
-     * @since 0.0.1-alpha
-     */
-    private Float calculateTotalAssetPurchasePriceWithCommission() {
-        return getAssetCount() * ((purchaseBondParValuePercent / 100.00F) * bondParValue + bondAccruedInterest)
-                + totalCommissionForPurchase;
-    }
-
-    /**
      * Возвращает простую доходность к погашению.
      * Источник формулы - https://bcs-express.ru/novosti-i-analitika/dokhodnost-obligatsii-na-vse-sluchai-zhizni
      * @return Простая доходность к погашению в % годовых, выраженная в десятичной форме. К примеру, 8% годовых = 8.00F.
      * @since 0.0.1-alpha
      */
-    private Float calculateSimpleYieldToMaturity() {
+    public Float calculateSimpleYieldToMaturity() {
         float marketClearPriceInCurrency = purchaseBondParValuePercent * bondParValue / 100.00F;
         float allExpectedCouponPaymentsSum = bondCouponValue * expectedBondCouponPaymentsCount;
         int daysInYear = getDaysInYear();
@@ -193,7 +183,7 @@ public class FixedRateBondPackage extends ExchangeAsset {
      * 8% годовых = 8.00F.
      * @since 0.0.1-alpha
      */
-    private Float calculateMarkDementevYieldIndicator() {
+    public Float calculateMarkDementevYieldIndicator() {
         //TODO - возможно, стоит потом рефакторить метод, чтобы учесть работу с налоговыми резидентами НЕ РФ!
         float expectedBondCouponPaymentsSum = bondCouponValue * expectedBondCouponPaymentsCount;
         float incomeTaxCorrection = FinancialAndAnotherConstants.RUSSIAN_TAX_SYSTEM_CORRECTION_VALUE;
@@ -208,6 +198,17 @@ public class FixedRateBondPackage extends ExchangeAsset {
         return (((expectedBondCouponPaymentsSum * incomeTaxCorrection + bondParValue + taxValueOfMaturityIncome)
                 / oneBondValueSummedWithHisCommission - 1) / (daysBeforeMaturity
                 / daysInYear)) * 100.00F;
+    }
+
+    /**
+     * Умножает количество облигаций на их цену в валюте с учётом НКД, после чего суммирует с комиссией за покупку
+     * данных облигаций при данных параметрах.
+     * @return Сколько надо конкретно заплатить за облигации в реальности в валюте.
+     * @since 0.0.1-alpha
+     */
+    private Float calculateTotalAssetPurchasePriceWithCommission() {
+        return getAssetCount() * ((purchaseBondParValuePercent / 100.00F) * bondParValue + bondAccruedInterest)
+                + totalCommissionForPurchase;
     }
 
     /**

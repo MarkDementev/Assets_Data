@@ -76,7 +76,7 @@ public abstract class Asset {
     private String assetTitle;
 
     /**
-     * Количество единиц актива на учёте инвестиционного фонда.
+     * Количество единиц актива в пакете на учёте инвестиционного фонда.
      */
     @NotNull
     @PositiveOrZero

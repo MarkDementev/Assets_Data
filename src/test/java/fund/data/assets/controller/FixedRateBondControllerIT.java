@@ -341,8 +341,13 @@ public class FixedRateBondControllerIT {
                 .get(String.valueOf(russianAssetsOwnerRepository.findAll().get(1).getId())));
         assertEquals(TEST_FIXED_RATE_BOND_LAST_ASSET_SELL_DATE,
                 fixedRateBondPackageFromResponse.getLastAssetBuyOrSellDate());
-        assertEquals(0, fixedRateBondPackageFromResponse.getExpectedBondCouponPaymentsCount());
-        //TODO проверь, какие поля могут поменяться, и протестируй их все!
+        assertEquals(1, fixedRateBondPackageFromResponse.getExpectedBondCouponPaymentsCount());
+        assertEquals(0.00F, fixedRateBondPackageFromResponse.getBondAccruedInterest());
+        assertEquals(150.00F, fixedRateBondPackageFromResponse.getTotalCommissionForPurchase());
+        assertEquals(15150.00F, fixedRateBondPackageFromResponse.getTotalAssetPurchasePriceWithCommission());
+        assertEquals(10.00F, fixedRateBondPackageFromResponse.getSimpleYieldToMaturity());
+        assertEquals(7.6238F, Float.parseFloat(TEST_DECIMAL_FORMAT.format(
+                fixedRateBondPackageFromResponse.getMarkDementevYieldIndicator())));
         assertNotEquals(fixedRateBondPackageFromResponse.getCreatedAt(),
                 fixedRateBondPackageFromResponse.getUpdatedAt());
         assertEquals(10180.8010F, accountCashRepository.findAll().get(0).getAmount());

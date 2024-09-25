@@ -79,7 +79,7 @@ public class FirstBuyFixedRateBondDTO {
     private Float bondCouponValue;
 
     @NotNull
-    @PositiveOrZero
+    @Positive
     private Integer expectedBondCouponPaymentsCount;
 
     @NotNull
