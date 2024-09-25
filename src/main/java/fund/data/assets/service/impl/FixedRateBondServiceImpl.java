@@ -120,7 +120,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         updateAssetOwnersWithAssetCounts(atomicFixedRateBondPackage.get(), fixedRateBondPartialSellDTO, true);
         //TODO надо поменять многие значения в самом бонде!
         /*
-            lastAssetBuyDate - ExchangeAsset - м.б. удалить и заменить везде на креэйтэд эт/апдейтед эт?
+            lastAssetBuyOrSellDate - ExchangeAsset - м.б. удалить и заменить везде на креэйтэд эт/апдейтед эт?
             bondAccruedInterest - FixedRateBondPackage
             totalCommissionForPurchase - FixedRateBondPackage
             totalAssetPurchasePriceWithCommission - FixedRateBondPackage
@@ -184,7 +184,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         Account accountFromDTO = accountRepository.findById(firstBuyFixedRateBondDTO.getAccountID()).orElseThrow();
         String iSIN = firstBuyFixedRateBondDTO.getISIN();
         String assetIssuerTitle = firstBuyFixedRateBondDTO.getAssetIssuerTitle();
-        LocalDate lastAssetBuyDate = firstBuyFixedRateBondDTO.getLastAssetBuyDate();
+        LocalDate lastAssetBuyOrSellDate = firstBuyFixedRateBondDTO.getLastAssetBuyOrSellDate();
         Integer bondParValue = firstBuyFixedRateBondDTO.getBondParValue();
         Float purchaseBondParValuePercent = firstBuyFixedRateBondDTO.getPurchaseBondParValuePercent();
         Float bondAccruedInterest = firstBuyFixedRateBondDTO.getBondAccruedInterest();
@@ -193,8 +193,9 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         LocalDate bondMaturityDate = firstBuyFixedRateBondDTO.getBondMaturityDate();
 
         return new FixedRateBondPackage(assetCurrency, assetTitle, assetCount, assetOwnersWithAssetCounts,
-                accountFromDTO, iSIN, assetIssuerTitle, lastAssetBuyDate, bondParValue, purchaseBondParValuePercent,
-                bondAccruedInterest, bondCouponValue, expectedBondCouponPaymentsCount, bondMaturityDate);
+                accountFromDTO, iSIN, assetIssuerTitle, lastAssetBuyOrSellDate, bondParValue,
+                purchaseBondParValuePercent, bondAccruedInterest, bondCouponValue, expectedBondCouponPaymentsCount,
+                bondMaturityDate);
     }
 
     /**

@@ -122,13 +122,13 @@ public class FixedRateBondPackage extends ExchangeAsset {
 
     public FixedRateBondPackage(AssetCurrency assetCurrency, String assetTitle, Integer assetCount,
                                 Map<String, Float> assetOwnersWithAssetCounts, Account account, String iSIN,
-                                String assetIssuerTitle, LocalDate lastAssetBuyDate, Integer bondParValue,
+                                String assetIssuerTitle, LocalDate lastAssetBuyOrSellDate, Integer bondParValue,
                                 Float purchaseBondParValuePercent, Float bondAccruedInterest, Float bondCouponValue,
                                 Integer expectedBondCouponPaymentsCount, LocalDate bondMaturityDate) {
         super(assetCurrency, FixedRateBondPackage.class.getTypeName(), assetTitle, assetCount,
                 (TaxSystem) AutoSelector.selectAssetOperationsCostSystem(assetCurrency,
                         FixedRateBondPackage.class.getTypeName(), AutoSelector.TAX_SYSTEM_CHOOSE),
-                assetOwnersWithAssetCounts, account, iSIN, assetIssuerTitle, lastAssetBuyDate);
+                assetOwnersWithAssetCounts, account, iSIN, assetIssuerTitle, lastAssetBuyOrSellDate);
         this.bondParValue = bondParValue;
         this.purchaseBondParValuePercent = purchaseBondParValuePercent;
         this.bondAccruedInterest = bondAccruedInterest;
@@ -217,9 +217,9 @@ public class FixedRateBondPackage extends ExchangeAsset {
      * @since 0.0.1-alpha
      */
     private int getDaysInYear() {
-        boolean firstLeapYearCheck = getLastAssetBuyDate().isLeapYear();
-        boolean secondLeapYearCheck = (bondMaturityDate.getYear() - getLastAssetBuyDate().getYear()) >= 4
-                && ChronoUnit.DAYS.between(getLastAssetBuyDate(), bondMaturityDate)
+        boolean firstLeapYearCheck = getLastAssetBuyOrSellDate().isLeapYear();
+        boolean secondLeapYearCheck = (bondMaturityDate.getYear() - getLastAssetBuyOrSellDate().getYear()) >= 4
+                && ChronoUnit.DAYS.between(getLastAssetBuyOrSellDate(), bondMaturityDate)
                 >= (FinancialAndAnotherConstants.LEAP_YEAR_DAYS_COUNT
                 + 3 * FinancialAndAnotherConstants.YEAR_DAYS_COUNT);
 
@@ -236,9 +236,9 @@ public class FixedRateBondPackage extends ExchangeAsset {
      * @since 0.0.1-alpha
      */
     private int calculateDaysBeforeMaturity() {
-        if (ChronoUnit.DAYS.between(getLastAssetBuyDate(), bondMaturityDate) < 0) {
+        if (ChronoUnit.DAYS.between(getLastAssetBuyOrSellDate(), bondMaturityDate) < 0) {
             throw new UnrealAddingAssetsParameterException(WRONG_DATE_BOND_ADDING_WARNING);
         }
-        return (int) ChronoUnit.DAYS.between(getLastAssetBuyDate(), bondMaturityDate);
+        return (int) ChronoUnit.DAYS.between(getLastAssetBuyOrSellDate(), bondMaturityDate);
     }
 }

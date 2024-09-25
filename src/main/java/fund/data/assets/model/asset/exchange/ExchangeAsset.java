@@ -54,11 +54,13 @@ public abstract class ExchangeAsset extends Asset {
     private String assetIssuerTitle;
 
     /**
-     * В определении состояния актива на учёте фонда важна дата его последнего приобретения.
+     * В определении состояния актива на учёте фонда важна дата его последнего приобретения или продажи.
      * Её достаточно знать в формате ГГГГ-ММ-ДД.
+     * Она должна существовать помимо полей createdAt и updatedAt, т.к. даты создания и обновления записи в БД
+     * могут отличаться от даты фактического совершения сделки на бирже.
      */
     @NotNull
-    private LocalDate lastAssetBuyDate;
+    private LocalDate lastAssetBuyOrSellDate;
 
     /**
      * Тип системы сбора комиссии за брокерское и иное обслуживание по активу. Не содержит в себе числовые значения,
@@ -69,13 +71,13 @@ public abstract class ExchangeAsset extends Asset {
 
     public ExchangeAsset(AssetCurrency assetCurrency, String assetTypeName, String assetTitle, Integer assetCount,
                          TaxSystem assetTaxSystem, Map<String, Float> assetOwnersWithAssetCounts, Account account,
-                         String iSIN, String assetIssuerTitle, LocalDate lastAssetBuyDate) {
+                         String iSIN, String assetIssuerTitle, LocalDate lastAssetBuyOrSellDate) {
         super(assetCurrency, assetTypeName, assetTitle, assetCount, assetTaxSystem, assetOwnersWithAssetCounts,
                 account);
 
         this.iSIN = iSIN;
         this.assetIssuerTitle = assetIssuerTitle;
-        this.lastAssetBuyDate = lastAssetBuyDate;
+        this.lastAssetBuyOrSellDate = lastAssetBuyOrSellDate;
         this.assetCommissionSystem = (CommissionSystem) AutoSelector.selectAssetOperationsCostSystem(assetCurrency,
                 assetTypeName, AutoSelector.COMMISSION_SYSTEM_CHOOSE);
     }

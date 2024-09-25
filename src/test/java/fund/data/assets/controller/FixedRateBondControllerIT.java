@@ -112,7 +112,7 @@ public class FixedRateBondControllerIT {
         assertEquals(expectedFixedRateBond.getISIN(), fixedRateBondPackageFromResponse.getISIN());
         assertEquals(expectedFixedRateBond.getAssetIssuerTitle(),
                 fixedRateBondPackageFromResponse.getAssetIssuerTitle());
-        assertNotNull(fixedRateBondPackageFromResponse.getLastAssetBuyDate());
+        assertNotNull(fixedRateBondPackageFromResponse.getLastAssetBuyOrSellDate());
         assertEquals(CommissionSystem.TURNOVER, fixedRateBondPackageFromResponse.getAssetCommissionSystem());
         assertEquals(expectedFixedRateBond.getBondParValue(), fixedRateBondPackageFromResponse.getBondParValue());
         assertEquals(expectedFixedRateBond.getPurchaseBondParValuePercent(),
@@ -172,7 +172,7 @@ public class FixedRateBondControllerIT {
         assertEquals(firstBuyFixedRateBondDTO.getISIN(), fixedRateBondPackageFromResponse.getISIN());
         assertEquals(firstBuyFixedRateBondDTO.getAssetIssuerTitle(),
                 fixedRateBondPackageFromResponse.getAssetIssuerTitle());
-        assertNotNull(fixedRateBondPackageFromResponse.getLastAssetBuyDate());
+        assertNotNull(fixedRateBondPackageFromResponse.getLastAssetBuyOrSellDate());
         assertEquals(CommissionSystem.TURNOVER, fixedRateBondPackageFromResponse.getAssetCommissionSystem());
         assertEquals(firstBuyFixedRateBondDTO.getBondParValue(), fixedRateBondPackageFromResponse.getBondParValue());
         assertEquals(firstBuyFixedRateBondDTO.getPurchaseBondParValuePercent(),

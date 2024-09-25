@@ -60,7 +60,7 @@ public class FirstBuyFixedRateBondDTO {
     private String assetIssuerTitle;
 
     @NotNull
-    private LocalDate lastAssetBuyDate;
+    private LocalDate lastAssetBuyOrSellDate;
 
     @NotNull
     @Positive
