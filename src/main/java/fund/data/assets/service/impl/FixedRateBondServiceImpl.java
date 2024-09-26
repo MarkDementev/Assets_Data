@@ -4,6 +4,7 @@ import fund.data.assets.dto.asset.exchange.AssetsOwnersCountryDTO;
 import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
 import fund.data.assets.dto.asset.exchange.FixedRateBondFullSellDTO;
 import fund.data.assets.dto.asset.exchange.FixedRateBondPartialSellDTO;
+import fund.data.assets.dto.asset.exchange.FixedRateBondBuyDTO;
 import fund.data.assets.model.asset.exchange.FixedRateBondPackage;
 import fund.data.assets.model.asset.relationship.FinancialAssetRelationship;
 import fund.data.assets.model.financial_entities.Account;
@@ -100,6 +101,23 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     }
 
     @Override
+    //TODO изоляция транзакций
+    public FixedRateBondPackage partialBuyFixedRateBondPackage(Long id, FixedRateBondBuyDTO fixedRateBondBuyDTO) {
+        //TODO 1 - валидируем кол-во бумаг к покупке с вэльюс в мапе их распределения по оунерам
+        //TODO 2 - находим бонд для изменения
+        AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
+                fixedRateBondRepository.findById(id).orElseThrow());
+        //TODO 3 - определяем совокупную стоимость покупаемого пакета с учётом комиссий и налогов
+        //TODO 4 - формируем мапу изменения денег
+        //TODO 5 - проверям, могут ли все оунеры позволить себе такие траты
+        //TODO 6 - уменьшаем деньги у оунеров
+        //TODO 7 - распределяем новые бонды по оунерам
+        //TODO 8 - меняем остальные поля у бонда и релатионшип, если надо
+        //TODO 9 - сохраняем и возвращаем новый пакет!
+        return fixedRateBondRepository.save(atomicFixedRateBondPackage.get());
+    }
+
+    @Override
     @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = {Exception.class})
     public FixedRateBondPackage partialSellFixedRateBondPackage(Long id,
         FixedRateBondPartialSellDTO fixedRateBondPartialSellDTO) {
@@ -180,10 +198,10 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         Account accountFromDTO = accountRepository.findById(firstBuyFixedRateBondDTO.getAccountID()).orElseThrow();
         String iSIN = firstBuyFixedRateBondDTO.getISIN();
         String assetIssuerTitle = firstBuyFixedRateBondDTO.getAssetIssuerTitle();
-        LocalDate lastAssetBuyOrSellDate = firstBuyFixedRateBondDTO.getLastAssetBuyOrSellDate();
+        LocalDate lastAssetBuyOrSellDate = firstBuyFixedRateBondDTO.getLastAssetBuyDate();
         Integer bondParValue = firstBuyFixedRateBondDTO.getBondParValue();
         Float purchaseBondParValuePercent = firstBuyFixedRateBondDTO.getPurchaseBondParValuePercent();
-        Float bondAccruedInterest = firstBuyFixedRateBondDTO.getBondAccruedInterest();
+        Float bondAccruedInterest = firstBuyFixedRateBondDTO.getBondsAccruedInterest();
         Float bondCouponValue = firstBuyFixedRateBondDTO.getBondCouponValue();
         Integer expectedBondCouponPaymentsCount = firstBuyFixedRateBondDTO.getExpectedBondCouponPaymentsCount();
         LocalDate bondMaturityDate = firstBuyFixedRateBondDTO.getBondMaturityDate();
@@ -521,7 +539,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
                                                           int[] oldNewAssetCount) {
         float assetCountDiffProportion = (float) oldNewAssetCount[1] / (float) oldNewAssetCount[0];
 
-        fixedRateBondPackage.setBondAccruedInterest(fixedRateBondPackage.getBondAccruedInterest()
+        fixedRateBondPackage.setBondsAccruedInterest(fixedRateBondPackage.getBondsAccruedInterest()
                 * assetCountDiffProportion);
         fixedRateBondPackage.setTotalCommissionForPurchase(fixedRateBondPackage.getTotalCommissionForPurchase()
                 * assetCountDiffProportion);

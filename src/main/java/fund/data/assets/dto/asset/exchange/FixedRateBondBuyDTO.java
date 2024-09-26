@@ -26,8 +26,9 @@ public class FixedRateBondBuyDTO {
     @NotNull
     private Map<String, Float> assetOwnersWithAssetCounts;
 
+    //TODO поправь название
     @NotNull
-    private LocalDate lastAssetBuyOrSellDate;
+    private LocalDate lastAssetBuyDate;
 
     @NotNull
     @Positive
@@ -35,20 +36,20 @@ public class FixedRateBondBuyDTO {
 
     @NotNull
     @PositiveOrZero
-    private Float bondAccruedInterest;
+    private Float bondsAccruedInterest;
 
     @NotNull
     @Positive
     private Integer expectedBondCouponPaymentsCount;
 
     public FixedRateBondBuyDTO(Integer assetCount, Map<String, Float> assetOwnersWithAssetCounts,
-                               LocalDate lastAssetBuyOrSellDate, Float purchaseBondParValuePercent,
-                               Float bondAccruedInterest, Integer expectedBondCouponPaymentsCount) {
+                               LocalDate lastAssetBuyDate, Float purchaseBondParValuePercent,
+                               Float bondsAccruedInterest, Integer expectedBondCouponPaymentsCount) {
         this.assetCount = assetCount;
         this.assetOwnersWithAssetCounts = assetOwnersWithAssetCounts;
-        this.lastAssetBuyOrSellDate = lastAssetBuyOrSellDate;
+        this.lastAssetBuyDate = lastAssetBuyDate;
         this.purchaseBondParValuePercent = purchaseBondParValuePercent;
-        this.bondAccruedInterest = bondAccruedInterest;
+        this.bondsAccruedInterest = bondsAccruedInterest;
         this.expectedBondCouponPaymentsCount = expectedBondCouponPaymentsCount;
     }
 }

@@ -64,14 +64,14 @@ public class FirstBuyFixedRateBondDTO extends FixedRateBondBuyDTO {
     private LocalDate bondMaturityDate;
 
     public FirstBuyFixedRateBondDTO(Integer assetCount, Map<String, Float> assetOwnersWithAssetCounts,
-                                    LocalDate lastAssetBuyOrSellDate, Float purchaseBondParValuePercent,
-                                    Float bondAccruedInterest, Integer expectedBondCouponPaymentsCount,
+                                    LocalDate lastAssetBuyDate, Float purchaseBondParValuePercent,
+                                    Float bondsAccruedInterest, Integer expectedBondCouponPaymentsCount,
                                     AssetCurrency assetCurrency, String assetTitle,
                                     AssetsOwnersCountry assetsOwnersCountry, Long accountID, String iSIN,
                                     String assetIssuerTitle, Integer bondParValue, Float bondCouponValue,
                                     LocalDate bondMaturityDate) {
-        super(assetCount, assetOwnersWithAssetCounts, lastAssetBuyOrSellDate, purchaseBondParValuePercent,
-                bondAccruedInterest, expectedBondCouponPaymentsCount);
+        super(assetCount, assetOwnersWithAssetCounts, lastAssetBuyDate, purchaseBondParValuePercent,
+                bondsAccruedInterest, expectedBondCouponPaymentsCount);
 
         this.assetCurrency = assetCurrency;
         this.assetTitle = assetTitle;

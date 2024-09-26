@@ -118,8 +118,8 @@ public class FixedRateBondControllerIT {
         assertEquals(expectedFixedRateBond.getBondParValue(), fixedRateBondPackageFromResponse.getBondParValue());
         assertEquals(expectedFixedRateBond.getPurchaseBondParValuePercent(),
                 fixedRateBondPackageFromResponse.getPurchaseBondParValuePercent());
-        assertEquals(expectedFixedRateBond.getBondAccruedInterest(),
-                fixedRateBondPackageFromResponse.getBondAccruedInterest());
+        assertEquals(expectedFixedRateBond.getBondsAccruedInterest(),
+                fixedRateBondPackageFromResponse.getBondsAccruedInterest());
         assertEquals(300.00F, fixedRateBondPackageFromResponse.getTotalCommissionForPurchase());
         assertEquals(30300.00F, fixedRateBondPackageFromResponse.getTotalAssetPurchasePriceWithCommission());
         assertEquals(expectedFixedRateBond.getBondCouponValue(),
@@ -178,8 +178,8 @@ public class FixedRateBondControllerIT {
         assertEquals(firstBuyFixedRateBondDTO.getBondParValue(), fixedRateBondPackageFromResponse.getBondParValue());
         assertEquals(firstBuyFixedRateBondDTO.getPurchaseBondParValuePercent(),
                 fixedRateBondPackageFromResponse.getPurchaseBondParValuePercent());
-        assertEquals(firstBuyFixedRateBondDTO.getBondAccruedInterest(),
-                fixedRateBondPackageFromResponse.getBondAccruedInterest());
+        assertEquals(firstBuyFixedRateBondDTO.getBondsAccruedInterest(),
+                fixedRateBondPackageFromResponse.getBondsAccruedInterest());
         assertEquals(300.00F, fixedRateBondPackageFromResponse.getTotalCommissionForPurchase());
         assertEquals(30300.00F, fixedRateBondPackageFromResponse.getTotalAssetPurchasePriceWithCommission());
         assertEquals(firstBuyFixedRateBondDTO.getBondCouponValue(),
@@ -342,7 +342,7 @@ public class FixedRateBondControllerIT {
         assertEquals(TEST_FIXED_RATE_BOND_LAST_ASSET_SELL_DATE,
                 fixedRateBondPackageFromResponse.getLastAssetBuyOrSellDate());
         assertEquals(1, fixedRateBondPackageFromResponse.getExpectedBondCouponPaymentsCount());
-        assertEquals(0.00F, fixedRateBondPackageFromResponse.getBondAccruedInterest());
+        assertEquals(0.00F, fixedRateBondPackageFromResponse.getBondsAccruedInterest());
         assertEquals(150.00F, fixedRateBondPackageFromResponse.getTotalCommissionForPurchase());
         assertEquals(15150.00F, fixedRateBondPackageFromResponse.getTotalAssetPurchasePriceWithCommission());
         assertEquals(10.00F, fixedRateBondPackageFromResponse.getSimpleYieldToMaturity());
@@ -385,7 +385,7 @@ public class FixedRateBondControllerIT {
         assertEquals(TEST_FIXED_RATE_BOND_LAST_ASSET_SELL_DATE,
                 fixedRateBondPackageFromResponse.getLastAssetBuyOrSellDate());
         assertEquals(1, fixedRateBondPackageFromResponse.getExpectedBondCouponPaymentsCount());
-        assertEquals(0.00F, fixedRateBondPackageFromResponse.getBondAccruedInterest());
+        assertEquals(0.00F, fixedRateBondPackageFromResponse.getBondsAccruedInterest());
         assertEquals(120.00F, fixedRateBondPackageFromResponse.getTotalCommissionForPurchase());
         assertEquals(12120.00F, fixedRateBondPackageFromResponse.getTotalAssetPurchasePriceWithCommission());
         assertEquals(10.00F, fixedRateBondPackageFromResponse.getSimpleYieldToMaturity());

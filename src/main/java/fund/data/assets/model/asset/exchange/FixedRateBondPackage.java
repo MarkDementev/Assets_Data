@@ -67,7 +67,7 @@ public class FixedRateBondPackage extends ExchangeAsset {
      */
     @NotNull
     @PositiveOrZero
-    private Float bondAccruedInterest;
+    private Float bondsAccruedInterest;
 
     /**
      * Совокупная комиссия при покупке облигаций.
@@ -124,7 +124,7 @@ public class FixedRateBondPackage extends ExchangeAsset {
     public FixedRateBondPackage(AssetCurrency assetCurrency, String assetTitle, Integer assetCount,
                                 Map<String, Float> assetOwnersWithAssetCounts, Account account, String iSIN,
                                 String assetIssuerTitle, LocalDate lastAssetBuyOrSellDate, Integer bondParValue,
-                                Float purchaseBondParValuePercent, Float bondAccruedInterest, Float bondCouponValue,
+                                Float purchaseBondParValuePercent, Float bondsAccruedInterest, Float bondCouponValue,
                                 Integer expectedBondCouponPaymentsCount, LocalDate bondMaturityDate) {
         super(assetCurrency, FixedRateBondPackage.class.getTypeName(), assetTitle, assetCount,
                 (TaxSystem) AutoSelector.selectAssetOperationsCostSystem(assetCurrency,
@@ -132,7 +132,7 @@ public class FixedRateBondPackage extends ExchangeAsset {
                 assetOwnersWithAssetCounts, account, iSIN, assetIssuerTitle, lastAssetBuyOrSellDate);
         this.bondParValue = bondParValue;
         this.purchaseBondParValuePercent = purchaseBondParValuePercent;
-        this.bondAccruedInterest = bondAccruedInterest;
+        this.bondsAccruedInterest = bondsAccruedInterest;
 
         if (getAssetCommissionSystem() != null) {
             CommissionCalculator commissionCalculator = new CommissionCalculator(SpringConfiguration.contextProvider()
@@ -142,7 +142,7 @@ public class FixedRateBondPackage extends ExchangeAsset {
                     account,
                     FixedRateBondPackage.class.getTypeName(),
                     getAssetCount(),
-                    (purchaseBondParValuePercent / 100.00F) * bondParValue + bondAccruedInterest);
+                    (purchaseBondParValuePercent / 100.00F) * bondParValue + bondsAccruedInterest);
         } else {
             this.totalCommissionForPurchase = 0.00F;
         }
@@ -171,7 +171,7 @@ public class FixedRateBondPackage extends ExchangeAsset {
         int daysInYear = getDaysInYear();
         int daysBeforeMaturity = calculateDaysBeforeMaturity();
 
-        return  (((bondParValue - marketClearPriceInCurrency + (allExpectedCouponPaymentsSum - bondAccruedInterest))
+        return  (((bondParValue - marketClearPriceInCurrency + (allExpectedCouponPaymentsSum - bondsAccruedInterest))
                 / marketClearPriceInCurrency) * (daysInYear / daysBeforeMaturity))
                 * 100.00F;
     }
@@ -207,7 +207,7 @@ public class FixedRateBondPackage extends ExchangeAsset {
      * @since 0.0.1-alpha
      */
     private Float calculateTotalAssetPurchasePriceWithCommission() {
-        return getAssetCount() * ((purchaseBondParValuePercent / 100.00F) * bondParValue + bondAccruedInterest)
+        return getAssetCount() * ((purchaseBondParValuePercent / 100.00F) * bondParValue + bondsAccruedInterest)
                 + totalCommissionForPurchase;
     }
 
