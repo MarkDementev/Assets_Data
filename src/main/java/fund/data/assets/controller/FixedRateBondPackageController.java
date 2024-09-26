@@ -4,6 +4,7 @@ import fund.data.assets.dto.asset.exchange.AssetsOwnersCountryDTO;
 import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
 import fund.data.assets.dto.asset.exchange.FixedRateBondFullSellDTO;
 import fund.data.assets.dto.asset.exchange.FixedRateBondPartialSellDTO;
+import fund.data.assets.dto.asset.exchange.FixedRateBondBuyDTO;
 import fund.data.assets.model.asset.exchange.FixedRateBondPackage;
 import fund.data.assets.service.FixedRateBondService;
 
@@ -43,6 +44,7 @@ import static fund.data.assets.controller.FixedRateBondPackageController.FIXED_R
 public class FixedRateBondPackageController {
     public static final String FIXED_RATE_BOND_CONTROLLER_PATH = "/bonds/simple";
     public static final String ID_PATH = "/{id}";
+    public static final String BUY_PATH = "/buy";
     public static final String REDEEM_PATH = "/redeem";
     private final FixedRateBondService fixedRateBondService;
 
@@ -73,6 +75,15 @@ public class FixedRateBondPackageController {
                 fixedRateBondService.firstBuyFixedRateBond(firstBuyFixedRateBondDTO));
     }
 
+    @Operation(summary = "Update fixed rate bond package - buy package part")
+    @ApiResponse(responseCode = "200", description = "Fixed rate bond package part bought")
+    @PutMapping(ID_PATH + BUY_PATH)
+    public ResponseEntity<FixedRateBondPackage> buyFixedRateBondPackagePartial(@PathVariable Long id,
+        @RequestBody @Valid FixedRateBondBuyDTO fixedRateBondBuyDTO) {
+        return ResponseEntity.ok().body(fixedRateBondService.partialBuyFixedRateBondPackage(id,
+                fixedRateBondBuyDTO));
+    }
+
     @Operation(summary = "Update fixed rate bond package - sell package part")
     @ApiResponse(responseCode = "200", description = "Fixed rate bond package part sold")
     @PutMapping(ID_PATH)
@@ -97,8 +108,4 @@ public class FixedRateBondPackageController {
                             @RequestBody @Valid AssetsOwnersCountryDTO assetsOwnersCountryDTO) {
         fixedRateBondService.redeemBonds(id, assetsOwnersCountryDTO);
     }
-
-    /*
-    TODO - Реализуй остальные контроллеры - 1) докупку бумаг в пакет
-     */
 }

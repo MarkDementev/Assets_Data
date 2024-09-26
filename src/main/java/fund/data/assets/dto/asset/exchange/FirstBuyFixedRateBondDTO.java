@@ -13,9 +13,9 @@ import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
@@ -26,10 +26,10 @@ import java.util.Map;
  * @version 0.0.1-alpha
  * @author MarkDementev a.k.a JavaMarkDem
  */
-@Data
 @NoArgsConstructor
-@AllArgsConstructor
-public class FirstBuyFixedRateBondDTO {
+@Getter
+@Setter
+public class FirstBuyFixedRateBondDTO extends FixedRateBondBuyDTO {
     @NotNull
     @Enumerated(EnumType.STRING)
     private AssetCurrency assetCurrency;
@@ -38,15 +38,8 @@ public class FirstBuyFixedRateBondDTO {
     private String assetTitle;
 
     @NotNull
-    @Positive
-    private Integer assetCount;
-
-    @NotNull
     @Enumerated(EnumType.STRING)
     private AssetsOwnersCountry assetsOwnersCountry;
-
-    @NotNull
-    private Map<String, Float> assetOwnersWithAssetCounts;
 
     @NotNull
     private Long accountID;
@@ -60,28 +53,34 @@ public class FirstBuyFixedRateBondDTO {
     private String assetIssuerTitle;
 
     @NotNull
-    private LocalDate lastAssetBuyOrSellDate;
-
-    @NotNull
     @Positive
     private Integer bondParValue;
-
-    @NotNull
-    @Positive
-    private Float purchaseBondParValuePercent;
-
-    @NotNull
-    @PositiveOrZero
-    private Float bondAccruedInterest;
 
     @NotNull
     @PositiveOrZero
     private Float bondCouponValue;
 
     @NotNull
-    @Positive
-    private Integer expectedBondCouponPaymentsCount;
-
-    @NotNull
     private LocalDate bondMaturityDate;
+
+    public FirstBuyFixedRateBondDTO(Integer assetCount, Map<String, Float> assetOwnersWithAssetCounts,
+                                    LocalDate lastAssetBuyOrSellDate, Float purchaseBondParValuePercent,
+                                    Float bondAccruedInterest, Integer expectedBondCouponPaymentsCount,
+                                    AssetCurrency assetCurrency, String assetTitle,
+                                    AssetsOwnersCountry assetsOwnersCountry, Long accountID, String iSIN,
+                                    String assetIssuerTitle, Integer bondParValue, Float bondCouponValue,
+                                    LocalDate bondMaturityDate) {
+        super(assetCount, assetOwnersWithAssetCounts, lastAssetBuyOrSellDate, purchaseBondParValuePercent,
+                bondAccruedInterest, expectedBondCouponPaymentsCount);
+
+        this.assetCurrency = assetCurrency;
+        this.assetTitle = assetTitle;
+        this.assetsOwnersCountry = assetsOwnersCountry;
+        this.accountID = accountID;
+        this.iSIN = iSIN;
+        this.assetIssuerTitle = assetIssuerTitle;
+        this.bondParValue = bondParValue;
+        this.bondCouponValue = bondCouponValue;
+        this.bondMaturityDate = bondMaturityDate;
+    }
 }

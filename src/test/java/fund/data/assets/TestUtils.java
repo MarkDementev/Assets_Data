@@ -242,20 +242,20 @@ public class TestUtils {
                 = prepareEntitiesBeforeFirstBuyFixedRateBondThenGetAssetOwnersWithAssetCounts();
 
         return new FirstBuyFixedRateBondDTO(
+                30,
+                assetOwnersWithAssetCounts,
+                TEST_FIXED_RATE_BOND_LAST_ASSET_BUY_DATE,
+                100.00F,
+                0.00F,
+                1,
                 RUSRUB,
                 "assetTitle",
-                30,
                 AssetsOwnersCountry.RUS,
-                assetOwnersWithAssetCounts,
                 accountRepository.findAll().get(0).getId(),
                 "RU000A103NZ8",
                 "assetIssuerTitle",
-                TEST_FIXED_RATE_BOND_LAST_ASSET_BUY_DATE,
                 1000,
                 100.00F,
-                0.00F,
-                100.00F,
-                1,
                 TEST_FIXED_RATE_BOND_MATURITY_DATE
         );
     }
@@ -265,20 +265,20 @@ public class TestUtils {
                 = prepareEntitiesBeforeFirstBuyFixedRateBondThenGetAssetOwnersWithAssetCounts();
 
         return new FirstBuyFixedRateBondDTO(
+                -30,
+                assetOwnersWithAssetCounts,
+                TEST_FIXED_RATE_BOND_LAST_ASSET_BUY_DATE,
+                100.00F,
+                0.00F,
+                0,
                 NOT_IMPLEMENTED,
                 "",
-                -30,
                 null,
-                assetOwnersWithAssetCounts,
                 accountRepository.findAll().get(0).getId(),
                 "",
                 "",
-                TEST_FIXED_RATE_BOND_LAST_ASSET_BUY_DATE,
                 1000,
                 100.00F,
-                0.00F,
-                100.00F,
-                0,
                 TEST_FIXED_RATE_BOND_MATURITY_DATE
         );
     }
@@ -430,20 +430,20 @@ public class TestUtils {
                 = prepareEntitiesBeforeFirstBuyFixedRateBondThenGetAssetOwnersWithAssetCounts();
 
         FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO = new FirstBuyFixedRateBondDTO(
+                30,
+                assetOwnersWithAssetCounts,
+                TEST_FIXED_RATE_BOND_LAST_ASSET_BUY_DATE,
+                90.00F,
+                0.00F,
+                1,
                 RUSRUB,
                 "assetTitle",
-                30,
                 AssetsOwnersCountry.RUS,
-                assetOwnersWithAssetCounts,
                 accountRepository.findAll().get(0).getId(),
                 "RU000A103NZ8",
                 "assetIssuerTitle",
-                TEST_FIXED_RATE_BOND_LAST_ASSET_BUY_DATE,
                 1000,
-                90.00F,
-                0.00F,
                 100.00F,
-                1,
                 TEST_FIXED_RATE_BOND_MATURITY_DATE
         );
         return createFixedRateBond(firstBuyFixedRateBondDTO);
@@ -454,20 +454,20 @@ public class TestUtils {
                 = prepareEntitiesBeforeFirstBuyFixedRateBondThenGetAssetOwnersWithAssetCounts();
 
         FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO = new FirstBuyFixedRateBondDTO(
+                30,
+                assetOwnersWithAssetCounts,
+                TEST_FIXED_RATE_BOND_LAST_ASSET_BUY_DATE,
+                100.00F,
+                0.00F,
+                1,
                 RUSRUB,
                 "assetTitle",
-                30,
                 AssetsOwnersCountry.RUS,
-                assetOwnersWithAssetCounts,
                 accountRepository.findAll().get(0).getId(),
                 "RU000A103NZ8",
                 "assetIssuerTitle",
-                TEST_FIXED_RATE_BOND_LAST_ASSET_BUY_DATE,
                 1000,
                 100.00F,
-                0.00F,
-                100.00F,
-                1,
                 TEST_FIXED_RATE_BOND_MATURITY_DATE
         );
         return createFixedRateBond(firstBuyFixedRateBondDTO);
@@ -478,20 +478,20 @@ public class TestUtils {
                 = prepareEntitiesBeforeFirstBuyFixedRateBondThenGetAssetOwnersWithAssetCounts();
 
         FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO = new FirstBuyFixedRateBondDTO(
+                30,
+                assetOwnersWithAssetCounts,
+                TEST_FIXED_RATE_BOND_LAST_ASSET_BUY_DATE_NOT_MATURED,
+                100.00F,
+                0.00F,
+                1,
                 RUSRUB,
                 "assetTitle",
-                30,
                 AssetsOwnersCountry.RUS,
-                assetOwnersWithAssetCounts,
                 accountRepository.findAll().get(0).getId(),
                 "RU000A103NZ8",
                 "assetIssuerTitle",
-                TEST_FIXED_RATE_BOND_LAST_ASSET_BUY_DATE_NOT_MATURED,
                 1000,
                 100.00F,
-                0.00F,
-                100.00F,
-                1,
                 TEST_FIXED_RATE_BOND_MATURITY_DATE_NOT_MATURED
         );
         return createFixedRateBond(firstBuyFixedRateBondDTO);
