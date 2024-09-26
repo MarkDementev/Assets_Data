@@ -26,7 +26,6 @@ public class FixedRateBondBuyDTO {
     @NotNull
     private Map<String, Float> assetOwnersWithAssetCounts;
 
-    //TODO поправь название
     @NotNull
     private LocalDate lastAssetBuyDate;
 

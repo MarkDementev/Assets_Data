@@ -66,7 +66,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     private final TurnoverCommissionValueRepository turnoverCommissionValueRepository;
     private final FinancialAssetRelationshipRepository financialAssetRelationshipRepository;
     //TODO После имплементации и окончания тестирования partialSellFixedRateBondPackage проведи инвентаризацию методов!
-    //TODO После имплементации и окончания тестирования partialSellFixedRateBondPackage переименуй DTO!
+    //TODO После имплементации и окончания тестирования всех методов переименуй все DTO, если нужно!
 
     @Override
     public FixedRateBondPackage getFixedRateBond(Long id) {
@@ -81,39 +81,57 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = {Exception.class})
     public FixedRateBondPackage firstBuyFixedRateBond(FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO) {
+        //1 - валидируем кол-во бумаг к покупке с вэльюс в мапе их распределения по оунерам
         isOwnershipMapValuesSumEqualsAssetCount(firstBuyFixedRateBondDTO.getAssetOwnersWithAssetCounts(),
                 firstBuyFixedRateBondDTO.getAssetCount());
 
+        //2 - создаём бонд
         FixedRateBondPackage fixedRateBondPackageToCreate = getNewFixedRateBondByDTO(firstBuyFixedRateBondDTO);
         AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
                 fixedRateBondPackageToCreate);
-        Map<AccountCash, Float> accountCashAmountChanges = formAccountCashAmountChangesMap(firstBuyFixedRateBondDTO,
-                atomicFixedRateBondPackage.get());
+        //3 - определяем совокупную стоимость покупаемого пакета с учётом комиссий и налогов
+        float packageBuyValueCorrectedByCommission = fixedRateBondPackageToCreate
+                .getTotalAssetPurchasePriceWithCommission();
+        //TODO 4 - формируем мапу изменения денег
+        Map<String, Float> ownersMoneyNegativeDistribution = formOwnersMoneyDistributionMap(
+                atomicFixedRateBondPackage.get(), packageBuyValueCorrectedByCommission, firstBuyFixedRateBondDTO);
 
-        changeAccountCashAmountsOfOwners(accountCashAmountChanges);
-        /*
-         * Сущность сохраняется, а потом снова сохраняется. Это нужно, чтобы инициализировать поле assetId
-         * в сущности AssetRelationship, которое заполняется значением из поля id из сохранённой в БД ранее сущности.
-         */
+        //TODO 5 - проверям, могут ли все оунеры позволить себе такие траты - НОВОЕ
+        //TODO 6 - уменьшаем деньги у оунеров
+        addMoneyToPreviousOwners(firstBuyFixedRateBondDTO, atomicFixedRateBondPackage.get(),
+                ownersMoneyNegativeDistribution);
+        //7 - сохраняем новый бонд
         fixedRateBondRepository.save(atomicFixedRateBondPackage.get());
+        //8 - добавляем айди
         atomicFixedRateBondPackage.get().getAssetRelationship().setAssetId(fixedRateBondPackageToCreate.getId());
+        //9 - уже полноценно всё сохраняем
         return fixedRateBondRepository.save(atomicFixedRateBondPackage.get());
     }
 
     @Override
-    //TODO изоляция транзакций
+    @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = {Exception.class})
     public FixedRateBondPackage partialBuyFixedRateBondPackage(Long id, FixedRateBondBuyDTO fixedRateBondBuyDTO) {
-        //TODO 1 - валидируем кол-во бумаг к покупке с вэльюс в мапе их распределения по оунерам
-        //TODO 2 - находим бонд для изменения
+        //1 - валидируем кол-во бумаг к покупке с вэльюс в мапе их распределения по оунерам
+        isOwnershipMapValuesSumEqualsAssetCount(fixedRateBondBuyDTO.getAssetOwnersWithAssetCounts(),
+                fixedRateBondBuyDTO.getAssetCount());
+
+        //2 - находим бонд для изменения
         AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
                 fixedRateBondRepository.findById(id).orElseThrow());
-        //TODO 3 - определяем совокупную стоимость покупаемого пакета с учётом комиссий и налогов
+        //3 - определяем совокупную стоимость покупаемого пакета с учётом комиссий
+        float packageBuyValue = calculatePartialPackageBuyValue(id, fixedRateBondBuyDTO);
+        packageBuyValue = correctOperationValueByCommission(packageBuyValue, atomicFixedRateBondPackage.get());
         //TODO 4 - формируем мапу изменения денег
-        //TODO 5 - проверям, могут ли все оунеры позволить себе такие траты
+        Map<String, Float> ownersMoneyNegativeDistribution = formOwnersMoneyDistributionMap(
+                atomicFixedRateBondPackage.get(), packageBuyValue, fixedRateBondBuyDTO);
+
+        //TODO 5 - проверям, могут ли все оунеры позволить себе такие траты - НОВОЕ
         //TODO 6 - уменьшаем деньги у оунеров
-        //TODO 7 - распределяем новые бонды по оунерам
-        //TODO 8 - меняем остальные поля у бонда и релатионшип, если надо
-        //TODO 9 - сохраняем и возвращаем новый пакет!
+        addMoneyToPreviousOwners(fixedRateBondBuyDTO, atomicFixedRateBondPackage.get(),
+                ownersMoneyNegativeDistribution);
+        //TODO 7 - распределяем новые бонды по оунерам - НОВОЕ
+        //TODO 8 - меняем остальные поля у бонда и релатионшип, если надо - НОВОЕ (УЧТИ, ЧТО МОГУТ БЫТЬ НОВЫЕ ОУНЕРЫ!)
+        //9 - сохраняем и возвращаем новый пакет!
         return fixedRateBondRepository.save(atomicFixedRateBondPackage.get());
     }
 
@@ -130,7 +148,8 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         updateFixedRateBondFieldsByDTO(atomicFixedRateBondPackage.get(), fixedRateBondPartialSellDTO);
 
         float packagePartSellValue = fixedRateBondPartialSellDTO.getPackageSellValue();
-        packagePartSellValue = correctSellValueByCommission(packagePartSellValue, atomicFixedRateBondPackage.get());
+        packagePartSellValue = correctOperationValueByCommission(packagePartSellValue,
+                atomicFixedRateBondPackage.get());
         packagePartSellValue = correctValueByTaxes(fixedRateBondPartialSellDTO, atomicFixedRateBondPackage.get(),
                 packagePartSellValue);
         Map<String, Float> ownersMoneyDistribution = formOwnersMoneyDistributionMap(atomicFixedRateBondPackage.get(),
@@ -152,7 +171,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
                 fixedRateBondRepository.findById(id).orElseThrow());
         float packageSellValue = fixedRateBondFullSellDTO.getPackageSellValue();
-        packageSellValue = correctSellValueByCommission(packageSellValue, atomicFixedRateBondPackage.get());
+        packageSellValue = correctOperationValueByCommission(packageSellValue, atomicFixedRateBondPackage.get());
         packageSellValue = correctValueByTaxes(fixedRateBondFullSellDTO, atomicFixedRateBondPackage.get(),
                 packageSellValue);
         Map<String, Float> ownersMoneyDistribution = formOwnersMoneyDistributionMap(atomicFixedRateBondPackage.get(),
@@ -294,6 +313,19 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         }
     }
 
+    /**
+     * При докупке облигаций в уже существующий в системе пакет, данный метод рассчитывает стоимость докупаемых
+     * облигаций в валюте.
+     * @param id айди пакета облигаций, в который идёт докупка.
+     * @param dTO DTO с информацией о покупке облигаций с фиксированным купоном.
+     * @return стоимость докупаемых облигаций в валюте.
+     * @since 0.0.1-alpha
+     */
+    private float calculatePartialPackageBuyValue(Long id, FixedRateBondBuyDTO dTO) {
+        return dTO.getAssetCount() * dTO.getPurchaseBondParValuePercent()
+                * fixedRateBondRepository.findById(id).orElseThrow().getBondParValue() + dTO.getBondsAccruedInterest();
+    }
+
 //    /**
 //     * Значения на счетах с денежными средствами изменяются на определённые значения либо в сторону увеличения, либо
 //     * в сторону уменьшения. Сторона определяется вторым аргументом метода. Если True - то вэльюс из мапы - первого
@@ -352,14 +384,14 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     }
 
     /**
-     * При полной или частичной продаже пакета определяем, платится ли комиссия. Если да - уменьшаем продажную сумму
-     * и возвращаем её, если нет - возвращаем без изменений.
-     * @param sellValue продажная цена облигаций в валюте эмиссии.
+     * При полной или частичной продаже пакета, при докупке в пакет, определяем, платится ли комиссия.
+     * Если да - уменьшаем сумму операции на размер комиссии и возвращаем её, если нет - возвращаем без изменений.
+     * @param operationValue цена продаваемого или покупаемого пакета облигаций в валюте эмиссии.
      * @param fixedRateBondPackage пакет облигаций, для работы с которым проводятся расчёты.
      * @return скорректированная или оставленная без изменений сумма.
      * @since 0.0.1-alpha
      */
-    private Float correctSellValueByCommission(float sellValue, FixedRateBondPackage fixedRateBondPackage) {
+    private Float correctOperationValueByCommission(float operationValue, FixedRateBondPackage fixedRateBondPackage) {
         if (fixedRateBondPackage.getAssetCommissionSystem().equals(CommissionSystem.TURNOVER)) {
             Account account = financialAssetRelationshipRepository.findById(
                     fixedRateBondPackage.getAssetRelationship().getId())
@@ -367,9 +399,9 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
             String assetTypeName = fixedRateBondPackage.getAssetTypeName();
             float commissionPercentValue = turnoverCommissionValueRepository.findByAccountAndAssetTypeName(account,
                     assetTypeName).getCommissionPercentValue();
-            sellValue = sellValue - sellValue * commissionPercentValue;
+            operationValue = operationValue - operationValue * commissionPercentValue;
         }
-        return sellValue;
+        return operationValue;
     }
 
     /**
@@ -480,6 +512,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
      * доли в валюте от суммы продажи пакета.
      * @since 0.0.1-alpha
      */
+    //TODO правь для отбора денег у оунеров, для полиморфизма
     private void addMoneyToPreviousOwners(AssetsOwnersCountryDTO dTO, FixedRateBondPackage fixedRateBondPackage,
                                           Map<String, Float> assetOwnersWithAccountCashAmountDiffs) {
         for (Map.Entry<String, Float> mapElement : assetOwnersWithAccountCashAmountDiffs.entrySet()) {
@@ -507,6 +540,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
      * @param isSell если true, то идёт частичная продажа облигаций, если false, то идёт частичная покупка.
      * @since 0.0.1-alpha
      */
+    //TODO правь для полиморфизма, особенно докуху
     private void updateAssetOwnersWithAssetCounts(FixedRateBondPackage fixedRateBondPackage,
                                                   FixedRateBondPartialSellDTO dTO, boolean isSell) {
         Map<String, Float> assetOwnersWithAssetCounts = fixedRateBondPackage.getAssetRelationship()
