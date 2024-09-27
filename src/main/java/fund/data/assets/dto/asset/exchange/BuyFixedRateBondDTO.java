@@ -1,11 +1,14 @@
 package fund.data.assets.dto.asset.exchange;
 
+import fund.data.assets.utils.enums.AssetsOwnersCountry;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
@@ -13,12 +16,14 @@ import java.util.Map;
 
 /**
  * DTO для внесения информации в систему о покупке облигаций с фиксированным купоном.
+ * Используется как при первичной покупке облигаций в пакет, так и при повторной.
  * @version 0.0.1-alpha
  * @author MarkDementev a.k.a JavaMarkDem
  */
-@Data
 @NoArgsConstructor
-public class FixedRateBondBuyDTO {
+@Getter
+@Setter
+public class BuyFixedRateBondDTO extends AssetsOwnersCountryDTO {
     @NotNull
     @Positive
     private Integer assetCount;
@@ -41,9 +46,12 @@ public class FixedRateBondBuyDTO {
     @Positive
     private Integer expectedBondCouponPaymentsCount;
 
-    public FixedRateBondBuyDTO(Integer assetCount, Map<String, Float> assetOwnersWithAssetCounts,
-                               LocalDate lastAssetBuyDate, Float purchaseBondParValuePercent,
-                               Float bondsAccruedInterest, Integer expectedBondCouponPaymentsCount) {
+    public BuyFixedRateBondDTO(AssetsOwnersCountry assetsOwnersTaxResidency, Integer assetCount,
+                               Map<String, Float> assetOwnersWithAssetCounts, LocalDate lastAssetBuyDate,
+                               Float purchaseBondParValuePercent, Float bondsAccruedInterest,
+                               Integer expectedBondCouponPaymentsCount) {
+        super(assetsOwnersTaxResidency);
+
         this.assetCount = assetCount;
         this.assetOwnersWithAssetCounts = assetOwnersWithAssetCounts;
         this.lastAssetBuyDate = lastAssetBuyDate;

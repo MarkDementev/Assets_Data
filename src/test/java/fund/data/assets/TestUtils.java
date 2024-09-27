@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fund.data.assets.dto.asset.exchange.AssetsOwnersCountryDTO;
 import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
-import fund.data.assets.dto.asset.exchange.FixedRateBondFullSellDTO;
-import fund.data.assets.dto.asset.exchange.FixedRateBondPartialSellDTO;
+import fund.data.assets.dto.asset.exchange.SellFixedRateBondDTO;
+import fund.data.assets.dto.asset.exchange.PartialSellFixedRateBondDTO;
 import fund.data.assets.dto.financial_entities.AccountDTO;
 import fund.data.assets.dto.financial_entities.AccountCashDTO;
 import fund.data.assets.dto.financial_entities.TurnoverCommissionValueDTO;
@@ -242,6 +242,7 @@ public class TestUtils {
                 = prepareEntitiesBeforeFirstBuyFixedRateBondThenGetAssetOwnersWithAssetCounts();
 
         return new FirstBuyFixedRateBondDTO(
+                AssetsOwnersCountry.RUS,
                 30,
                 assetOwnersWithAssetCounts,
                 TEST_FIXED_RATE_BOND_LAST_ASSET_BUY_DATE,
@@ -250,7 +251,6 @@ public class TestUtils {
                 1,
                 RUSRUB,
                 "assetTitle",
-                AssetsOwnersCountry.RUS,
                 accountRepository.findAll().get(0).getId(),
                 "RU000A103NZ8",
                 "assetIssuerTitle",
@@ -265,6 +265,7 @@ public class TestUtils {
                 = prepareEntitiesBeforeFirstBuyFixedRateBondThenGetAssetOwnersWithAssetCounts();
 
         return new FirstBuyFixedRateBondDTO(
+                null,
                 -30,
                 assetOwnersWithAssetCounts,
                 TEST_FIXED_RATE_BOND_LAST_ASSET_BUY_DATE,
@@ -273,7 +274,6 @@ public class TestUtils {
                 0,
                 NOT_IMPLEMENTED,
                 "",
-                null,
                 accountRepository.findAll().get(0).getId(),
                 "",
                 "",
@@ -283,7 +283,7 @@ public class TestUtils {
         );
     }
 
-    public FixedRateBondPartialSellDTO getPartialSellFixedRateBondPackageFirst() {
+    public PartialSellFixedRateBondDTO getPartialSellFixedRateBondPackageFirstDTO() {
         Map<String, Integer> assetOwnersWithAssetCountsToSell = new LinkedHashMap<>();
 
         assetOwnersWithAssetCountsToSell.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(0).getId()),
@@ -291,7 +291,7 @@ public class TestUtils {
         assetOwnersWithAssetCountsToSell.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(1).getId()),
                 10);
 
-        return new FixedRateBondPartialSellDTO(
+        return new PartialSellFixedRateBondDTO(
                 AssetsOwnersCountry.RUS,
                 TEST_NORMAL_PACKAGE_SELL_VALUE,
                 assetOwnersWithAssetCountsToSell,
@@ -300,7 +300,7 @@ public class TestUtils {
         );
     }
 
-    public FixedRateBondPartialSellDTO getPartialSellFixedRateBondPackageSecond() {
+    public PartialSellFixedRateBondDTO getPartialSellFixedRateBondPackageSecondDTO() {
         Map<String, Integer> assetOwnersWithAssetCountsToSell = new LinkedHashMap<>();
 
         assetOwnersWithAssetCountsToSell.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(0).getId()),
@@ -308,7 +308,7 @@ public class TestUtils {
         assetOwnersWithAssetCountsToSell.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(1).getId()),
                 12);
 
-        return new FixedRateBondPartialSellDTO(
+        return new PartialSellFixedRateBondDTO(
                 AssetsOwnersCountry.RUS,
                 TEST_SMALL_PACKAGE_SELL_VALUE,
                 assetOwnersWithAssetCountsToSell,
@@ -317,7 +317,7 @@ public class TestUtils {
         );
     }
 
-    public FixedRateBondPartialSellDTO getPartialSellFixedRateBondPackageNotEnoughAssets() {
+    public PartialSellFixedRateBondDTO getPartialSellFixedRateBondPackageNotEnoughAssetsDTO() {
         Map<String, Integer> assetOwnersWithAssetCountsToSell = new LinkedHashMap<>();
 
         assetOwnersWithAssetCountsToSell.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(0).getId()),
@@ -325,7 +325,7 @@ public class TestUtils {
         assetOwnersWithAssetCountsToSell.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(1).getId()),
                 21);
 
-        return new FixedRateBondPartialSellDTO(
+        return new PartialSellFixedRateBondDTO(
                 AssetsOwnersCountry.RUS,
                 TEST_SMALL_PACKAGE_SELL_VALUE,
                 assetOwnersWithAssetCountsToSell,
@@ -334,7 +334,7 @@ public class TestUtils {
         );
     }
 
-    public FixedRateBondPartialSellDTO getPartialSellFixedRateBondPackageNotValidTaxResidency() {
+    public PartialSellFixedRateBondDTO getPartialSellFixedRateBondPackageNotValidTaxResidencyDTO() {
         Map<String, Integer> assetOwnersWithAssetCountsToSell = new LinkedHashMap<>();
 
         assetOwnersWithAssetCountsToSell.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(0).getId()),
@@ -342,7 +342,7 @@ public class TestUtils {
         assetOwnersWithAssetCountsToSell.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(1).getId()),
                 12);
 
-        return new FixedRateBondPartialSellDTO(
+        return new PartialSellFixedRateBondDTO(
                 AssetsOwnersCountry.USA,
                 TEST_SMALL_PACKAGE_SELL_VALUE,
                 assetOwnersWithAssetCountsToSell,
@@ -351,22 +351,22 @@ public class TestUtils {
         );
     }
 
-    public FixedRateBondFullSellDTO getFixedRateBondFullSellDTO() {
-        return new FixedRateBondFullSellDTO(
+    public SellFixedRateBondDTO getFixedRateBondFullSellDTO() {
+        return new SellFixedRateBondDTO(
              AssetsOwnersCountry.RUS,
                 TEST_NORMAL_PACKAGE_SELL_VALUE
         );
     }
 
-    public FixedRateBondFullSellDTO getFixedRateBondFullSellDTODiffWithoutTaxes() {
-        return new FixedRateBondFullSellDTO(
+    public SellFixedRateBondDTO getFixedRateBondFullSellDTODiffWithoutTaxes() {
+        return new SellFixedRateBondDTO(
                 AssetsOwnersCountry.RUS,
                 TEST_SMALL_PACKAGE_SELL_VALUE
         );
     }
 
-    public FixedRateBondFullSellDTO getNotValidCountryFixedRateBondFullSellDTO() {
-        return new FixedRateBondFullSellDTO(
+    public SellFixedRateBondDTO getNotValidCountryFixedRateBondFullSellDTO() {
+        return new SellFixedRateBondDTO(
                 AssetsOwnersCountry.USA,
                 TEST_NORMAL_PACKAGE_SELL_VALUE
         );
@@ -430,6 +430,7 @@ public class TestUtils {
                 = prepareEntitiesBeforeFirstBuyFixedRateBondThenGetAssetOwnersWithAssetCounts();
 
         FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO = new FirstBuyFixedRateBondDTO(
+                AssetsOwnersCountry.RUS,
                 30,
                 assetOwnersWithAssetCounts,
                 TEST_FIXED_RATE_BOND_LAST_ASSET_BUY_DATE,
@@ -438,7 +439,6 @@ public class TestUtils {
                 1,
                 RUSRUB,
                 "assetTitle",
-                AssetsOwnersCountry.RUS,
                 accountRepository.findAll().get(0).getId(),
                 "RU000A103NZ8",
                 "assetIssuerTitle",
@@ -454,6 +454,7 @@ public class TestUtils {
                 = prepareEntitiesBeforeFirstBuyFixedRateBondThenGetAssetOwnersWithAssetCounts();
 
         FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO = new FirstBuyFixedRateBondDTO(
+                AssetsOwnersCountry.RUS,
                 30,
                 assetOwnersWithAssetCounts,
                 TEST_FIXED_RATE_BOND_LAST_ASSET_BUY_DATE,
@@ -462,7 +463,6 @@ public class TestUtils {
                 1,
                 RUSRUB,
                 "assetTitle",
-                AssetsOwnersCountry.RUS,
                 accountRepository.findAll().get(0).getId(),
                 "RU000A103NZ8",
                 "assetIssuerTitle",
@@ -478,6 +478,7 @@ public class TestUtils {
                 = prepareEntitiesBeforeFirstBuyFixedRateBondThenGetAssetOwnersWithAssetCounts();
 
         FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO = new FirstBuyFixedRateBondDTO(
+                AssetsOwnersCountry.RUS,
                 30,
                 assetOwnersWithAssetCounts,
                 TEST_FIXED_RATE_BOND_LAST_ASSET_BUY_DATE_NOT_MATURED,
@@ -486,7 +487,6 @@ public class TestUtils {
                 1,
                 RUSRUB,
                 "assetTitle",
-                AssetsOwnersCountry.RUS,
                 accountRepository.findAll().get(0).getId(),
                 "RU000A103NZ8",
                 "assetIssuerTitle",

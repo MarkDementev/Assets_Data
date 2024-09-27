@@ -21,7 +21,12 @@ import java.util.Map;
 @NoArgsConstructor
 @Getter
 @Setter
-public class FixedRateBondPartialSellDTO extends FixedRateBondFullSellDTO {
+public class PartialSellFixedRateBondDTO extends SellFixedRateBondDTO {
+    /**
+     * Хотя подобное поле в AssetRelationship в качестве вэльюс использует Float, здесь используется Integer,
+     * т.к. продавать облигации можно только полностью, а в той сущности учитывается возможная работа с другими
+     * типами активов.
+     */
     @NotNull
     private Map<String, Integer> assetOwnersWithAssetCountsToSell;
 
@@ -38,7 +43,7 @@ public class FixedRateBondPartialSellDTO extends FixedRateBondFullSellDTO {
     @Positive
     private Integer expectedBondCouponPaymentsCount;
 
-    public FixedRateBondPartialSellDTO(AssetsOwnersCountry assetsOwnersTaxResidency, Float packageSellValue,
+    public PartialSellFixedRateBondDTO(AssetsOwnersCountry assetsOwnersTaxResidency, Float packageSellValue,
                                        Map<String, Integer> assetOwnersWithAssetCountsToSell,
                                        LocalDate lastAssetSellDate, Integer expectedBondCouponPaymentsCount) {
         super(assetsOwnersTaxResidency, packageSellValue);

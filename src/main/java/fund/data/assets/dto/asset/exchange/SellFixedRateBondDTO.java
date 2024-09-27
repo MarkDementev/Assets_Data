@@ -17,12 +17,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class FixedRateBondFullSellDTO extends AssetsOwnersCountryDTO {
+public class SellFixedRateBondDTO extends AssetsOwnersCountryDTO {
     @NotNull
     @Positive
     private Float packageSellValue;
 
-    public FixedRateBondFullSellDTO(AssetsOwnersCountry assetsOwnersTaxResidency, Float packageSellValue) {
+    public SellFixedRateBondDTO(AssetsOwnersCountry assetsOwnersTaxResidency, Float packageSellValue) {
         super(assetsOwnersTaxResidency);
 
         this.packageSellValue = packageSellValue;

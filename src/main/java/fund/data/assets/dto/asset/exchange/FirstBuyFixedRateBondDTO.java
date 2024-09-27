@@ -29,17 +29,13 @@ import java.util.Map;
 @NoArgsConstructor
 @Getter
 @Setter
-public class FirstBuyFixedRateBondDTO extends FixedRateBondBuyDTO {
+public class FirstBuyFixedRateBondDTO extends BuyFixedRateBondDTO {
     @NotNull
     @Enumerated(EnumType.STRING)
     private AssetCurrency assetCurrency;
 
     @NotBlank
     private String assetTitle;
-
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private AssetsOwnersCountry assetsOwnersCountry;
 
     @NotNull
     private Long accountID;
@@ -63,19 +59,17 @@ public class FirstBuyFixedRateBondDTO extends FixedRateBondBuyDTO {
     @NotNull
     private LocalDate bondMaturityDate;
 
-    public FirstBuyFixedRateBondDTO(Integer assetCount, Map<String, Float> assetOwnersWithAssetCounts,
-                                    LocalDate lastAssetBuyDate, Float purchaseBondParValuePercent,
-                                    Float bondsAccruedInterest, Integer expectedBondCouponPaymentsCount,
-                                    AssetCurrency assetCurrency, String assetTitle,
-                                    AssetsOwnersCountry assetsOwnersCountry, Long accountID, String iSIN,
-                                    String assetIssuerTitle, Integer bondParValue, Float bondCouponValue,
-                                    LocalDate bondMaturityDate) {
-        super(assetCount, assetOwnersWithAssetCounts, lastAssetBuyDate, purchaseBondParValuePercent,
-                bondsAccruedInterest, expectedBondCouponPaymentsCount);
+    public FirstBuyFixedRateBondDTO(AssetsOwnersCountry assetsOwnersTaxResidency, Integer assetCount,
+                                    Map<String, Float> assetOwnersWithAssetCounts, LocalDate lastAssetBuyDate,
+                                    Float purchaseBondParValuePercent, Float bondsAccruedInterest,
+                                    Integer expectedBondCouponPaymentsCount, AssetCurrency assetCurrency,
+                                    String assetTitle, Long accountID, String iSIN, String assetIssuerTitle,
+                                    Integer bondParValue, Float bondCouponValue, LocalDate bondMaturityDate) {
+        super(assetsOwnersTaxResidency, assetCount, assetOwnersWithAssetCounts, lastAssetBuyDate,
+                purchaseBondParValuePercent, bondsAccruedInterest, expectedBondCouponPaymentsCount);
 
         this.assetCurrency = assetCurrency;
         this.assetTitle = assetTitle;
-        this.assetsOwnersCountry = assetsOwnersCountry;
         this.accountID = accountID;
         this.iSIN = iSIN;
         this.assetIssuerTitle = assetIssuerTitle;

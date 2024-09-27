@@ -323,7 +323,7 @@ public class FixedRateBondControllerIT {
         var response = testUtils.perform(
                         put("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH,
                                 createdFixedRateBondPackageId)
-                                .content(asJson(testUtils.getPartialSellFixedRateBondPackageFirst()))
+                                .content(asJson(testUtils.getPartialSellFixedRateBondPackageFirstDTO()))
                                 .contentType(APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
@@ -366,7 +366,7 @@ public class FixedRateBondControllerIT {
         var response = testUtils.perform(
                         put("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH,
                                 createdFixedRateBondPackageId)
-                                .content(asJson(testUtils.getPartialSellFixedRateBondPackageSecond()))
+                                .content(asJson(testUtils.getPartialSellFixedRateBondPackageSecondDTO()))
                                 .contentType(APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
@@ -409,7 +409,7 @@ public class FixedRateBondControllerIT {
 
         Assertions.assertThrows(ServletException.class, () -> testUtils.perform(
                 put("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH, createdFixedRateBondPackageId)
-                        .content(asJson(testUtils.getPartialSellFixedRateBondPackageNotEnoughAssets()))
+                        .content(asJson(testUtils.getPartialSellFixedRateBondPackageNotEnoughAssetsDTO()))
                         .contentType(APPLICATION_JSON)
         ));
         assertThat(fixedRateBondRepository.findAll()).hasSize(1);
@@ -429,7 +429,7 @@ public class FixedRateBondControllerIT {
 
         Assertions.assertThrows(ServletException.class, () -> testUtils.perform(
                 put("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH, createdFixedRateBondPackageId)
-                        .content(asJson(testUtils.getPartialSellFixedRateBondPackageNotValidTaxResidency()))
+                        .content(asJson(testUtils.getPartialSellFixedRateBondPackageNotValidTaxResidencyDTO()))
                         .contentType(APPLICATION_JSON)
         ));
         assertThat(fixedRateBondRepository.findAll()).hasSize(1);

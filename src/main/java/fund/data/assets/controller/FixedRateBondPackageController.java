@@ -2,9 +2,9 @@ package fund.data.assets.controller;
 
 import fund.data.assets.dto.asset.exchange.AssetsOwnersCountryDTO;
 import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
-import fund.data.assets.dto.asset.exchange.FixedRateBondFullSellDTO;
-import fund.data.assets.dto.asset.exchange.FixedRateBondPartialSellDTO;
-import fund.data.assets.dto.asset.exchange.FixedRateBondBuyDTO;
+import fund.data.assets.dto.asset.exchange.SellFixedRateBondDTO;
+import fund.data.assets.dto.asset.exchange.PartialSellFixedRateBondDTO;
+import fund.data.assets.dto.asset.exchange.BuyFixedRateBondDTO;
 import fund.data.assets.model.asset.exchange.FixedRateBondPackage;
 import fund.data.assets.service.FixedRateBondService;
 
@@ -79,26 +79,26 @@ public class FixedRateBondPackageController {
     @ApiResponse(responseCode = "200", description = "Fixed rate bond package part bought")
     @PutMapping(ID_PATH + BUY_PATH)
     public ResponseEntity<FixedRateBondPackage> buyFixedRateBondPackagePartial(@PathVariable Long id,
-        @RequestBody @Valid FixedRateBondBuyDTO fixedRateBondBuyDTO) {
+        @RequestBody @Valid BuyFixedRateBondDTO buyFixedRateBondDTO) {
         return ResponseEntity.ok().body(fixedRateBondService.partialBuyFixedRateBondPackage(id,
-                fixedRateBondBuyDTO));
+                buyFixedRateBondDTO));
     }
 
     @Operation(summary = "Update fixed rate bond package - sell package part")
     @ApiResponse(responseCode = "200", description = "Fixed rate bond package part sold")
     @PutMapping(ID_PATH)
     public ResponseEntity<FixedRateBondPackage> sellFixedRateBondPackagePartial(@PathVariable Long id,
-        @RequestBody @Valid FixedRateBondPartialSellDTO fixedRateBondPartialSellDTO) {
+        @RequestBody @Valid PartialSellFixedRateBondDTO partialSellFixedRateBondDTO) {
         return ResponseEntity.ok().body(fixedRateBondService.partialSellFixedRateBondPackage(id,
-                fixedRateBondPartialSellDTO));
+                partialSellFixedRateBondDTO));
     }
 
     @Operation(summary = "Sell all fixed rate bond package")
     @ApiResponse(responseCode = "200", description = "All package is sold")
     @DeleteMapping(ID_PATH)
     public void sellAllPackageFixedRateBond(@PathVariable Long id,
-                                            @RequestBody @Valid FixedRateBondFullSellDTO fixedRateBondFullSellDTO) {
-        fixedRateBondService.sellAllPackage(id, fixedRateBondFullSellDTO);
+                                            @RequestBody @Valid SellFixedRateBondDTO sellFixedRateBondDTO) {
+        fixedRateBondService.sellAllPackage(id, sellFixedRateBondDTO);
     }
 
     @Operation(summary = "Redeem fixed rate bond package")

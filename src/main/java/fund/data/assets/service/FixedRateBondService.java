@@ -2,9 +2,9 @@ package fund.data.assets.service;
 
 import fund.data.assets.dto.asset.exchange.AssetsOwnersCountryDTO;
 import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
-import fund.data.assets.dto.asset.exchange.FixedRateBondFullSellDTO;
-import fund.data.assets.dto.asset.exchange.FixedRateBondBuyDTO;
-import fund.data.assets.dto.asset.exchange.FixedRateBondPartialSellDTO;
+import fund.data.assets.dto.asset.exchange.SellFixedRateBondDTO;
+import fund.data.assets.dto.asset.exchange.BuyFixedRateBondDTO;
+import fund.data.assets.dto.asset.exchange.PartialSellFixedRateBondDTO;
 import fund.data.assets.model.asset.exchange.FixedRateBondPackage;
 
 import java.util.List;
@@ -19,9 +19,9 @@ public interface FixedRateBondService {
     FixedRateBondPackage getFixedRateBond(Long id);
     List<FixedRateBondPackage> getFixedRateBonds();
     FixedRateBondPackage firstBuyFixedRateBond(FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO);
-    FixedRateBondPackage partialBuyFixedRateBondPackage(Long id, FixedRateBondBuyDTO fixedRateBondBuyDTO);
+    FixedRateBondPackage partialBuyFixedRateBondPackage(Long id, BuyFixedRateBondDTO buyFixedRateBondDTO);
     FixedRateBondPackage partialSellFixedRateBondPackage(Long id,
-                                                         FixedRateBondPartialSellDTO fixedRateBondPartialSellDTO);
-    void sellAllPackage(Long id, FixedRateBondFullSellDTO fixedRateBondFullSellDTO);
+                                                         PartialSellFixedRateBondDTO partialSellFixedRateBondDTO);
+    void sellAllPackage(Long id, SellFixedRateBondDTO sellFixedRateBondDTO);
     void redeemBonds(Long id, AssetsOwnersCountryDTO assetsOwnersCountryDTO);
 }
