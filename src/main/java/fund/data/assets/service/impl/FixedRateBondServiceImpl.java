@@ -259,7 +259,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
      * @since 0.0.1-alpha
      */
     private float calculatePartialPackageBuyValue(Long id, BuyFixedRateBondDTO dTO) {
-        return dTO.getAssetCount() * dTO.getPurchaseBondParValuePercent()
+        return dTO.getAssetCount() * (dTO.getPurchaseBondParValuePercent() / 100.00F)
                 * fixedRateBondRepository.findById(id).orElseThrow().getBondParValue() + dTO.getBondsAccruedInterest();
     }
 

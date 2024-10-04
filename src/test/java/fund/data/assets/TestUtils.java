@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fund.data.assets.dto.asset.exchange.AssetsOwnersCountryDTO;
+import fund.data.assets.dto.asset.exchange.BuyFixedRateBondDTO;
 import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
 import fund.data.assets.dto.asset.exchange.SellFixedRateBondDTO;
 import fund.data.assets.dto.asset.exchange.PartialSellFixedRateBondDTO;
@@ -280,6 +281,23 @@ public class TestUtils {
                 1000,
                 100.00F,
                 TEST_FIXED_RATE_BOND_MATURITY_DATE
+        );
+    }
+
+    public BuyFixedRateBondDTO getBuyFixedRateBondDTO() {
+        Map<String, Float> assetOwnersWithAssetCounts = new LinkedHashMap<>();
+
+        assetOwnersWithAssetCounts.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(0).getId()), 1.00F);
+        assetOwnersWithAssetCounts.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(1).getId()), 2.00F);
+
+        return new BuyFixedRateBondDTO(
+                AssetsOwnersCountry.RUS,
+                3,
+                assetOwnersWithAssetCounts,
+                TEST_FIXED_RATE_BOND_LAST_ASSET_SELL_DATE,
+                99.00F,
+                10.00F,
+                1
         );
     }
 
@@ -576,6 +594,24 @@ public class TestUtils {
         createAccountCash(secondAccountCashDTO);
 
         return assetOwnersWithAssetCounts;
+    }
+
+    public void addMoreMoneyToOwnersWhileBuyingMoreBonds() throws Exception {
+        AccountCashDTO firstAccountCashDTO = new AccountCashDTO(
+                accountRepository.findAll().get(0).getId(),
+                RUSRUB,
+                russianAssetsOwnerRepository.findAll().get(0).getId(),
+                TEST_FIRST_RUSSIAN_OWNER_CASH_AMOUNT
+        );
+        AccountCashDTO secondAccountCashDTO = new AccountCashDTO(
+                accountRepository.findAll().get(0).getId(),
+                RUSRUB,
+                russianAssetsOwnerRepository.findAll().get(1).getId(),
+                TEST_SECOND_RUSSIAN_OWNER_CASH_AMOUNT
+        );
+
+        createAccountCash(firstAccountCashDTO);
+        createAccountCash(secondAccountCashDTO);
     }
 
     public ResultActions perform(final MockHttpServletRequestBuilder request) throws Exception {
