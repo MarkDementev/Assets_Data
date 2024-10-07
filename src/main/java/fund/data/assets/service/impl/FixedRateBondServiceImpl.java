@@ -127,6 +127,15 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         updateAssetOwnersWithAssetCounts(atomicFixedRateBondPackage.get(),
                 buyFixedRateBondDTO.getAssetOwnersWithAssetCounts(), false);
         //TODO 8 - меняем остальные поля у бонда и релатионшип, если надо - НОВОЕ (УЧТИ, ЧТО МОГУТ БЫТЬ НОВЫЕ ОУНЕРЫ!)
+        updateFixedRateBondFieldsWithoutCalculations(atomicFixedRateBondPackage.get(),
+                buyFixedRateBondDTO.getLastAssetBuyDate(), buyFixedRateBondDTO.getExpectedBondCouponPaymentsCount());
+        /*
+         * Правь следующие поля:
+         * PurchaseBondParValuePercent
+         * SimpleYieldToMaturity
+         * MarkDementevYieldIndicator
+         * Проверь, как меняется, и на какие суммы, состояние денег на счетах инвесторов!
+         */
         //9 - сохраняем и возвращаем новый пакет!
         return fixedRateBondRepository.save(atomicFixedRateBondPackage.get());
     }
@@ -141,7 +150,9 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         oldNewAssetCount[0] = atomicFixedRateBondPackage.get().getAssetCount();
 
         isAssetsOwnersHaveThisAssetsAmounts(atomicFixedRateBondPackage.get(), partialSellFixedRateBondDTO);
-        updateFixedRateBondFieldsByDTO(atomicFixedRateBondPackage.get(), partialSellFixedRateBondDTO);
+        updateFixedRateBondFieldsWithoutCalculations(atomicFixedRateBondPackage.get(),
+                partialSellFixedRateBondDTO.getLastAssetSellDate(),
+                partialSellFixedRateBondDTO.getExpectedBondCouponPaymentsCount());
 
         float packagePartSellValue = partialSellFixedRateBondDTO.getPackageSellValue();
         packagePartSellValue = correctOperationValueByCommission(packagePartSellValue,
@@ -265,15 +276,19 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
 
     /**
      * При частичных продаже или покупке пакета облигаций ряд полей сущности нужно просто перезаполнить
-     * без проведения дополнительных расчётов.
+     * без проведения дополнительных расчётов. Перезаполняются поля lastAssetBuyOrSellDate и
+     * expectedBondCouponPaymentsCount.
      * @param fixedRateBondPackage пакет облигаций, поля которого перезаполняются.
-     * @param dTO DTO с информацией о новых значениях полей.
+     * @param newLastAssetBuyOrSellDate новая дата последнего приобретения или продажи актива.
+     * @param newExpectedBondCouponPaymentsCount новое ожидаемое количество купонных выплат на момент последней
+     * покупки/продажи до даты погашения облигации.
      * @since 0.0.1-alpha
      */
-    private void updateFixedRateBondFieldsByDTO(FixedRateBondPackage fixedRateBondPackage,
-                                                PartialSellFixedRateBondDTO dTO) {
-        fixedRateBondPackage.setLastAssetBuyOrSellDate(dTO.getLastAssetSellDate());
-        fixedRateBondPackage.setExpectedBondCouponPaymentsCount(dTO.getExpectedBondCouponPaymentsCount());
+    private void updateFixedRateBondFieldsWithoutCalculations(FixedRateBondPackage fixedRateBondPackage,
+                                                              LocalDate newLastAssetBuyOrSellDate,
+                                                              Integer newExpectedBondCouponPaymentsCount) {
+        fixedRateBondPackage.setLastAssetBuyOrSellDate(newLastAssetBuyOrSellDate);
+        fixedRateBondPackage.setExpectedBondCouponPaymentsCount(newExpectedBondCouponPaymentsCount);
     }
 
     /**

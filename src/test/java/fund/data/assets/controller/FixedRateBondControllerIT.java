@@ -336,24 +336,37 @@ public class FixedRateBondControllerIT {
         assertThat(fixedRateBondRepository.findAll()).hasSize(1);
         assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
         assertEquals(createdFixedRateBondPackageId, fixedRateBondPackageFromResponse.getId());
-//        assertEquals(15, fixedRateBondPackageFromResponse.getAssetCount());
-//        assertEquals(5, fixedRateBondPackageFromResponse.getAssetRelationship().getAssetOwnersWithAssetCounts()
-//                .get(String.valueOf(russianAssetsOwnerRepository.findAll().get(0).getId())));
-//        assertEquals(10, fixedRateBondPackageFromResponse.getAssetRelationship().getAssetOwnersWithAssetCounts()
-//                .get(String.valueOf(russianAssetsOwnerRepository.findAll().get(1).getId())));
-//        assertEquals(TEST_FIXED_RATE_BOND_LAST_ASSET_SELL_DATE,
-//                fixedRateBondPackageFromResponse.getLastAssetBuyOrSellDate());
-//        assertEquals(1, fixedRateBondPackageFromResponse.getExpectedBondCouponPaymentsCount());
-//        assertEquals(0.00F, fixedRateBondPackageFromResponse.getBondsAccruedInterest());
-//        assertEquals(150.00F, fixedRateBondPackageFromResponse.getTotalCommissionForPurchase());
-//        assertEquals(15150.00F, fixedRateBondPackageFromResponse.getTotalAssetPurchasePriceWithCommission());
-//        assertEquals(10.00F, fixedRateBondPackageFromResponse.getSimpleYieldToMaturity());
-//        assertEquals(7.6238F, Float.parseFloat(TEST_DECIMAL_FORMAT.format(
-//                fixedRateBondPackageFromResponse.getMarkDementevYieldIndicator())));
-//        assertNotEquals(fixedRateBondPackageFromResponse.getCreatedAt(),
-//                fixedRateBondPackageFromResponse.getUpdatedAt());
-//        assertEquals(10180.8010F, accountCashRepository.findAll().get(0).getAmount());
-//        assertEquals(20361.6020F, accountCashRepository.findAll().get(1).getAmount());
+        assertEquals(33, fixedRateBondPackageFromResponse.getAssetCount());
+        assertEquals(11, fixedRateBondPackageFromResponse.getAssetRelationship()
+                .getAssetOwnersWithAssetCounts().get(String.valueOf(russianAssetsOwnerRepository.findAll().get(0)
+                        .getId())));
+        assertEquals(22, fixedRateBondPackageFromResponse.getAssetRelationship()
+                .getAssetOwnersWithAssetCounts().get(String.valueOf(russianAssetsOwnerRepository.findAll().get(1)
+                        .getId())));
+        assertNotEquals(fixedRateBondPackageFromResponse.getAssetRelationship().getCreatedAt(),
+                fixedRateBondPackageFromResponse.getAssetRelationship().getUpdatedAt());
+        assertEquals(TEST_FIXED_RATE_BOND_LAST_ASSET_SELL_DATE,
+                fixedRateBondPackageFromResponse.getLastAssetBuyOrSellDate());
+        assertEquals(0.9991F, fixedRateBondPackageFromResponse.getPurchaseBondParValuePercent());
+        assertEquals(10.00F, fixedRateBondPackageFromResponse.getBondsAccruedInterest());
+        assertEquals(330.1F, fixedRateBondPackageFromResponse.getTotalCommissionForPurchase());
+        assertEquals(33340.1F, fixedRateBondPackageFromResponse.getTotalAssetPurchasePriceWithCommission());
+        assertEquals(1, fixedRateBondPackageFromResponse.getExpectedBondCouponPaymentsCount());
+        assertEquals(10.6532F, fixedRateBondPackageFromResponse.getSimpleYieldToMaturity());
+        assertEquals(8.2211F, Float.parseFloat(TEST_DECIMAL_FORMAT.format(
+                fixedRateBondPackageFromResponse.getMarkDementevYieldIndicator())));
+        assertNotEquals(fixedRateBondPackageFromResponse.getCreatedAt(),
+                fixedRateBondPackageFromResponse.getUpdatedAt());
+        assertEquals(9196,7333F, accountCashRepository.findByAccountAndAssetCurrencyAndAssetsOwner(
+                accountRepository.findAll().get(0),
+                AssetCurrency.RUSRUB,
+                russianAssetsOwnerRepository.findAll().get(0)
+        ).getAmount());
+        assertEquals(18393.4667F, accountCashRepository.findByAccountAndAssetCurrencyAndAssetsOwner(
+                accountRepository.findAll().get(0),
+                AssetCurrency.RUSRUB,
+                russianAssetsOwnerRepository.findAll().get(1)
+        ).getAmount());
     }
 
 //    @Test
@@ -386,10 +399,25 @@ public class FixedRateBondControllerIT {
         assertEquals(30, fixedRateBondRepository.findAll().get(0).getAssetCount());
     }
 
-//    @Test
-//    public void partialBuyFixedRateBondNotValidTaxResidencyIT() throws Exception {
-//
-//    }
+    @Test
+    public void partialBuyFixedRateBondNotValidTaxResidencyIT() throws Exception {
+        testUtils.createDefaultFixedRateBond();
+
+        assertThat(fixedRateBondRepository.findAll()).hasSize(1);
+        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
+        assertEquals(30, fixedRateBondRepository.findAll().get(0).getAssetCount());
+
+        Long createdFixedRateBondPackageId = fixedRateBondRepository.findAll().get(0).getId();
+        Assertions.assertThrows(ServletException.class, () -> testUtils.perform(
+                put("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH + BUY_PATH,
+                        createdFixedRateBondPackageId)
+                        .content(asJson(testUtils.getBuyFixedRateBondNotValidTaxResidencyDTO()))
+                        .contentType(APPLICATION_JSON)
+        ));
+        assertThat(fixedRateBondRepository.findAll()).hasSize(1);
+        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
+        assertEquals(30, fixedRateBondRepository.findAll().get(0).getAssetCount());
+    }
 
     @Test
     public void partialSellForAllOwnersFixedRateBondPackageIT() throws Exception {
@@ -419,12 +447,14 @@ public class FixedRateBondControllerIT {
                 .get(String.valueOf(russianAssetsOwnerRepository.findAll().get(0).getId())));
         assertEquals(10, fixedRateBondPackageFromResponse.getAssetRelationship().getAssetOwnersWithAssetCounts()
                 .get(String.valueOf(russianAssetsOwnerRepository.findAll().get(1).getId())));
+        assertNotEquals(fixedRateBondPackageFromResponse.getAssetRelationship().getCreatedAt(),
+                fixedRateBondPackageFromResponse.getAssetRelationship().getUpdatedAt());
         assertEquals(TEST_FIXED_RATE_BOND_LAST_ASSET_SELL_DATE,
                 fixedRateBondPackageFromResponse.getLastAssetBuyOrSellDate());
-        assertEquals(1, fixedRateBondPackageFromResponse.getExpectedBondCouponPaymentsCount());
         assertEquals(0.00F, fixedRateBondPackageFromResponse.getBondsAccruedInterest());
         assertEquals(150.00F, fixedRateBondPackageFromResponse.getTotalCommissionForPurchase());
         assertEquals(15150.00F, fixedRateBondPackageFromResponse.getTotalAssetPurchasePriceWithCommission());
+        assertEquals(1, fixedRateBondPackageFromResponse.getExpectedBondCouponPaymentsCount());
         assertEquals(10.00F, fixedRateBondPackageFromResponse.getSimpleYieldToMaturity());
         assertEquals(7.6238F, Float.parseFloat(TEST_DECIMAL_FORMAT.format(
                 fixedRateBondPackageFromResponse.getMarkDementevYieldIndicator())));
