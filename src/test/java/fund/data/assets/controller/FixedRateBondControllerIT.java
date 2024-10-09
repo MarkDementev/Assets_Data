@@ -347,22 +347,25 @@ public class FixedRateBondControllerIT {
                 fixedRateBondPackageFromResponse.getAssetRelationship().getUpdatedAt());
         assertEquals(TEST_FIXED_RATE_BOND_LAST_ASSET_SELL_DATE,
                 fixedRateBondPackageFromResponse.getLastAssetBuyOrSellDate());
-        assertEquals(0.9991F, fixedRateBondPackageFromResponse.getPurchaseBondParValuePercent());
+        assertEquals(99.9091F, Float.parseFloat(TEST_DECIMAL_FORMAT.format(
+                        fixedRateBondPackageFromResponse.getPurchaseBondParValuePercent())));
         assertEquals(10.00F, fixedRateBondPackageFromResponse.getBondsAccruedInterest());
-        assertEquals(330.1F, fixedRateBondPackageFromResponse.getTotalCommissionForPurchase());
-        assertEquals(33340.1F, fixedRateBondPackageFromResponse.getTotalAssetPurchasePriceWithCommission());
+        assertEquals(329.8F, Float.parseFloat(TEST_DECIMAL_FORMAT.format(
+                fixedRateBondPackageFromResponse.getTotalCommissionForPurchase())));
+        assertEquals(33309.8F, fixedRateBondPackageFromResponse.getTotalAssetPurchasePriceWithCommission());
         assertEquals(1, fixedRateBondPackageFromResponse.getExpectedBondCouponPaymentsCount());
-        assertEquals(10.6532F, fixedRateBondPackageFromResponse.getSimpleYieldToMaturity());
-        assertEquals(8.2211F, Float.parseFloat(TEST_DECIMAL_FORMAT.format(
+        assertEquals(10.7922F, Float.parseFloat(TEST_DECIMAL_FORMAT.format(
+                        fixedRateBondPackageFromResponse.getSimpleYieldToMaturity())));
+        assertEquals(8.2193F, Float.parseFloat(TEST_DECIMAL_FORMAT.format(
                 fixedRateBondPackageFromResponse.getMarkDementevYieldIndicator())));
         assertNotEquals(fixedRateBondPackageFromResponse.getCreatedAt(),
                 fixedRateBondPackageFromResponse.getUpdatedAt());
-        assertEquals(9196,7333F, accountCashRepository.findByAccountAndAssetCurrencyAndAssetsOwner(
+        assertEquals(9216.6F, accountCashRepository.findByAccountAndAssetCurrencyAndAssetsOwner(
                 accountRepository.findAll().get(0),
                 AssetCurrency.RUSRUB,
                 russianAssetsOwnerRepository.findAll().get(0)
         ).getAmount());
-        assertEquals(18393.4667F, accountCashRepository.findByAccountAndAssetCurrencyAndAssetsOwner(
+        assertEquals(18433.2F, accountCashRepository.findByAccountAndAssetCurrencyAndAssetsOwner(
                 accountRepository.findAll().get(0),
                 AssetCurrency.RUSRUB,
                 russianAssetsOwnerRepository.findAll().get(1)

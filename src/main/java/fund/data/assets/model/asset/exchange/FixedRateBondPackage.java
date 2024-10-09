@@ -150,12 +150,14 @@ public class FixedRateBondPackage extends ExchangeAsset {
         this.bondCouponValue = bondCouponValue;
         this.expectedBondCouponPaymentsCount = expectedBondCouponPaymentsCount;
         this.bondMaturityDate = bondMaturityDate;
-        this.simpleYieldToMaturity = calculateSimpleYieldToMaturity();
+        this.simpleYieldToMaturity = calculateSimpleYieldToMaturity(purchaseBondParValuePercent, bondParValue,
+                bondCouponValue, expectedBondCouponPaymentsCount, bondsAccruedInterest);
 
         if (getAssetCurrency().equals(AssetCurrency.RUSRUB)
                 && getAssetTaxSystem().equals(TaxSystem.EQUAL_COUPON_DIVIDEND_TRADE)
                 && getAssetCommissionSystem().equals(CommissionSystem.TURNOVER)) {
-            this.markDementevYieldIndicator = calculateMarkDementevYieldIndicator();
+            this.markDementevYieldIndicator = calculateMarkDementevYieldIndicator(bondCouponValue,
+                    expectedBondCouponPaymentsCount, totalAssetPurchasePriceWithCommission, assetCount, bondParValue);
         }
     }
 
@@ -165,11 +167,13 @@ public class FixedRateBondPackage extends ExchangeAsset {
      * @return Простая доходность к погашению в % годовых, выраженная в десятичной форме. К примеру, 8% годовых = 8.00F.
      * @since 0.0.1-alpha
      */
-    public Float calculateSimpleYieldToMaturity() {
+    public Float calculateSimpleYieldToMaturity(Float purchaseBondParValuePercent, Integer bondParValue,
+                                                Float bondCouponValue, Integer expectedBondCouponPaymentsCount,
+                                                Float bondsAccruedInterest) {
         float marketClearPriceInCurrency = purchaseBondParValuePercent * bondParValue / 100.00F;
         float allExpectedCouponPaymentsSum = bondCouponValue * expectedBondCouponPaymentsCount;
-        int daysInYear = getDaysInYear();
-        int daysBeforeMaturity = calculateDaysBeforeMaturity();
+        float daysInYear = getDaysInYear();
+        float daysBeforeMaturity = calculateDaysBeforeMaturity();
 
         return  (((bondParValue - marketClearPriceInCurrency + (allExpectedCouponPaymentsSum - bondsAccruedInterest))
                 / marketClearPriceInCurrency) * (daysInYear / daysBeforeMaturity))
@@ -183,14 +187,18 @@ public class FixedRateBondPackage extends ExchangeAsset {
      * 8% годовых = 8.00F.
      * @since 0.0.1-alpha
      */
-    public Float calculateMarkDementevYieldIndicator() {
+    public Float calculateMarkDementevYieldIndicator(Float bondCouponValue, Integer expectedBondCouponPaymentsCount,
+                                                     float totalAssetPurchasePriceWithCommission,
+                                                     Integer assetCount,
+                                                     Integer bondParValue) {
         //TODO - возможно, стоит потом рефакторить метод, чтобы учесть работу с налоговыми резидентами НЕ РФ!
-        float expectedBondCouponPaymentsSum = bondCouponValue * expectedBondCouponPaymentsCount;
+        float expectedBondCouponPaymentsSum = bondCouponValue * Float.valueOf(expectedBondCouponPaymentsCount);
         float incomeTaxCorrection = FinancialAndAnotherConstants.RUSSIAN_TAX_SYSTEM_CORRECTION_VALUE;
-        float oneBondValueSummedWithHisCommission = (totalAssetPurchasePriceWithCommission / getAssetCount());
+        float oneBondValueSummedWithHisCommission = (totalAssetPurchasePriceWithCommission
+                / Float.valueOf(assetCount));
         float taxValueOfMaturityIncome = 0.00F;
-        int daysInYear = getDaysInYear();
-        int daysBeforeMaturity = calculateDaysBeforeMaturity();
+        float daysInYear = getDaysInYear();
+        float daysBeforeMaturity = calculateDaysBeforeMaturity();
 
         if (bondParValue > oneBondValueSummedWithHisCommission) {
             taxValueOfMaturityIncome = incomeTaxCorrection * (bondParValue - oneBondValueSummedWithHisCommission);
@@ -217,7 +225,7 @@ public class FixedRateBondPackage extends ExchangeAsset {
      * @return количество дней в году.
      * @since 0.0.1-alpha
      */
-    private int getDaysInYear() {
+    private float getDaysInYear() {
         boolean firstLeapYearCheck = getLastAssetBuyOrSellDate().isLeapYear();
         boolean secondLeapYearCheck = (bondMaturityDate.getYear() - getLastAssetBuyOrSellDate().getYear()) >= 4
                 && ChronoUnit.DAYS.between(getLastAssetBuyOrSellDate(), bondMaturityDate)
@@ -236,10 +244,10 @@ public class FixedRateBondPackage extends ExchangeAsset {
      * @throws UnrealAddingAssetsParameterException Если в систему вводится уже погашенный бонд.
      * @since 0.0.1-alpha
      */
-    private int calculateDaysBeforeMaturity() {
+    private float calculateDaysBeforeMaturity() {
         if (ChronoUnit.DAYS.between(getLastAssetBuyOrSellDate(), bondMaturityDate) < 0) {
             throw new UnrealAddingAssetsParameterException(WRONG_DATE_BOND_ADDING_WARNING);
         }
-        return (int) ChronoUnit.DAYS.between(getLastAssetBuyOrSellDate(), bondMaturityDate);
+        return (float) ChronoUnit.DAYS.between(getLastAssetBuyOrSellDate(), bondMaturityDate);
     }
 }

@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -110,9 +111,13 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         //2 - находим бонд для изменения
         AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
                 fixedRateBondRepository.findById(id).orElseThrow());
-        //3 - определяем совокупную стоимость покупаемого пакета с учётом комиссий
+        //3 - определяем совокупную стоимость покупаемого пакета с учётом комиссий. Также записываем старую и новую
+        //величины для дальнейшего использования
+        float[] packageBuyValueBeforeAfterCorrectBuyCommission = new float[2];
         float packageBuyValue = calculatePartialPackageBuyValue(id, buyFixedRateBondDTO);
+        packageBuyValueBeforeAfterCorrectBuyCommission[0] = packageBuyValue;
         packageBuyValue = correctOperationValueByCommission(packageBuyValue, atomicFixedRateBondPackage.get());
+        packageBuyValueBeforeAfterCorrectBuyCommission[1] = packageBuyValue;
         //4 - формируем мапу изменения денег
         Map<String, Float> ownersMoneyNegativeDistribution = formOwnersMoneyDistributionMap(
                 atomicFixedRateBondPackage.get(), packageBuyValue, buyFixedRateBondDTO);
@@ -126,16 +131,11 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         //7 - распределяем новые бонды по оунерам
         updateAssetOwnersWithAssetCounts(atomicFixedRateBondPackage.get(),
                 buyFixedRateBondDTO.getAssetOwnersWithAssetCounts(), false);
-        //TODO 8 - меняем остальные поля у бонда и релатионшип, если надо - НОВОЕ (УЧТИ, ЧТО МОГУТ БЫТЬ НОВЫЕ ОУНЕРЫ!)
-        updateFixedRateBondFieldsWithoutCalculations(atomicFixedRateBondPackage.get(),
+        //8 - меняем остальные поля у бонда
+        updateSomeFixedRateBondFieldsWithoutCalculations(atomicFixedRateBondPackage.get(),
                 buyFixedRateBondDTO.getLastAssetBuyDate(), buyFixedRateBondDTO.getExpectedBondCouponPaymentsCount());
-        /*
-         * Правь следующие поля:
-         * PurchaseBondParValuePercent
-         * SimpleYieldToMaturity
-         * MarkDementevYieldIndicator
-         * Проверь, как меняется, и на какие суммы, состояние денег на счетах инвесторов!
-         */
+        recalculateSomeFixedRateBondFieldsAtBuy(atomicFixedRateBondPackage.get(), buyFixedRateBondDTO,
+                packageBuyValueBeforeAfterCorrectBuyCommission);
         //9 - сохраняем и возвращаем новый пакет!
         return fixedRateBondRepository.save(atomicFixedRateBondPackage.get());
     }
@@ -150,7 +150,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         oldNewAssetCount[0] = atomicFixedRateBondPackage.get().getAssetCount();
 
         isAssetsOwnersHaveThisAssetsAmounts(atomicFixedRateBondPackage.get(), partialSellFixedRateBondDTO);
-        updateFixedRateBondFieldsWithoutCalculations(atomicFixedRateBondPackage.get(),
+        updateSomeFixedRateBondFieldsWithoutCalculations(atomicFixedRateBondPackage.get(),
                 partialSellFixedRateBondDTO.getLastAssetSellDate(),
                 partialSellFixedRateBondDTO.getExpectedBondCouponPaymentsCount());
 
@@ -284,11 +284,77 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
      * покупки/продажи до даты погашения облигации.
      * @since 0.0.1-alpha
      */
-    private void updateFixedRateBondFieldsWithoutCalculations(FixedRateBondPackage fixedRateBondPackage,
-                                                              LocalDate newLastAssetBuyOrSellDate,
-                                                              Integer newExpectedBondCouponPaymentsCount) {
+    private void updateSomeFixedRateBondFieldsWithoutCalculations(FixedRateBondPackage fixedRateBondPackage,
+                                                                  LocalDate newLastAssetBuyOrSellDate,
+                                                                  Integer newExpectedBondCouponPaymentsCount) {
         fixedRateBondPackage.setLastAssetBuyOrSellDate(newLastAssetBuyOrSellDate);
         fixedRateBondPackage.setExpectedBondCouponPaymentsCount(newExpectedBondCouponPaymentsCount);
+    }
+
+    /**
+     * При частичной покупке пакета облигаций ряд полей сущности нужно заполнить результатами вычислений. Они
+     * проводятся в данном методе, поля также заполняются здесь.
+     * @param fixedRateBondPackage пакет облигаций, поля которого перезаполняются.
+     * @param dTO DTO для обслуживания внесения изменений в систему при частичной покупке облигаций в пакет.
+     * @param packageBuyValueBeforeAfterCorrectBuyCommission стоимость пакета до и после корректировки на комиссию.
+     * @since 0.0.1-alpha
+     */
+    private void recalculateSomeFixedRateBondFieldsAtBuy(FixedRateBondPackage fixedRateBondPackage,
+                                                         BuyFixedRateBondDTO dTO,
+                                                         float[] packageBuyValueBeforeAfterCorrectBuyCommission) {
+        Float[] methodArguments = new Float[5];
+        float commissionDiff = (packageBuyValueBeforeAfterCorrectBuyCommission[0]
+                - packageBuyValueBeforeAfterCorrectBuyCommission[1]);
+
+        methodArguments[0] = fixedRateBondPackage.getPurchaseBondParValuePercent();
+        methodArguments[1] = Float.valueOf(fixedRateBondPackage.getAssetCount()) - Float.valueOf(dTO.getAssetCount());
+        methodArguments[2] = Float.valueOf(fixedRateBondPackage.getAssetCount());
+        methodArguments[3] = dTO.getPurchaseBondParValuePercent();
+        methodArguments[4] = Float.valueOf(dTO.getAssetCount());
+
+        fixedRateBondPackage.setPurchaseBondParValuePercent(calculateComplexField(methodArguments));
+        Arrays.fill(methodArguments, null);
+        fixedRateBondPackage.setBondsAccruedInterest(fixedRateBondPackage.getBondsAccruedInterest()
+                + dTO.getBondsAccruedInterest());
+
+        methodArguments[0] = fixedRateBondPackage.getSimpleYieldToMaturity();
+        methodArguments[1] = (Float.valueOf(fixedRateBondPackage.getAssetCount()) - Float.valueOf(dTO.getAssetCount()))
+                * Float.valueOf(fixedRateBondPackage.getBondParValue());
+        methodArguments[4] = Float.valueOf(dTO.getAssetCount()) * dTO.getPurchaseBondParValuePercent() / 100.0F
+                * Float.valueOf(fixedRateBondPackage.getBondParValue());
+        methodArguments[2] = methodArguments[1] + methodArguments[4];
+        methodArguments[3] = fixedRateBondPackage.calculateSimpleYieldToMaturity(dTO.getPurchaseBondParValuePercent(),
+                fixedRateBondPackage.getBondParValue(), fixedRateBondPackage.getBondCouponValue(),
+                dTO.getExpectedBondCouponPaymentsCount(),
+                fixedRateBondPackage.getBondsAccruedInterest()
+                        * (Float.valueOf(dTO.getAssetCount()) / Float.valueOf(fixedRateBondPackage.getAssetCount())));
+
+        fixedRateBondPackage.setSimpleYieldToMaturity(calculateComplexField(methodArguments));
+        fixedRateBondPackage.setTotalCommissionForPurchase(fixedRateBondPackage.getTotalCommissionForPurchase()
+                + commissionDiff);
+        fixedRateBondPackage.setTotalAssetPurchasePriceWithCommission(fixedRateBondPackage
+                .getTotalAssetPurchasePriceWithCommission() + commissionDiff
+                + packageBuyValueBeforeAfterCorrectBuyCommission[0]);
+
+        methodArguments[0] = fixedRateBondPackage.getMarkDementevYieldIndicator();
+        methodArguments[3] = fixedRateBondPackage.calculateMarkDementevYieldIndicator(
+                fixedRateBondPackage.getBondCouponValue(), dTO.getExpectedBondCouponPaymentsCount(),
+                (commissionDiff + packageBuyValueBeforeAfterCorrectBuyCommission[0]), dTO.getAssetCount(),
+                fixedRateBondPackage.getBondParValue());
+
+        fixedRateBondPackage.setMarkDementevYieldIndicator(calculateComplexField(methodArguments));
+    }
+
+    /**
+     * В методе recalculateSomeFixedRateBondFieldsAtBuy нужно несколько раз повторять одну и ту же формулу, но с
+     * разными аргументами, для чего используется данный метод.
+     * @param methodArguments аргументы для формулы внутри метода.
+     * @return результат расчётов по формуле с использованием аргументов метода.
+     * @since 0.0.1-alpha
+     */
+    private Float calculateComplexField(Float[] methodArguments) {
+        return (methodArguments[0] * (methodArguments[1] / methodArguments[2]))
+                + (methodArguments[3] * (methodArguments[4] / methodArguments[2]));
     }
 
     /**
