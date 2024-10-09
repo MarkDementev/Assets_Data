@@ -201,11 +201,11 @@ public class FixedRateBondPackage extends ExchangeAsset {
         float daysBeforeMaturity = calculateDaysBeforeMaturity();
 
         if (bondParValue > oneBondValueSummedWithHisCommission) {
-            taxValueOfMaturityIncome = incomeTaxCorrection * (bondParValue - oneBondValueSummedWithHisCommission);
+            taxValueOfMaturityIncome = (1 - incomeTaxCorrection) * (bondParValue - oneBondValueSummedWithHisCommission);
         }
-        return (((expectedBondCouponPaymentsSum * incomeTaxCorrection + bondParValue + taxValueOfMaturityIncome)
+        return ((expectedBondCouponPaymentsSum * incomeTaxCorrection + bondParValue - taxValueOfMaturityIncome)
                 / oneBondValueSummedWithHisCommission - 1) / (daysBeforeMaturity
-                / daysInYear)) * 100.00F;
+                / daysInYear) * 100.00F;
     }
 
     /**

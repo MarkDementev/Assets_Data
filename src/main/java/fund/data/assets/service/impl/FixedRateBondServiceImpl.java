@@ -116,7 +116,8 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         float[] packageBuyValueBeforeAfterCorrectBuyCommission = new float[2];
         float packageBuyValue = calculatePartialPackageBuyValue(id, buyFixedRateBondDTO);
         packageBuyValueBeforeAfterCorrectBuyCommission[0] = packageBuyValue;
-        packageBuyValue = correctOperationValueByCommission(packageBuyValue, atomicFixedRateBondPackage.get());
+        packageBuyValue = correctOperationValueByCommission(packageBuyValue, atomicFixedRateBondPackage.get(),
+                false);
         packageBuyValueBeforeAfterCorrectBuyCommission[1] = packageBuyValue;
         //4 - формируем мапу изменения денег
         Map<String, Float> ownersMoneyNegativeDistribution = formOwnersMoneyDistributionMap(
@@ -156,7 +157,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
 
         float packagePartSellValue = partialSellFixedRateBondDTO.getPackageSellValue();
         packagePartSellValue = correctOperationValueByCommission(packagePartSellValue,
-                atomicFixedRateBondPackage.get());
+                atomicFixedRateBondPackage.get(), true);
         packagePartSellValue = correctValueByTaxes(partialSellFixedRateBondDTO, atomicFixedRateBondPackage.get(),
                 packagePartSellValue);
         Map<String, Float> ownersMoneyDistribution = formOwnersMoneyDistributionMap(atomicFixedRateBondPackage.get(),
@@ -179,7 +180,8 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
                 fixedRateBondRepository.findById(id).orElseThrow());
         float packageSellValue = sellFixedRateBondDTO.getPackageSellValue();
-        packageSellValue = correctOperationValueByCommission(packageSellValue, atomicFixedRateBondPackage.get());
+        packageSellValue = correctOperationValueByCommission(packageSellValue, atomicFixedRateBondPackage.get(),
+                true);
         packageSellValue = correctValueByTaxes(sellFixedRateBondDTO, atomicFixedRateBondPackage.get(),
                 packageSellValue);
         Map<String, Float> ownersMoneyDistribution = formOwnersMoneyDistributionMap(atomicFixedRateBondPackage.get(),
@@ -303,8 +305,8 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
                                                          BuyFixedRateBondDTO dTO,
                                                          float[] packageBuyValueBeforeAfterCorrectBuyCommission) {
         Float[] methodArguments = new Float[5];
-        float commissionDiff = (packageBuyValueBeforeAfterCorrectBuyCommission[0]
-                - packageBuyValueBeforeAfterCorrectBuyCommission[1]);
+        float commissionDiff = (packageBuyValueBeforeAfterCorrectBuyCommission[1]
+                - packageBuyValueBeforeAfterCorrectBuyCommission[0]);
 
         methodArguments[0] = fixedRateBondPackage.getPurchaseBondParValuePercent();
         methodArguments[1] = Float.valueOf(fixedRateBondPackage.getAssetCount()) - Float.valueOf(dTO.getAssetCount());
@@ -313,35 +315,38 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         methodArguments[4] = Float.valueOf(dTO.getAssetCount());
 
         fixedRateBondPackage.setPurchaseBondParValuePercent(calculateComplexField(methodArguments));
-        Arrays.fill(methodArguments, null);
-        fixedRateBondPackage.setBondsAccruedInterest(fixedRateBondPackage.getBondsAccruedInterest()
-                + dTO.getBondsAccruedInterest());
 
         methodArguments[0] = fixedRateBondPackage.getSimpleYieldToMaturity();
         methodArguments[1] = (Float.valueOf(fixedRateBondPackage.getAssetCount()) - Float.valueOf(dTO.getAssetCount()))
-                * Float.valueOf(fixedRateBondPackage.getBondParValue());
+                * Float.valueOf(fixedRateBondPackage.getBondParValue())
+                + fixedRateBondPackage.getBondsAccruedInterest();
         methodArguments[4] = Float.valueOf(dTO.getAssetCount()) * dTO.getPurchaseBondParValuePercent() / 100.0F
-                * Float.valueOf(fixedRateBondPackage.getBondParValue());
+                * Float.valueOf(fixedRateBondPackage.getBondParValue()) + dTO.getBondsAccruedInterest();
         methodArguments[2] = methodArguments[1] + methodArguments[4];
         methodArguments[3] = fixedRateBondPackage.calculateSimpleYieldToMaturity(dTO.getPurchaseBondParValuePercent(),
                 fixedRateBondPackage.getBondParValue(), fixedRateBondPackage.getBondCouponValue(),
-                dTO.getExpectedBondCouponPaymentsCount(),
-                fixedRateBondPackage.getBondsAccruedInterest()
-                        * (Float.valueOf(dTO.getAssetCount()) / Float.valueOf(fixedRateBondPackage.getAssetCount())));
+                dTO.getExpectedBondCouponPaymentsCount(), dTO.getBondsAccruedInterest());
 
         fixedRateBondPackage.setSimpleYieldToMaturity(calculateComplexField(methodArguments));
         fixedRateBondPackage.setTotalCommissionForPurchase(fixedRateBondPackage.getTotalCommissionForPurchase()
                 + commissionDiff);
-        fixedRateBondPackage.setTotalAssetPurchasePriceWithCommission(fixedRateBondPackage
-                .getTotalAssetPurchasePriceWithCommission() + commissionDiff
-                + packageBuyValueBeforeAfterCorrectBuyCommission[0]);
 
         methodArguments[0] = fixedRateBondPackage.getMarkDementevYieldIndicator();
+        methodArguments[1] = fixedRateBondPackage.getTotalAssetPurchasePriceWithCommission()
+                + fixedRateBondPackage.getBondsAccruedInterest();
+
+        fixedRateBondPackage.setTotalAssetPurchasePriceWithCommission(fixedRateBondPackage
+                .getTotalAssetPurchasePriceWithCommission() + packageBuyValueBeforeAfterCorrectBuyCommission[1]);
+
+        methodArguments[4] = packageBuyValueBeforeAfterCorrectBuyCommission[1];
+        methodArguments[2] = methodArguments[1] + methodArguments[4];
         methodArguments[3] = fixedRateBondPackage.calculateMarkDementevYieldIndicator(
                 fixedRateBondPackage.getBondCouponValue(), dTO.getExpectedBondCouponPaymentsCount(),
-                (commissionDiff + packageBuyValueBeforeAfterCorrectBuyCommission[0]), dTO.getAssetCount(),
+                packageBuyValueBeforeAfterCorrectBuyCommission[1], dTO.getAssetCount(),
                 fixedRateBondPackage.getBondParValue());
 
+        fixedRateBondPackage.setBondsAccruedInterest(fixedRateBondPackage.getBondsAccruedInterest()
+                + dTO.getBondsAccruedInterest());
         fixedRateBondPackage.setMarkDementevYieldIndicator(calculateComplexField(methodArguments));
     }
 
@@ -382,13 +387,15 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
 
     /**
      * При полной или частичной продаже пакета, при докупке в пакет, определяем, платится ли комиссия.
-     * Если да - уменьшаем сумму операции на размер комиссии и возвращаем её, если нет - возвращаем без изменений.
+     * Если да - изменяем сумму операции на размер комиссии и возвращаем её, если нет - возвращаем без изменений.
      * @param operationValue цена продаваемого или покупаемого пакета облигаций в валюте эмиссии.
      * @param fixedRateBondPackage пакет облигаций, для работы с которым проводятся расчёты.
+     * @param isSell если true, то идёт продажа облигаций, если false, то идёт покупка.
      * @return скорректированная или оставленная без изменений сумма.
      * @since 0.0.1-alpha
      */
-    private Float correctOperationValueByCommission(float operationValue, FixedRateBondPackage fixedRateBondPackage) {
+    private Float correctOperationValueByCommission(float operationValue, FixedRateBondPackage fixedRateBondPackage,
+                                                    boolean isSell) {
         if (fixedRateBondPackage.getAssetCommissionSystem().equals(CommissionSystem.TURNOVER)) {
             Account account = financialAssetRelationshipRepository.findById(
                     fixedRateBondPackage.getAssetRelationship().getId())
@@ -396,7 +403,11 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
             String assetTypeName = fixedRateBondPackage.getAssetTypeName();
             float commissionPercentValue = turnoverCommissionValueRepository.findByAccountAndAssetTypeName(account,
                     assetTypeName).getCommissionPercentValue();
-            operationValue = operationValue - operationValue * commissionPercentValue;
+            if (isSell) {
+                operationValue = operationValue - operationValue * commissionPercentValue;
+            } else {
+                operationValue = operationValue + operationValue * commissionPercentValue;
+            }
         }
         return operationValue;
     }

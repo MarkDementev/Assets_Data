@@ -301,6 +301,22 @@ public class TestUtils {
         );
     }
 
+    public BuyFixedRateBondDTO getBuyFixedRateBondNotAllOwnersDTO() {
+        Map<String, Float> assetOwnersWithAssetCounts = new LinkedHashMap<>();
+
+        assetOwnersWithAssetCounts.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(1).getId()), 5.00F);
+
+        return new BuyFixedRateBondDTO(
+                AssetsOwnersCountry.RUS,
+                5,
+                assetOwnersWithAssetCounts,
+                TEST_FIXED_RATE_BOND_LAST_ASSET_SELL_DATE,
+                95.00F,
+                50.00F,
+                1
+        );
+    }
+
     public BuyFixedRateBondDTO getBuyFixedRateBondNotValidTaxResidencyDTO() {
         Map<String, Float> assetOwnersWithAssetCounts = new LinkedHashMap<>();
 
