@@ -121,6 +121,12 @@ public class TestUtils {
             "111112", "ANOTHER_placeOfBirth", "ANOTHER_placeOfPassportGiven",
             "25.08.2021", "377-778"
     );
+    private final NewRussianAssetsOwnerDTO thirdRussianAssetsOwnerDTO = new NewRussianAssetsOwnerDTO(
+            "THIRD_name", "THIRD_surname", "27.05.1995", "Email_tur@mail.ru",
+            "THIRD_patronymic", MAN, "9888888886", "2426",
+            "111113", "THIRD_placeOfBirth", "THIRD_placeOfPassportGiven",
+            "26.08.2021", "377-779"
+    );
     private final NewRussianAssetsOwnerDTO notValidRussianAssetsOwnerDTO = new NewRussianAssetsOwnerDTO(
             "", "", "25,05,1995", "Email_surmail.ru", "",
             null, "988888888", "242", "11111", "",
@@ -334,6 +340,24 @@ public class TestUtils {
         );
     }
 
+    public BuyFixedRateBondDTO getBuyWithNewOwnerFixedRateBondDTO() {
+        Map<String, Float> assetOwnersWithAssetCounts = new LinkedHashMap<>();
+
+        assetOwnersWithAssetCounts.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(0).getId()), 1.00F);
+        assetOwnersWithAssetCounts.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(1).getId()), 2.00F);
+        assetOwnersWithAssetCounts.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(2).getId()), 4.00F);
+
+        return new BuyFixedRateBondDTO(
+                AssetsOwnersCountry.RUS,
+                7,
+                assetOwnersWithAssetCounts,
+                TEST_FIXED_RATE_BOND_LAST_ASSET_SELL_DATE,
+                99.00F,
+                10.00F,
+                1
+        );
+    }
+
     public PartialSellFixedRateBondDTO getPartialSellFixedRateBondPackageFirstDTO() {
         Map<String, Integer> assetOwnersWithAssetCountsToSell = new LinkedHashMap<>();
 
@@ -459,8 +483,12 @@ public class TestUtils {
         return createRussianAssetsOwner(russianAssetsOwnerDTO);
     }
 
-    public ResultActions createSecondDefaultRussianAssetsOwner() throws Exception {
+    public ResultActions createSecondRussianAssetsOwner() throws Exception {
         return createRussianAssetsOwner(secondRussianAssetsOwnerDTO);
+    }
+
+    public ResultActions createThirdRussianAssetsOwner() throws Exception {
+        return createRussianAssetsOwner(thirdRussianAssetsOwnerDTO);
     }
 
     public ResultActions createDefaultAccountCash() throws Exception {
@@ -596,7 +624,7 @@ public class TestUtils {
         Map<String, Float> assetOwnersWithAssetCounts = new LinkedHashMap<>();
 
         createDefaultRussianAssetsOwner();
-        createSecondDefaultRussianAssetsOwner();
+        createSecondRussianAssetsOwner();
         assetOwnersWithAssetCounts.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(0).getId()),
                 10.00F);
         assetOwnersWithAssetCounts.put(String.valueOf(russianAssetsOwnerRepository.findAll().get(1).getId()),
@@ -645,6 +673,19 @@ public class TestUtils {
 
         createAccountCash(firstAccountCashDTO);
         createAccountCash(secondAccountCashDTO);
+    }
+
+    public void addThirdRussianAssetsOwnerWithMoney() throws Exception {
+        createThirdRussianAssetsOwner();
+
+        AccountCashDTO accountCashDTO = new AccountCashDTO(
+                accountRepository.findAll().get(0).getId(),
+                RUSRUB,
+                russianAssetsOwnerRepository.findAll().get(2).getId(),
+                TEST_FIRST_RUSSIAN_OWNER_CASH_AMOUNT
+        );
+
+        createAccountCash(accountCashDTO);
     }
 
     public ResultActions perform(final MockHttpServletRequestBuilder request) throws Exception {

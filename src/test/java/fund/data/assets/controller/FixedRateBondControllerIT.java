@@ -432,10 +432,74 @@ public class FixedRateBondControllerIT {
         ).getAmount());
     }
 
-//    @Test
-//    public void partialBuyFixedRateBondWithNewOwnersAndAnotherPriceIT() throws Exception {
-//
-//    }
+    @Test
+    public void partialBuyFixedRateBondWithNewOwnerIT() throws Exception {
+        testUtils.createDefaultFixedRateBond();
+        testUtils.addMoreMoneyToOwnersWhileBuyingMoreBonds();
+        testUtils.addThirdRussianAssetsOwnerWithMoney();
+
+        assertThat(fixedRateBondRepository.findAll()).hasSize(1);
+        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
+        assertEquals(30, fixedRateBondRepository.findAll().get(0).getAssetCount());
+
+        Long createdFixedRateBondPackageId = fixedRateBondRepository.findAll().get(0).getId();
+        var response = testUtils.perform(
+                        put("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH + BUY_PATH,
+                                createdFixedRateBondPackageId)
+                                .content(asJson(testUtils.getBuyWithNewOwnerFixedRateBondDTO()))
+                                .contentType(APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andReturn().getResponse();
+        FixedRateBondPackage fixedRateBondPackageFromResponse = fromJson(response.getContentAsString(),
+                new TypeReference<>() {});
+
+        assertThat(fixedRateBondRepository.findAll()).hasSize(1);
+        assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
+        assertEquals(createdFixedRateBondPackageId, fixedRateBondPackageFromResponse.getId());
+        assertEquals(37, fixedRateBondPackageFromResponse.getAssetCount());
+        assertEquals(11, fixedRateBondPackageFromResponse.getAssetRelationship()
+                .getAssetOwnersWithAssetCounts().get(String.valueOf(russianAssetsOwnerRepository.findAll().get(0)
+                        .getId())));
+        assertEquals(22, fixedRateBondPackageFromResponse.getAssetRelationship()
+                .getAssetOwnersWithAssetCounts().get(String.valueOf(russianAssetsOwnerRepository.findAll().get(1)
+                        .getId())));
+        assertEquals(4, fixedRateBondPackageFromResponse.getAssetRelationship()
+                .getAssetOwnersWithAssetCounts().get(String.valueOf(russianAssetsOwnerRepository.findAll().get(2)
+                        .getId())));
+        assertNotEquals(fixedRateBondPackageFromResponse.getAssetRelationship().getCreatedAt(),
+                fixedRateBondPackageFromResponse.getAssetRelationship().getUpdatedAt());
+        assertEquals(TEST_FIXED_RATE_BOND_LAST_ASSET_SELL_DATE,
+                fixedRateBondPackageFromResponse.getLastAssetBuyOrSellDate());
+        assertEquals(99.8108F, Float.parseFloat(TEST_DECIMAL_FORMAT.format(
+                fixedRateBondPackageFromResponse.getPurchaseBondParValuePercent())));
+        assertEquals(10.00F, fixedRateBondPackageFromResponse.getBondsAccruedInterest());
+        assertEquals(369.3999F, Float.parseFloat(TEST_DECIMAL_FORMAT.format(
+                fixedRateBondPackageFromResponse.getTotalCommissionForPurchase())));
+        assertEquals(37309.4F, fixedRateBondPackageFromResponse.getTotalAssetPurchasePriceWithCommission());
+        assertEquals(1, fixedRateBondPackageFromResponse.getExpectedBondCouponPaymentsCount());
+        assertEquals(11.3580F, Float.parseFloat(TEST_DECIMAL_FORMAT.format(
+                fixedRateBondPackageFromResponse.getSimpleYieldToMaturity())));
+        assertEquals(8.9326F, Float.parseFloat(TEST_DECIMAL_FORMAT.format(
+                fixedRateBondPackageFromResponse.getMarkDementevYieldIndicator())));
+        assertNotEquals(fixedRateBondPackageFromResponse.getCreatedAt(),
+                fixedRateBondPackageFromResponse.getUpdatedAt());
+        assertEquals(9198.657F, accountCashRepository.findByAccountAndAssetCurrencyAndAssetsOwner(
+                accountRepository.findAll().get(0),
+                AssetCurrency.RUSRUB,
+                russianAssetsOwnerRepository.findAll().get(0)
+        ).getAmount());
+        assertEquals(18397.3143F, accountCashRepository.findByAccountAndAssetCurrencyAndAssetsOwner(
+                accountRepository.findAll().get(0),
+                AssetCurrency.RUSRUB,
+                russianAssetsOwnerRepository.findAll().get(1)
+        ).getAmount());
+        assertEquals(6144.628F, accountCashRepository.findByAccountAndAssetCurrencyAndAssetsOwner(
+                accountRepository.findAll().get(0),
+                AssetCurrency.RUSRUB,
+                russianAssetsOwnerRepository.findAll().get(2)
+        ).getAmount());
+    }
 
     @Test
     public void partialBuyFixedRateBondNotEnoughMoneyIT() throws Exception {

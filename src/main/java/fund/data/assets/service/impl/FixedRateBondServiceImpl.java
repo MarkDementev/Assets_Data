@@ -30,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -64,7 +63,6 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     private final AccountCashRepository accountCashRepository;
     private final TurnoverCommissionValueRepository turnoverCommissionValueRepository;
     private final FinancialAssetRelationshipRepository financialAssetRelationshipRepository;
-    //TODO После достижения функциональности всех методов проведи их инвентаризацию - особенно ДОКУМЕНТАЦИЮ И ИМЕНОВАНИЯ
 
     @Override
     public FixedRateBondPackage getFixedRateBond(Long id) {
@@ -104,40 +102,30 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     @Override
     @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = {Exception.class})
     public FixedRateBondPackage partialBuyFixedRateBondPackage(Long id, BuyFixedRateBondDTO buyFixedRateBondDTO) {
-        //1 - валидируем кол-во бумаг к покупке с вэльюс в мапе их распределения по оунерам
         isOwnershipMapValuesSumEqualsAssetCount(buyFixedRateBondDTO.getAssetOwnersWithAssetCounts(),
                 buyFixedRateBondDTO.getAssetCount());
 
-        //2 - находим бонд для изменения
         AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
                 fixedRateBondRepository.findById(id).orElseThrow());
-        //3 - определяем совокупную стоимость покупаемого пакета с учётом комиссий. Также записываем старую и новую
-        //величины для дальнейшего использования
-        float[] packageBuyValueBeforeAfterCorrectBuyCommission = new float[2];
+        float[] packageBuyValueBeforeAfterCorrectionBuyCommission = new float[2];
         float packageBuyValue = calculatePartialPackageBuyValue(id, buyFixedRateBondDTO);
-        packageBuyValueBeforeAfterCorrectBuyCommission[0] = packageBuyValue;
+        packageBuyValueBeforeAfterCorrectionBuyCommission[0] = packageBuyValue;
         packageBuyValue = correctOperationValueByCommission(packageBuyValue, atomicFixedRateBondPackage.get(),
                 false);
-        packageBuyValueBeforeAfterCorrectBuyCommission[1] = packageBuyValue;
-        //4 - формируем мапу изменения денег
+        packageBuyValueBeforeAfterCorrectionBuyCommission[1] = packageBuyValue;
         Map<String, Float> ownersMoneyNegativeDistribution = formOwnersMoneyDistributionMap(
                 atomicFixedRateBondPackage.get(), packageBuyValue, buyFixedRateBondDTO);
 
-        //5 - проверяем, могут ли все оунеры позволить себе такие траты
         isAssetsOwnersHaveThisAccountCashAmounts(atomicFixedRateBondPackage.get(), buyFixedRateBondDTO,
                 ownersMoneyNegativeDistribution);
-        //6 - уменьшаем деньги у оунеров
         distributeMoneyOrExpensesAmongOwners(buyFixedRateBondDTO, atomicFixedRateBondPackage.get(),
                 ownersMoneyNegativeDistribution, false);
-        //7 - распределяем новые бонды по оунерам
         updateAssetOwnersWithAssetCounts(atomicFixedRateBondPackage.get(),
                 buyFixedRateBondDTO.getAssetOwnersWithAssetCounts(), false);
-        //8 - меняем остальные поля у бонда
         updateSomeFixedRateBondFieldsWithoutCalculations(atomicFixedRateBondPackage.get(),
                 buyFixedRateBondDTO.getLastAssetBuyDate(), buyFixedRateBondDTO.getExpectedBondCouponPaymentsCount());
         recalculateSomeFixedRateBondFieldsAtBuy(atomicFixedRateBondPackage.get(), buyFixedRateBondDTO,
-                packageBuyValueBeforeAfterCorrectBuyCommission);
-        //9 - сохраняем и возвращаем новый пакет!
+                packageBuyValueBeforeAfterCorrectionBuyCommission);
         return fixedRateBondRepository.save(atomicFixedRateBondPackage.get());
     }
 
@@ -243,7 +231,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
 
     /**
      * Проводится валидация - сумма выльюс в assetOwnersWithAssetCounts, приведённая к Integer, должна быть равна
-     * значению assetCount. Аргументы метода берутся из DTO {@link FirstBuyFixedRateBondDTO}.
+     значению assetCount. Аргументы метода берутся из DTO {@link FirstBuyFixedRateBondDTO}.
      @param assetOwnersWithAssetCounts мапа, где кей - это владелец актива, вэлью - количество ценных бумаг оунера
      в рамках данного пакета ценных бумаг.
      @param assetCount количество бумаг в пакете ценных бумаг.
@@ -602,17 +590,24 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
      * При частичных продаже и покупке облигаций надо изменять количество облигаций во владении, для чего используется
      * этот метод.
      * @param fixedRateBondPackage пакет облигаций, который затрагивают изменения.
-     * @param assetOwnersWithAssetCountsDiffMap мапа с информацией, у кого на сколько изменится облигаций во владении.
+     * @param diffMap мапа с информацией, у кого на сколько изменится облигаций во владении.
      * @param isSell если true, то идёт частичная продажа облигаций, если false, то идёт частичная покупка.
      * @since 0.0.1-alpha
      */
     private void updateAssetOwnersWithAssetCounts(FixedRateBondPackage fixedRateBondPackage,
-                                                  Map<String, ? extends Number> assetOwnersWithAssetCountsDiffMap,
-                                                  boolean isSell) {
+                                                  Map<String, ? extends Number> diffMap, boolean isSell) {
         Map<String, Float> assetOwnersWithAssetCounts = fixedRateBondPackage.getAssetRelationship()
                 .getAssetOwnersWithAssetCounts();
 
-        for (Map.Entry<String, ? extends Number> mapElement : assetOwnersWithAssetCountsDiffMap.entrySet()) {
+        if (diffMap.size() > assetOwnersWithAssetCounts.size()) {
+            for (Map.Entry<String, ? extends Number> mapElement : diffMap.entrySet()) {
+                if (!assetOwnersWithAssetCounts.containsKey(mapElement.getKey())) {
+                    assetOwnersWithAssetCounts.put(mapElement.getKey(), 0.0F);
+                }
+            }
+        }
+
+        for (Map.Entry<String, ? extends Number> mapElement : diffMap.entrySet()) {
             float newAssetCount;
             String assetsOwnerID = mapElement.getKey();
             int assetCountDiff = mapElement.getValue().intValue();
