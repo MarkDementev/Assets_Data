@@ -6,20 +6,19 @@ import fund.data.assets.TestUtils;
 import fund.data.assets.config.SpringConfigForTests;
 import fund.data.assets.dto.financial_entities.TurnoverCommissionValueDTO;
 import fund.data.assets.dto.common.PercentFloatValueDTO;
+import fund.data.assets.exception.EntityWithIDNotFoundException;
 import fund.data.assets.exception.NotValidPercentValueInputFormatException;
 import fund.data.assets.model.financial_entities.TurnoverCommissionValue;
 import fund.data.assets.repository.AccountRepository;
 import fund.data.assets.repository.TurnoverCommissionValueRepository;
 
-import jakarta.servlet.ServletException;
-
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
@@ -36,7 +35,6 @@ import static fund.data.assets.controller.AccountController.ID_PATH;
 import static fund.data.assets.controller.TurnoverCommissionValueController.TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -51,6 +49,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * @version 0.3-a
+ * @author MarkDementev a.k.a JavaMarkDem
+ */
 @SpringBootTest(classes = SpringConfigForTests.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles(TEST_PROFILE)
 @AutoConfigureMockMvc
@@ -90,6 +92,23 @@ public class TurnoverCommissionValueControllerIT {
         assertEquals(expectedTurnoverCommissionValue.getCommissionPercentValue(),
                 turnoverCommissionValueFromResponse.getCommissionPercentValue());
         assertNotNull(turnoverCommissionValueFromResponse.getCreatedAt());
+    }
+
+    @Test
+    public void getNotExistsTurnoverCommissionValueIT() throws Exception {
+        testUtils.createDefaultTurnoverCommissionValue();
+
+        Long notExistsTurnoverCommissionValueID = turnoverCommissionValueRepository.findAll().get(0).getId();
+        notExistsTurnoverCommissionValueID++;
+
+        Exception exception = testUtils.perform(
+                    get("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH + ID_PATH,
+                            notExistsTurnoverCommissionValueID))
+                .andExpect(status().isNotFound())
+                .andReturn().getResolvedException();
+
+        assert exception != null;
+        assertEquals(EntityWithIDNotFoundException.class, exception.getClass());
     }
 
     @Test
@@ -157,10 +176,14 @@ public class TurnoverCommissionValueControllerIT {
                 TEST_ASSET_TYPE_NAME,
                 TEST_COMMISSION_PERCENT_VALUE + TEST_COMMISSION_PERCENT_VALUE
         );
-        Assertions.assertThrows(ServletException.class,
-                () -> testUtils.perform(post("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH)
+        Exception exception = testUtils.perform(post("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH)
                         .content(asJson(turnoverCommissionValueDTOBothNotUniqueAccountAssetTypeName))
-                        .contentType(APPLICATION_JSON)));
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResolvedException();
+
+        assert exception != null;
+        assertEquals(DataIntegrityViolationException.class, exception.getClass());
         assertThat(turnoverCommissionValueRepository.findAll()).hasSize(1);
     }
 
@@ -202,14 +225,15 @@ public class TurnoverCommissionValueControllerIT {
         notValidPercentFloatValueDTO.setPercentValue(TEST_STRING_FORMAT_PERCENT_VALUE + "111");
 
         Long createdTurnoverCommissionId = turnoverCommissionValueRepository.findAll().get(0).getId();
-        assertThatThrownBy(() -> testUtils.perform(put("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH
+        Exception exception = testUtils.perform(put("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH
                         + ID_PATH, createdTurnoverCommissionId)
-                .content(asJson(notValidPercentFloatValueDTO))
-                .contentType(APPLICATION_JSON))
-        )
-                .isInstanceOf(ServletException.class)
-                .hasMessageContaining(NotValidPercentValueInputFormatException.MESSAGE);
+                        .content(asJson(notValidPercentFloatValueDTO))
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResolvedException();
 
+        assert exception != null;
+        assertEquals(NotValidPercentValueInputFormatException.class, exception.getClass());
         assertEquals(TEST_COMMISSION_PERCENT_VALUE_FLOAT,
                 turnoverCommissionValueRepository.findAll().get(0).getCommissionPercentValue());
     }

@@ -20,9 +20,6 @@ import fund.data.assets.utils.enums.AssetCurrency;
 import fund.data.assets.utils.enums.CommissionSystem;
 import fund.data.assets.utils.enums.TaxSystem;
 
-import jakarta.servlet.ServletException;
-
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 
@@ -30,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.List;
 import java.util.Map;
@@ -61,6 +59,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * @version 0.3-a
+ * @author MarkDementev a.k.a JavaMarkDem
+ */
 @SpringBootTest(classes = SpringConfigForTests.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles(TEST_PROFILE)
 @AutoConfigureMockMvc
@@ -300,12 +302,14 @@ public class FixedRateBondControllerIT {
         assertEquals(TEST_FIRST_RUSSIAN_OWNER_CASH_AMOUNT, accountCashRepository.findAll().get(0).getAmount());
         assertEquals(TEST_SECOND_RUSSIAN_OWNER_CASH_AMOUNT, accountCashRepository.findAll().get(1).getAmount());
 
-        testUtils.perform(
+        Exception exception = testUtils.perform(
                 post("/data" + FIXED_RATE_BOND_CONTROLLER_PATH)
                         .content(asJson(notValidFirstBuyFixedRateBondDTO))
                         .contentType(APPLICATION_JSON)
-        ).andExpect(status().isBadRequest());
+        ).andExpect(status().isBadRequest()).andReturn().getResolvedException();
 
+        assert exception != null;
+        assertEquals(MethodArgumentNotValidException.class, exception.getClass());
         assertThat(fixedRateBondRepository.findAll()).hasSize(0);
         assertThat(financialAssetRelationshipRepository.findAll()).hasSize(0);
         assertEquals(TEST_FIRST_RUSSIAN_OWNER_CASH_AMOUNT, accountCashRepository.findAll().get(0).getAmount());
@@ -510,12 +514,16 @@ public class FixedRateBondControllerIT {
         assertEquals(30, fixedRateBondRepository.findAll().get(0).getAssetCount());
 
         Long createdFixedRateBondPackageId = fixedRateBondRepository.findAll().get(0).getId();
-        Assertions.assertThrows(ServletException.class, () -> testUtils.perform(
-                put("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH + BUY_PATH,
-                        createdFixedRateBondPackageId)
-                        .content(asJson(testUtils.getBuyFixedRateBondDTO()))
-                        .contentType(APPLICATION_JSON)
-        ));
+        Exception exception = testUtils.perform(
+                        put("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH + BUY_PATH,
+                                createdFixedRateBondPackageId)
+                                .content(asJson(testUtils.getBuyFixedRateBondDTO()))
+                                .contentType(APPLICATION_JSON)
+                ).andExpect(status().isBadRequest())
+                .andReturn().getResolvedException();
+
+        assert exception != null;
+        assertEquals(IllegalArgumentException.class, exception.getClass());
         assertThat(fixedRateBondRepository.findAll()).hasSize(1);
         assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
         assertEquals(30, fixedRateBondRepository.findAll().get(0).getAssetCount());
@@ -530,12 +538,15 @@ public class FixedRateBondControllerIT {
         assertEquals(30, fixedRateBondRepository.findAll().get(0).getAssetCount());
 
         Long createdFixedRateBondPackageId = fixedRateBondRepository.findAll().get(0).getId();
-        Assertions.assertThrows(ServletException.class, () -> testUtils.perform(
+        Exception exception = testUtils.perform(
                 put("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH + BUY_PATH,
                         createdFixedRateBondPackageId)
                         .content(asJson(testUtils.getBuyFixedRateBondNotValidTaxResidencyDTO()))
                         .contentType(APPLICATION_JSON)
-        ));
+        ).andExpect(status().isBadRequest()).andReturn().getResolvedException();
+
+        assert exception != null;
+        assertEquals(IllegalArgumentException.class, exception.getClass());
         assertThat(fixedRateBondRepository.findAll()).hasSize(1);
         assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
         assertEquals(30, fixedRateBondRepository.findAll().get(0).getAssetCount());
@@ -654,12 +665,16 @@ public class FixedRateBondControllerIT {
         assertEquals(30, fixedRateBondRepository.findAll().get(0).getAssetCount());
 
         Long createdFixedRateBondPackageId = fixedRateBondRepository.findAll().get(0).getId();
+        Exception exception = testUtils.perform(
+                        put("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH,
+                                createdFixedRateBondPackageId)
+                                .content(asJson(testUtils.getPartialSellFixedRateBondPackageNotEnoughAssetsDTO()))
+                                .contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResolvedException();
 
-        Assertions.assertThrows(ServletException.class, () -> testUtils.perform(
-                put("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH, createdFixedRateBondPackageId)
-                        .content(asJson(testUtils.getPartialSellFixedRateBondPackageNotEnoughAssetsDTO()))
-                        .contentType(APPLICATION_JSON)
-        ));
+        assert exception != null;
+        assertEquals(IllegalArgumentException.class, exception.getClass());
         assertThat(fixedRateBondRepository.findAll()).hasSize(1);
         assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
         assertEquals(30, fixedRateBondRepository.findAll().get(0).getAssetCount());
@@ -674,12 +689,16 @@ public class FixedRateBondControllerIT {
         assertEquals(30, fixedRateBondRepository.findAll().get(0).getAssetCount());
 
         Long createdFixedRateBondPackageId = fixedRateBondRepository.findAll().get(0).getId();
+        Exception exception = testUtils.perform(
+                        put("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH,
+                                createdFixedRateBondPackageId)
+                                .content(asJson(testUtils.getPartialSellFixedRateBondPackageNotValidTaxResidencyDTO()))
+                                .contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResolvedException();
 
-        Assertions.assertThrows(ServletException.class, () -> testUtils.perform(
-                put("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH, createdFixedRateBondPackageId)
-                        .content(asJson(testUtils.getPartialSellFixedRateBondPackageNotValidTaxResidencyDTO()))
-                        .contentType(APPLICATION_JSON)
-        ));
+        assert exception != null;
+        assertEquals(IllegalArgumentException.class, exception.getClass());
         assertThat(fixedRateBondRepository.findAll()).hasSize(1);
         assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
         assertEquals(30, fixedRateBondRepository.findAll().get(0).getAssetCount());
@@ -732,13 +751,16 @@ public class FixedRateBondControllerIT {
         assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
 
         Long createdFixedRateBondID = fixedRateBondRepository.findAll().get(0).getId();
+        Exception exception = testUtils.perform(
+                        delete("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH,
+                                createdFixedRateBondID)
+                                .content(asJson(testUtils.getNotValidCountryFixedRateBondFullSellDTO()))
+                                .contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResolvedException();
 
-        Assertions.assertThrows(ServletException.class, () -> testUtils.perform(
-                delete("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH,
-                        createdFixedRateBondID)
-                        .content(asJson(testUtils.getNotValidCountryFixedRateBondFullSellDTO()))
-                        .contentType(APPLICATION_JSON)
-        ));
+        assert exception != null;
+        assertEquals(IllegalArgumentException.class, exception.getClass());
         assertThat(fixedRateBondRepository.findAll()).hasSize(1);
         assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
     }
@@ -790,13 +812,16 @@ public class FixedRateBondControllerIT {
         assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
 
         Long createdFixedRateBondID = fixedRateBondRepository.findAll().get(0).getId();
+        Exception exception = testUtils.perform(
+                        delete("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH + REDEEM_PATH,
+                                createdFixedRateBondID)
+                                .content(asJson(testUtils.getNotValidAssetsOwnersCountryDTO()))
+                                .contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResolvedException();
 
-        Assertions.assertThrows(ServletException.class, () -> testUtils.perform(
-                delete("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH + REDEEM_PATH,
-                        createdFixedRateBondID)
-                        .content(asJson(testUtils.getNotValidAssetsOwnersCountryDTO()))
-                        .contentType(APPLICATION_JSON)
-        ));
+        assert exception != null;
+        assertEquals(IllegalArgumentException.class, exception.getClass());
         assertThat(fixedRateBondRepository.findAll()).hasSize(1);
         assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
     }
@@ -808,13 +833,16 @@ public class FixedRateBondControllerIT {
         assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
 
         Long createdFixedRateBondID = fixedRateBondRepository.findAll().get(0).getId();
+        Exception exception = testUtils.perform(
+                        delete("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH + REDEEM_PATH,
+                                createdFixedRateBondID)
+                                .content(asJson(testUtils.getAssetsOwnersCountryDTO()))
+                                .contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResolvedException();
 
-        Assertions.assertThrows(ServletException.class, () -> testUtils.perform(
-                delete("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH + REDEEM_PATH,
-                        createdFixedRateBondID)
-                        .content(asJson(testUtils.getAssetsOwnersCountryDTO()))
-                        .contentType(APPLICATION_JSON)
-        ));
+        assert exception != null;
+        assertEquals(IllegalArgumentException.class, exception.getClass());
         assertThat(fixedRateBondRepository.findAll()).hasSize(1);
         assertThat(financialAssetRelationshipRepository.findAll()).hasSize(1);
     }

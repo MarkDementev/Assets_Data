@@ -5,14 +5,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import fund.data.assets.TestUtils;
 import fund.data.assets.config.SpringConfigForTests;
 import fund.data.assets.dto.owner.NewRussianAssetsOwnerDTO;
+import fund.data.assets.exception.EntityWithIDNotFoundException;
 import fund.data.assets.model.owner.RussianAssetsOwner;
 import fund.data.assets.repository.RussianAssetsOwnerRepository;
 import fund.data.assets.service.RussianAssetsOwnerService;
 
-import jakarta.servlet.ServletException;
-
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +42,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * @version 0.3-a
+ * @author MarkDementev a.k.a JavaMarkDem
+ */
 @SpringBootTest(classes = SpringConfigForTests.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles(TEST_PROFILE)
 @AutoConfigureMockMvc
@@ -95,6 +97,21 @@ public class RussianAssetsOwnerControllerIT {
         assertEquals(expectedRussianAssetsOwner.getIssueDate(), russianAssetsOwnerFromResponse.getIssueDate());
         assertEquals(expectedRussianAssetsOwner.getIssuerOrganisationCode(),
                 russianAssetsOwnerFromResponse.getIssuerOrganisationCode());
+    }
+
+    @Test
+    public void getNotExistsRussianAssetsOwnerIT() throws Exception {
+        testUtils.createDefaultRussianAssetsOwner();
+
+        Long expectedRussianAssetsOwnerID = russianAssetsOwnerRepository.findAll().get(0).getId();
+        expectedRussianAssetsOwnerID++;
+
+        Exception exception = testUtils.perform(
+                        get("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH + ID_PATH, expectedRussianAssetsOwnerID)
+                ).andExpect(status().isNotFound())
+                .andReturn().getResolvedException();
+        assert exception != null;
+        assertEquals(EntityWithIDNotFoundException.class, exception.getClass());
     }
 
     @Test
@@ -183,10 +200,14 @@ public class RussianAssetsOwnerControllerIT {
                 testUtils.getNewRussianAssetsOwnerDTO().getIssueDate(),
                 testUtils.getNewRussianAssetsOwnerDTO().getIssuerOrganisationCode()
         );
-        Assertions.assertThrows(ServletException.class,
-                () -> testUtils.perform(post("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH)
+        Exception exception = testUtils.perform(post("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH)
                         .content(asJson(newRussianAssetsOwnerDTOWithAlreadyExistsPassportData))
-                        .contentType(APPLICATION_JSON)));
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResolvedException();
+
+        assert exception != null;
+        assertEquals(IllegalArgumentException.class, exception.getClass());
         assertThat(russianAssetsOwnerRepository.findAll()).hasSize(1);
 
         NewRussianAssetsOwnerDTO newRussianAssetsOwnerDTOWithAlreadyExistsPhoneAndEmail

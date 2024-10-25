@@ -5,16 +5,16 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import fund.data.assets.TestUtils;
 import fund.data.assets.config.SpringConfigForTests;
 import fund.data.assets.dto.financial_entities.AccountCashDTO;
+import fund.data.assets.exception.AmountFromDTOMoreThanAccountCashAmountException;
+import fund.data.assets.exception.EntityWithIDNotFoundException;
+import fund.data.assets.exception.NegativeValueNotExistAccountCashException;
 import fund.data.assets.model.financial_entities.AccountCash;
 import fund.data.assets.repository.AccountRepository;
 import fund.data.assets.repository.AccountCashRepository;
 import fund.data.assets.repository.RussianAssetsOwnerRepository;
 import fund.data.assets.utils.enums.AssetCurrency;
 
-import jakarta.servlet.ServletException;
-
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +44,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * @version 0.3-a
+ * @author MarkDementev a.k.a JavaMarkDem
+ */
 @SpringBootTest(classes = SpringConfigForTests.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles(TEST_PROFILE)
 @AutoConfigureMockMvc
@@ -83,6 +87,22 @@ public class AccountCashControllerIT {
         assertEquals(expectedAccountCash.getAmount(), accountCashFromResponse.getAmount());
         assertNotNull(accountCashFromResponse.getCreatedAt());
         assertNotNull(accountCashFromResponse.getUpdatedAt());
+    }
+
+    @Test
+    public void getNotExistsCashIT() throws Exception {
+        testUtils.createDefaultAccountCash();
+
+        Long notExistsAccountCashID = accountCashRepository.findAll().get(0).getId();
+        notExistsAccountCashID++;
+
+        Exception exception = testUtils.perform(
+                        get("/data" + ACCOUNT_CASH_CONTROLLER_PATH + ID_PATH, notExistsAccountCashID))
+                .andExpect(status().isNotFound())
+                .andReturn().getResolvedException();
+
+        assert exception != null;
+        assertEquals(EntityWithIDNotFoundException.class, exception.getClass());
     }
 
     @Test
@@ -148,9 +168,13 @@ public class AccountCashControllerIT {
                 russianAssetsOwnerRepository.findAll().get(0).getId(),
                 -amountChangeValue
         );
-        Assertions.assertThrows(ServletException.class,
-                () -> testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
-                        .content(asJson(accountCashDTO)).contentType(APPLICATION_JSON)));
+        Exception exception = testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
+                        .content(asJson(accountCashDTO)).contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResolvedException();
+
+        assert exception != null;
+        assertEquals(NegativeValueNotExistAccountCashException.class, exception.getClass());
         assertThat(accountCashRepository.findAll()).hasSize(0);
 
         accountCashDTO.setAmountChangeValue(amountChangeValue);
@@ -217,10 +241,14 @@ public class AccountCashControllerIT {
                 russianAssetsOwnerRepository.findAll().get(0).getId(),
                 -10.00F
         );
-        Assertions.assertThrows(ServletException.class,
-                () -> testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
+        Exception exception = testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
                         .content(asJson(accountCashDTOWithNegativeAmount))
-                        .contentType(APPLICATION_JSON)));
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResolvedException();
+
+        assert exception != null;
+        assertEquals(AmountFromDTOMoreThanAccountCashAmountException.class, exception.getClass());
         assertEquals(0.00F, accountCashRepository.findAll().get(0).getAmount());
     }
 
