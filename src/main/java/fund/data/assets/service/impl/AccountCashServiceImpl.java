@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Реализация сервиса для обслуживания денежных средств собственников активов на счетах.
  * Обслуживаемая сущность - {@link AccountCash}.
- * @version 0.0.2-alpha
+ * @version 0.2-a
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Service

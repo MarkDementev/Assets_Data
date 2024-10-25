@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Реализация сервиса для обслуживания размера комиссии с оборота для типа актива на счёте.
  * Обслуживаемая сущность - {@link TurnoverCommissionValue}.
- * @version 0.0.2-alpha
+ * @version 0.2-a
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Service

@@ -4,7 +4,7 @@ package fund.data.assets.exception;
  * Исключение - наследник NullPointerException.
  * Вызывается при неудачном поиске сущности в БД, когда её по указанному id не существует. Сообщает юзеру название
  * сущности и введённый id, чтобы при повторном запросе юзер не повторялся.
- * @since 0.0.2-alpha
+ * @since 0.2-a
  * @author MarkDementev a.k.a JavaMarkDem
  */
 public class EntityWithIDNotFoundException extends NullPointerException {

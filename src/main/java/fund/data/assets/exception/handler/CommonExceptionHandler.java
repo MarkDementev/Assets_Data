@@ -13,7 +13,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 /**
  * Класс с хэндлерами для всех исключений - и для проектных, и для дефолтных в Java.
- * @version 0.0.2-alpha
+ * @version 0.2-a
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @ControllerAdvice

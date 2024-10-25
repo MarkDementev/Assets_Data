@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Реализация сервиса для обслуживания владельца активов с гражданством РФ.
  * Обслуживаемая сущность - {@link RussianAssetsOwner}.
- * @version 0.0.2-alpha
+ * @version 0.2-a
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Service

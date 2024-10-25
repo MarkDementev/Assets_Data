@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Реализация сервиса для обслуживания облигаций с фиксированным купоном.
  * Обслуживаемая сущность - {@link FixedRateBondPackage}.
- * @version 0.0.2-alpha
+ * @version 0.2-a
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Service
@@ -265,7 +265,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
      * @param id айди пакета облигаций, в который идёт докупка.
      * @param dTO DTO с информацией о покупке облигаций с фиксированным купоном.
      * @return стоимость докупаемых облигаций в валюте.
-     * @since 0.0.2-alpha
+     * @since 0.2-a
      */
     private float calculatePartialPackageBuyValue(Long id, BuyFixedRateBondDTO dTO) {
         return dTO.getAssetCount() * (dTO.getPurchaseBondParValuePercent() / 100.00F)
@@ -364,7 +364,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
      * @param fixedRateBondPackage пакет облигаций, для которого проводится валидация.
      * @param dTO DTO для обслуживания внесения в систему данных о продаже части облигаций из пакета бумаг выпуска
      облигаций.
-     * @since 0.0.2-alpha
+     * @since 0.2-a
      */
     private void isAssetsOwnersHaveThisAssetsAmounts(FixedRateBondPackage fixedRateBondPackage,
                                                      PartialSellFixedRateBondDTO dTO) {
@@ -390,7 +390,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
      * @param fixedRateBondPackage пакет облигаций, для работы с которым проводятся расчёты.
      * @param isSell если true, то идёт продажа облигаций, если false, то идёт покупка.
      * @return скорректированная или оставленная без изменений сумма.
-     * @since 0.0.2-alpha
+     * @since 0.2-a
      */
     private Float correctOperationValueByCommission(float operationValue, FixedRateBondPackage fixedRateBondPackage,
                                                     boolean isSell) {
@@ -536,7 +536,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
      * @param dTO DTO с информацией о коллективном гражданстве участников операции.
      * @param ownersMoneyDistributionMap мапа, где кей - id будущих оунеров покупаемых облигаций, вэлью - размер их
      * доли в валюте эмиссии от суммы операции.
-     * @since 0.0.2-alpha
+     * @since 0.2-a
      */
     private void isAssetsOwnersHaveThisAccountCashAmounts(FixedRateBondPackage fixedRateBondPackage,
                                                           AssetsOwnersCountryDTO dTO,
@@ -572,7 +572,7 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
      * @param assetOwnersWithAccountCashAmountDiffs мапа, где кей - id оунеров облигаций, вэлью - размер их
      * доли в валюте от суммы операции.
      * @param isSell если true, то идёт продажа облигаций, если false, то идёт покупка.
-     * @since 0.0.2-alpha
+     * @since 0.2-a
      */
     private void distributeMoneyOrExpensesAmongOwners(AssetsOwnersCountryDTO dTO,
                                                       FixedRateBondPackage fixedRateBondPackage,
