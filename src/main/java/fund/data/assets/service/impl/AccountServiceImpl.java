@@ -1,6 +1,7 @@
 package fund.data.assets.service.impl;
 
 import fund.data.assets.dto.financial_entities.AccountDTO;
+import fund.data.assets.exception.EntityWithIDNotFoundException;
 import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.repository.AccountRepository;
 import fund.data.assets.service.AccountService;
@@ -16,8 +17,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Реализация сервиса для обслуживания банковских счетов.
- * Обслуживаемая сущность - {@link fund.data.assets.model.financial_entities.Account}.
- * @version 0.0.1-alpha
+ * Обслуживаемая сущность - {@link Account}.
+ * @version 0.0.2-alpha
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Service
@@ -27,7 +28,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account getAccount(Long id) {
-        return accountRepository.findById(id).orElseThrow();
+        return accountRepository.findById(id).orElseThrow(() -> new EntityWithIDNotFoundException("Account", id));
     }
 
     @Override
@@ -36,7 +37,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = {Exception.class})
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = {Exception.class})
     public Account createAccount(AccountDTO accountDTO) {
         AtomicReference<Account> atomicNewAccount = new AtomicReference<>(new Account());
 
@@ -49,7 +50,7 @@ public class AccountServiceImpl implements AccountService {
     @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = {Exception.class})
     public Account updateAccount(Long id, AccountDTO accountDTO) {
         AtomicReference<Account> atomicAccountToUpdate = new AtomicReference<>(
-                accountRepository.findById(id).orElseThrow()
+                accountRepository.findById(id).orElseThrow(() -> new EntityWithIDNotFoundException("Account", id))
         );
 
         getFromDTOThenSetAll(atomicAccountToUpdate, accountDTO);

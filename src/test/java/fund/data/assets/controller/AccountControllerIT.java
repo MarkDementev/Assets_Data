@@ -4,18 +4,17 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import fund.data.assets.TestUtils;
 import fund.data.assets.config.SpringConfigForTests;
+import fund.data.assets.exception.EntityWithIDNotFoundException;
 import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.repository.AccountRepository;
 
-import jakarta.servlet.ServletException;
-
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
@@ -80,12 +79,27 @@ class AccountControllerIT {
 	}
 
 	@Test
+	public void getNotExistsAccountIT() throws Exception {
+		testUtils.createDefaultAccount();
+
+		Long notExistsAccountID = accountRepository.findByOrganisationWhereAccountOpened(
+				testUtils.getAccountDTO().getOrganisationWhereAccountOpened()).getId();
+		notExistsAccountID++;
+
+		Exception exception = testUtils.perform(get("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH,
+						notExistsAccountID))
+				.andExpect(status().isNotFound())
+				.andReturn().getResolvedException();
+
+        assert exception != null;
+        assertEquals(EntityWithIDNotFoundException.class, exception.getClass());
+	}
+
+	@Test
 	public void getAccountsIT() throws Exception {
 		testUtils.createDefaultAccount();
 
-		var response = testUtils.perform(
-						get("/data" + ACCOUNT_CONTROLLER_PATH)
-				)
+		var response = testUtils.perform(get("/data" + ACCOUNT_CONTROLLER_PATH))
 				.andExpect(status().isOk())
 				.andReturn()
 				.getResponse();
@@ -98,11 +112,9 @@ class AccountControllerIT {
 
 	@Test
 	public void createAccountIT() throws Exception {
-		var response = testUtils.perform(
-				post("/data" + ACCOUNT_CONTROLLER_PATH)
+		var response = testUtils.perform(post("/data" + ACCOUNT_CONTROLLER_PATH)
 						.content(asJson(testUtils.getAccountDTO()))
-						.contentType(APPLICATION_JSON)
-				)
+						.contentType(APPLICATION_JSON))
 				.andExpect(status().isCreated())
 				.andReturn()
 				.getResponse();
@@ -122,19 +134,22 @@ class AccountControllerIT {
 
 	@Test
 	public void createNotValidAccountIT() throws Exception {
-		testUtils.perform(
-				post("/data" + ACCOUNT_CONTROLLER_PATH)
+		testUtils.perform(post("/data" + ACCOUNT_CONTROLLER_PATH)
 						.content(asJson(testUtils.getNotValidAccountDTO()))
 						.contentType(APPLICATION_JSON));
-
 		assertThat(accountRepository.findAll()).hasSize(0);
 
 		testUtils.createDefaultAccount();
+		assertThat(accountRepository.findAll()).hasSize(1);
 
-		Assertions.assertThrows(ServletException.class,
-				() -> testUtils.perform(post("/data" + ACCOUNT_CONTROLLER_PATH)
+		Exception exception = testUtils.perform(post("/data" + ACCOUNT_CONTROLLER_PATH)
 						.content(asJson(testUtils.getAnotherBankButSameAccountNumberAccountDTO()))
-						.contentType(APPLICATION_JSON)));
+						.contentType(APPLICATION_JSON))
+				.andExpect(status().isBadRequest())
+				.andReturn().getResolvedException();
+
+        assert exception != null;
+        assertEquals(DataIntegrityViolationException.class, exception.getClass());
 		assertThat(accountRepository.findAll()).hasSize(1);
 	}
 
@@ -189,11 +204,15 @@ class AccountControllerIT {
 
 		Long createdSecondAccountId = accountRepository.findByOrganisationWhereAccountOpened(
 				testUtils.getSecondAccountDTO().getOrganisationWhereAccountOpened()).getId();
-		Assertions.assertThrows(ServletException.class,
-				() -> testUtils.perform(put("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH,
+		Exception exception = testUtils.perform(put("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH,
 						createdSecondAccountId)
 						.content(asJson(testUtils.getAccountDTO()))
-						.contentType(APPLICATION_JSON)));
+						.contentType(APPLICATION_JSON))
+				.andExpect(status().isBadRequest())
+				.andReturn().getResolvedException();
+
+		assert exception != null;
+		assertEquals(DataIntegrityViolationException.class, exception.getClass());
 	}
 
 	@Test

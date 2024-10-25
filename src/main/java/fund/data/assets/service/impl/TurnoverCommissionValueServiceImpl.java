@@ -2,6 +2,7 @@ package fund.data.assets.service.impl;
 
 import fund.data.assets.dto.common.PercentFloatValueDTO;
 import fund.data.assets.dto.financial_entities.TurnoverCommissionValueDTO;
+import fund.data.assets.exception.EntityWithIDNotFoundException;
 import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.model.financial_entities.TurnoverCommissionValue;
 import fund.data.assets.repository.AccountRepository;
@@ -20,8 +21,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Реализация сервиса для обслуживания размера комиссии с оборота для типа актива на счёте.
- * Обслуживаемая сущность - {@link fund.data.assets.model.financial_entities.TurnoverCommissionValue}.
- * @version 0.0.1-alpha
+ * Обслуживаемая сущность - {@link TurnoverCommissionValue}.
+ * @version 0.0.2-alpha
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Service
@@ -32,7 +33,8 @@ public class TurnoverCommissionValueServiceImpl implements TurnoverCommissionVal
 
     @Override
     public TurnoverCommissionValue getTurnoverCommissionValue(Long id) {
-        return turnoverCommissionValueRepository.findById(id).orElseThrow();
+        return turnoverCommissionValueRepository.findById(id).orElseThrow(() -> new EntityWithIDNotFoundException(
+                "TurnoverCommissionValue", id));
     }
 
     @Override
@@ -46,7 +48,9 @@ public class TurnoverCommissionValueServiceImpl implements TurnoverCommissionVal
             TurnoverCommissionValueDTO turnoverCommissionValueDTO) {
         AtomicReference<TurnoverCommissionValue> atomicTurnoverCommissionValue = new AtomicReference<>(
                 new TurnoverCommissionValue());
-        Account account = accountRepository.findById(turnoverCommissionValueDTO.getAccountID()).orElseThrow();
+        Long accountID = turnoverCommissionValueDTO.getAccountID();
+        Account account = accountRepository.findById(accountID).orElseThrow(() -> new EntityWithIDNotFoundException(
+                "Account", accountID));
 
         atomicTurnoverCommissionValue.get().setAccount(account);
         atomicTurnoverCommissionValue.get().setAssetTypeName(turnoverCommissionValueDTO.getAssetTypeName());
@@ -60,8 +64,8 @@ public class TurnoverCommissionValueServiceImpl implements TurnoverCommissionVal
     @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = {Exception.class})
     public TurnoverCommissionValue updateTurnoverCommissionValue(Long id, PercentFloatValueDTO percentFloatValueDTO) {
         AtomicReference<TurnoverCommissionValue> atomicTurnoverCommissionValueToUpdate = new AtomicReference<>(
-                turnoverCommissionValueRepository.findById(id).orElseThrow()
-        );
+                turnoverCommissionValueRepository.findById(id).orElseThrow(() -> new EntityWithIDNotFoundException(
+                        "TurnoverCommissionValue", id)));
 
         atomicTurnoverCommissionValueToUpdate.get().setCommissionPercentValue(InputPercentValueStringsFormatter
                 .getCheckedAndFormatted(percentFloatValueDTO.getPercentValue()));

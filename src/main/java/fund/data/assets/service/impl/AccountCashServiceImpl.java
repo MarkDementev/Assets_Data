@@ -2,6 +2,7 @@ package fund.data.assets.service.impl;
 
 import fund.data.assets.dto.financial_entities.AccountCashDTO;
 import fund.data.assets.exception.AmountFromDTOMoreThanAccountCashAmountException;
+import fund.data.assets.exception.EntityWithIDNotFoundException;
 import fund.data.assets.exception.NegativeValueNotExistAccountCashException;
 import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.model.financial_entities.AccountCash;
@@ -25,7 +26,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Реализация сервиса для обслуживания денежных средств собственников активов на счетах.
  * Обслуживаемая сущность - {@link AccountCash}.
- * @version 0.0.1-alpha
+ * @version 0.0.2-alpha
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Service
@@ -37,7 +38,8 @@ public class AccountCashServiceImpl implements AccountCashService {
 
     @Override
     public AccountCash getCash(Long id) {
-        return accountCashRepository.findById(id).orElseThrow();
+        return accountCashRepository.findById(id).orElseThrow(() -> new EntityWithIDNotFoundException("AccountCash",
+                id));
     }
 
     @Override
@@ -48,14 +50,17 @@ public class AccountCashServiceImpl implements AccountCashService {
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = {Exception.class})
     public AccountCash createAccountCashOrChangeAmount(AccountCashDTO accountCashDTO) {
-        Account accountFromDTO = accountRepository.findById(accountCashDTO.getAccountID()).orElseThrow();
+        Long accountIDFromDTO = accountCashDTO.getAccountID();
+        Account accountFromDTO = accountRepository.findById(accountIDFromDTO).orElseThrow(
+                () -> new EntityWithIDNotFoundException("AccountCash", accountIDFromDTO));
         AssetCurrency assetCurrencyFromDTO = accountCashDTO.getAssetCurrency();
-        RussianAssetsOwner assetsOwnerFromDTO = russianAssetsOwnerRepository.findById(accountCashDTO.getAssetsOwnerID())
-                .orElseThrow();
-        float amountFromDTO = accountCashDTO.getAmountChangeValue();
+        Long assetsOwnerIDFromDTO = accountCashDTO.getAssetsOwnerID();
+        RussianAssetsOwner assetsOwnerFromDTO = russianAssetsOwnerRepository.findById(assetsOwnerIDFromDTO)
+                .orElseThrow(() -> new EntityWithIDNotFoundException("RussianAssetsOwner", assetsOwnerIDFromDTO));
         Optional<AccountCash> accountCashToWorkWith = Optional.ofNullable(
                 accountCashRepository.findByAccountAndAssetCurrencyAndAssetsOwner(accountFromDTO, assetCurrencyFromDTO,
                         assetsOwnerFromDTO));
+        float amountFromDTO = accountCashDTO.getAmountChangeValue();
 
         if (accountCashToWorkWith.isEmpty() && amountFromDTO >= 0) {
             return accountCashRepository.save(new AtomicReference<>(new AccountCash(accountFromDTO,
@@ -65,7 +70,7 @@ public class AccountCashServiceImpl implements AccountCashService {
         }
         AtomicReference<AccountCash> accountCashAtomicReference = new AtomicReference<>(accountCashToWorkWith
                 .orElseThrow());
-        float accountCashAmount = accountCashToWorkWith.orElseThrow().getAmount();
+        float accountCashAmount = accountCashAtomicReference.get().getAmount();
 
         if (amountFromDTO < 0 && Math.abs(amountFromDTO) >= accountCashAmount) {
             throw new AmountFromDTOMoreThanAccountCashAmountException(amountFromDTO, accountCashAmount);

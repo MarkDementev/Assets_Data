@@ -5,6 +5,7 @@ import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
 import fund.data.assets.dto.asset.exchange.SellFixedRateBondDTO;
 import fund.data.assets.dto.asset.exchange.PartialSellFixedRateBondDTO;
 import fund.data.assets.dto.asset.exchange.BuyFixedRateBondDTO;
+import fund.data.assets.exception.EntityWithIDNotFoundException;
 import fund.data.assets.model.asset.exchange.FixedRateBondPackage;
 import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.model.financial_entities.AccountCash;
@@ -38,7 +39,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Реализация сервиса для обслуживания облигаций с фиксированным купоном.
  * Обслуживаемая сущность - {@link FixedRateBondPackage}.
- * @version 0.0.1-alpha
+ * @version 0.0.2-alpha
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Service
@@ -66,7 +67,8 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
 
     @Override
     public FixedRateBondPackage getFixedRateBond(Long id) {
-        return fixedRateBondRepository.findById(id).orElseThrow();
+        return fixedRateBondRepository.findById(id).orElseThrow(() -> new EntityWithIDNotFoundException(
+                "FixedRateBondPackage", id));
     }
 
     @Override
@@ -106,7 +108,8 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
                 buyFixedRateBondDTO.getAssetCount());
 
         AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
-                fixedRateBondRepository.findById(id).orElseThrow());
+                fixedRateBondRepository.findById(id).orElseThrow(() -> new EntityWithIDNotFoundException(
+                        "FixedRateBondPackage", id)));
         float[] packageBuyValueBeforeAfterCorrectionBuyCommission = new float[2];
         float packageBuyValue = calculatePartialPackageBuyValue(id, buyFixedRateBondDTO);
         packageBuyValueBeforeAfterCorrectionBuyCommission[0] = packageBuyValue;
@@ -134,7 +137,8 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     public FixedRateBondPackage partialSellFixedRateBondPackage(Long id,
         PartialSellFixedRateBondDTO partialSellFixedRateBondDTO) {
         AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
-                fixedRateBondRepository.findById(id).orElseThrow());
+                fixedRateBondRepository.findById(id).orElseThrow(() -> new EntityWithIDNotFoundException(
+                        "FixedRateBondPackage", id)));
         int[] oldNewAssetCount = new int[2];
         oldNewAssetCount[0] = atomicFixedRateBondPackage.get().getAssetCount();
 
@@ -166,7 +170,8 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = {Exception.class})
     public void sellAllPackage(Long id, SellFixedRateBondDTO sellFixedRateBondDTO) {
         AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
-                fixedRateBondRepository.findById(id).orElseThrow());
+                fixedRateBondRepository.findById(id).orElseThrow(() -> new EntityWithIDNotFoundException(
+                        "FixedRateBondPackage", id)));
         float packageSellValue = sellFixedRateBondDTO.getPackageSellValue();
         packageSellValue = correctOperationValueByCommission(packageSellValue, atomicFixedRateBondPackage.get(),
                 true);
@@ -184,7 +189,8 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
     @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = {Exception.class})
     public void redeemBonds(Long id, AssetsOwnersCountryDTO assetsOwnersCountryDTO) {
         AtomicReference<FixedRateBondPackage> atomicFixedRateBondPackage = new AtomicReference<>(
-                fixedRateBondRepository.findById(id).orElseThrow());
+                fixedRateBondRepository.findById(id).orElseThrow(() -> new EntityWithIDNotFoundException(
+                        "FixedRateBondPackage", id)));
 
         if (LocalDate.now().toEpochDay() < atomicFixedRateBondPackage.get().getBondMaturityDate().toEpochDay()) {
             throw new IllegalArgumentException(ERROR_DATE_REDEEM);
@@ -212,7 +218,9 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
         String assetTitle = firstBuyFixedRateBondDTO.getAssetTitle();
         Integer assetCount = firstBuyFixedRateBondDTO.getAssetCount();
         Map<String, Float> assetOwnersWithAssetCounts = firstBuyFixedRateBondDTO.getAssetOwnersWithAssetCounts();
-        Account accountFromDTO = accountRepository.findById(firstBuyFixedRateBondDTO.getAccountID()).orElseThrow();
+        Long accountIDFromDTO = firstBuyFixedRateBondDTO.getAccountID();
+        Account accountFromDTO = accountRepository.findById(accountIDFromDTO).orElseThrow(() ->
+                new EntityWithIDNotFoundException("Account", accountIDFromDTO));
         String iSIN = firstBuyFixedRateBondDTO.getISIN();
         String assetIssuerTitle = firstBuyFixedRateBondDTO.getAssetIssuerTitle();
         LocalDate lastAssetBuyOrSellDate = firstBuyFixedRateBondDTO.getLastAssetBuyDate();
@@ -257,11 +265,12 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
      * @param id айди пакета облигаций, в который идёт докупка.
      * @param dTO DTO с информацией о покупке облигаций с фиксированным купоном.
      * @return стоимость докупаемых облигаций в валюте.
-     * @since 0.0.1-alpha
+     * @since 0.0.2-alpha
      */
     private float calculatePartialPackageBuyValue(Long id, BuyFixedRateBondDTO dTO) {
         return dTO.getAssetCount() * (dTO.getPurchaseBondParValuePercent() / 100.00F)
-                * fixedRateBondRepository.findById(id).orElseThrow().getBondParValue() + dTO.getBondsAccruedInterest();
+                * fixedRateBondRepository.findById(id).orElseThrow(() -> new EntityWithIDNotFoundException(
+                        "FixedRateBondPackage", id)).getBondParValue() + dTO.getBondsAccruedInterest();
     }
 
     /**
@@ -355,16 +364,17 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
      * @param fixedRateBondPackage пакет облигаций, для которого проводится валидация.
      * @param dTO DTO для обслуживания внесения в систему данных о продаже части облигаций из пакета бумаг выпуска
      облигаций.
-     * @since 0.0.1-alpha
+     * @since 0.0.2-alpha
      */
     private void isAssetsOwnersHaveThisAssetsAmounts(FixedRateBondPackage fixedRateBondPackage,
                                                      PartialSellFixedRateBondDTO dTO) {
         Map<String, Integer> assetOwnersWithAssetCountsToSell = dTO.getAssetOwnersWithAssetCountsToSell();
 
         for (Map.Entry<String, Integer> mapElement : assetOwnersWithAssetCountsToSell.entrySet()) {
-            Float assetsOwnerAssetCount = financialAssetRelationshipRepository.findById(
-                    fixedRateBondPackage.getAssetRelationship().getId()).orElseThrow()
-                    .getAssetOwnersWithAssetCounts().get(mapElement.getKey());
+            Long assetRelationshipID = fixedRateBondPackage.getAssetRelationship().getId();
+            Float assetsOwnerAssetCount = financialAssetRelationshipRepository.findById(assetRelationshipID)
+                    .orElseThrow(() -> new EntityWithIDNotFoundException("FinancialAssetRelationship",
+                            assetRelationshipID)).getAssetOwnersWithAssetCounts().get(mapElement.getKey());
             Integer assetToSellCount = mapElement.getValue();
 
             if (assetsOwnerAssetCount < assetToSellCount) {
@@ -380,14 +390,15 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
      * @param fixedRateBondPackage пакет облигаций, для работы с которым проводятся расчёты.
      * @param isSell если true, то идёт продажа облигаций, если false, то идёт покупка.
      * @return скорректированная или оставленная без изменений сумма.
-     * @since 0.0.1-alpha
+     * @since 0.0.2-alpha
      */
     private Float correctOperationValueByCommission(float operationValue, FixedRateBondPackage fixedRateBondPackage,
                                                     boolean isSell) {
         if (fixedRateBondPackage.getAssetCommissionSystem().equals(CommissionSystem.TURNOVER)) {
-            Account account = financialAssetRelationshipRepository.findById(
-                    fixedRateBondPackage.getAssetRelationship().getId())
-                    .orElseThrow().getAccount();
+            Long assetRelationshipID = fixedRateBondPackage.getAssetRelationship().getId();
+            Account account = financialAssetRelationshipRepository.findById(assetRelationshipID).orElseThrow(() ->
+                            new EntityWithIDNotFoundException("FinancialAssetRelationship", assetRelationshipID))
+                    .getAccount();
             String assetTypeName = fixedRateBondPackage.getAssetTypeName();
             float commissionPercentValue = turnoverCommissionValueRepository.findByAccountAndAssetTypeName(account,
                     assetTypeName).getCommissionPercentValue();
@@ -525,20 +536,23 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
      * @param dTO DTO с информацией о коллективном гражданстве участников операции.
      * @param ownersMoneyDistributionMap мапа, где кей - id будущих оунеров покупаемых облигаций, вэлью - размер их
      * доли в валюте эмиссии от суммы операции.
-     * @since 0.0.1-alpha
+     * @since 0.0.2-alpha
      */
     private void isAssetsOwnersHaveThisAccountCashAmounts(FixedRateBondPackage fixedRateBondPackage,
                                                           AssetsOwnersCountryDTO dTO,
                                                           Map<String, Float> ownersMoneyDistributionMap) {
-        Account account = financialAssetRelationshipRepository.findById(fixedRateBondPackage.getAssetRelationship()
-                        .getId()).orElseThrow().getAccount();
+        Long assetRelationshipID = fixedRateBondPackage.getAssetRelationship().getId();
+        Account account = financialAssetRelationshipRepository.findById(assetRelationshipID).orElseThrow(() ->
+                new EntityWithIDNotFoundException("FinancialAssetRelationship", assetRelationshipID)).getAccount();
         AssetCurrency assetCurrency = fixedRateBondPackage.getAssetCurrency();
 
         for (Map.Entry<String, Float> mapElement : ownersMoneyDistributionMap.entrySet()) {
             AssetsOwner assetsOwner;
 
             if (dTO.getAssetsOwnersTaxResidency().equals(AssetsOwnersCountry.RUS)) {
-                assetsOwner = russianAssetsOwnerRepository.findById(Long.valueOf(mapElement.getKey())).orElseThrow();
+                Long assetsOwnerID = Long.valueOf(mapElement.getKey());
+                assetsOwner = russianAssetsOwnerRepository.findById(assetsOwnerID).orElseThrow(() ->
+                        new EntityWithIDNotFoundException("RussianAssetsOwner", assetsOwnerID));
             } else {
                 throw new IllegalArgumentException(ERROR_OWNER_COUNTRY);
             }
@@ -558,20 +572,24 @@ public class FixedRateBondServiceImpl implements FixedRateBondService {
      * @param assetOwnersWithAccountCashAmountDiffs мапа, где кей - id оунеров облигаций, вэлью - размер их
      * доли в валюте от суммы операции.
      * @param isSell если true, то идёт продажа облигаций, если false, то идёт покупка.
-     * @since 0.0.1-alpha
+     * @since 0.0.2-alpha
      */
     private void distributeMoneyOrExpensesAmongOwners(AssetsOwnersCountryDTO dTO,
                                                       FixedRateBondPackage fixedRateBondPackage,
                                                       Map<String, Float> assetOwnersWithAccountCashAmountDiffs,
                                                       boolean isSell) {
         for (Map.Entry<String, Float> mapElement : assetOwnersWithAccountCashAmountDiffs.entrySet()) {
-            Account account = financialAssetRelationshipRepository.findById(fixedRateBondPackage
-                    .getAssetRelationship().getId()).orElseThrow().getAccount();
+            Long assetRelationshipID = fixedRateBondPackage.getAssetRelationship().getId();
+            Account account = financialAssetRelationshipRepository.findById(assetRelationshipID).orElseThrow(() ->
+                    new EntityWithIDNotFoundException("FinancialAssetRelationship", assetRelationshipID))
+                    .getAccount();
             AssetCurrency assetCurrency = fixedRateBondPackage.getAssetCurrency();
             AssetsOwner assetsOwner;
 
             if (dTO.getAssetsOwnersTaxResidency().equals(AssetsOwnersCountry.RUS)) {
-                assetsOwner = russianAssetsOwnerRepository.findById(Long.parseLong(mapElement.getKey())).orElseThrow();
+                Long assetsOwnerID = Long.parseLong(mapElement.getKey());
+                assetsOwner = russianAssetsOwnerRepository.findById(assetsOwnerID).orElseThrow(() ->
+                        new EntityWithIDNotFoundException("RussianAssetsOwner", assetsOwnerID));
             } else {
                 throw new IllegalArgumentException(ERROR_OWNER_COUNTRY);
             }

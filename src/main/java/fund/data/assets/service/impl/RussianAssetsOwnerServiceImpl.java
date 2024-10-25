@@ -3,6 +3,7 @@ package fund.data.assets.service.impl;
 import fund.data.assets.dto.owner.ContactDataRussianAssetsOwnerDTO;
 import fund.data.assets.dto.owner.PersonalDataRussianAssetsOwnerDTO;
 import fund.data.assets.dto.owner.NewRussianAssetsOwnerDTO;
+import fund.data.assets.exception.EntityWithIDNotFoundException;
 import fund.data.assets.model.owner.RussianAssetsOwner;
 import fund.data.assets.repository.RussianAssetsOwnerRepository;
 import fund.data.assets.service.RussianAssetsOwnerService;
@@ -24,7 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Реализация сервиса для обслуживания владельца активов с гражданством РФ.
  * Обслуживаемая сущность - {@link RussianAssetsOwner}.
- * @version 0.0.1-alpha
+ * @version 0.0.2-alpha
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Service
@@ -38,7 +39,8 @@ public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService 
 
     @Override
     public RussianAssetsOwner getRussianAssetsOwner(Long id) {
-        return russianAssetsOwnerRepository.findById(id).orElseThrow();
+        return russianAssetsOwnerRepository.findById(id).orElseThrow(() -> new EntityWithIDNotFoundException(
+                "RussianAssetsOwner", id));
     }
 
     @Override
@@ -81,7 +83,8 @@ public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService 
     public RussianAssetsOwner updateRussianAssetsOwnerPersonalData(Long id, PersonalDataRussianAssetsOwnerDTO
             personalDataRussianAssetsOwnerDTO) {
         AtomicReference<RussianAssetsOwner> atomicRussianAssetsOwnerToUpdate = new AtomicReference<>(
-                russianAssetsOwnerRepository.findById(id).orElseThrow()
+                russianAssetsOwnerRepository.findById(id).orElseThrow(() -> new EntityWithIDNotFoundException(
+                        "RussianAssetsOwner", id))
         );
 
         atomicRussianAssetsOwnerToUpdate.get().setName(personalDataRussianAssetsOwnerDTO.getName().get());
@@ -106,7 +109,8 @@ public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService 
     public RussianAssetsOwner updateRussianAssetsOwnerContactData(Long id, ContactDataRussianAssetsOwnerDTO
             contactDataRussianAssetsOwnerDTO) {
         AtomicReference<RussianAssetsOwner> atomicRussianAssetsOwnerToUpdate = new AtomicReference<>(
-                russianAssetsOwnerRepository.findById(id).orElseThrow()
+                russianAssetsOwnerRepository.findById(id).orElseThrow(() -> new EntityWithIDNotFoundException(
+                        "RussianAssetsOwner", id))
         );
 
         atomicRussianAssetsOwnerToUpdate.get().setEmail(contactDataRussianAssetsOwnerDTO.getEmail().get());
@@ -159,6 +163,7 @@ public class RussianAssetsOwnerServiceImpl implements RussianAssetsOwnerService 
      * @param issuerOrganisationCode код организации, выдавшей паспорт
      * @since 0.0.1-alpha
      */
+    //TODO мб можно переписать с использованием Predicate и коллекции какой-нибудь?
     @Override
     public void checkUniquenessRFPassportFields(String passportSeries, String passportNumber, String placeOfBirth,
                                String placeOfPassportGiven, LocalDate issueDate, String issuerOrganisationCode) {
