@@ -12,5 +12,9 @@ spring:
     hibernate:
       ddl-auto: create
 
+  output:
+    ansi:
+      enabled: ALWAYS
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master-test.xml

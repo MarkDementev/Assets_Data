@@ -11,7 +11,7 @@ spring:
 
   output:
     ansi:
-      enabled: true
+      enabled: ALWAYS
 
   liquibase:
     enabled: false
