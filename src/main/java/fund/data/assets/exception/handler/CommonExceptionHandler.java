@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.util.Arrays;
+
 /**
  * Класс с хэндлерами для всех исключений - и для проектных, и для дефолтных в Java.
  * @version 0.4-a
@@ -54,7 +56,8 @@ public class CommonExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorMessage> exceptionHandler(Exception e) {
-        String errorMessage = e.getClass().getName() + " / " + e.getMessage();
+        String errorMessage = Arrays.stream(e.getStackTrace()).findFirst() + " / " + e.getClass().getName()
+                + " / " + e.getMessage();
 
         LoggerConfig.getLogger().error("Unexpected exception was thrown: {}", errorMessage);
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ErrorMessage(errorMessage));
