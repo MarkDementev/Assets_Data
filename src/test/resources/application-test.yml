@@ -18,3 +18,7 @@ spring:
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master-test.xml
+
+logging:
+  level:
+    org.hibernate.engine.jdbc.spi.SqlExceptionHelper : "off"

@@ -41,8 +41,13 @@ public class CommonExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorMessage> dataIntegrityViolationExceptionHandler(DataIntegrityViolationException e) {
         String errorMessage = e.getMessage();
+
         int errorIndexOf = errorMessage.indexOf("[ERROR:");
-        int pointIndexOf = errorMessage.indexOf(".]");
+
+        String pointIndexOfString = ".]";
+        int pointIndexOfStringLength = pointIndexOfString.length();
+        int pointIndexOf = errorMessage.indexOf(pointIndexOfString) + pointIndexOfStringLength;
+
         errorMessage = errorMessage.substring(errorIndexOf, pointIndexOf);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessage(errorMessage));
@@ -56,10 +61,12 @@ public class CommonExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorMessage> exceptionHandler(Exception e) {
-        String errorMessage = Arrays.stream(e.getStackTrace()).findFirst() + " / " + e.getClass().getName()
-                + " / " + e.getMessage();
+        String separator = " / ";
+        String errorMessage = Arrays.stream(e.getStackTrace()).findFirst().orElseThrow()
+                + separator + e.getClass().getName()
+                + separator + e.getMessage();
 
-        LoggerConfig.getLogger().error("Unexpected exception was thrown: {}", errorMessage);
+        LoggerConfig.getLogger().error(errorMessage);
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ErrorMessage(errorMessage));
     }
 }
