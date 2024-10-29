@@ -1,5 +1,6 @@
 package fund.data.assets.exception.handler;
 
+import fund.data.assets.config.LoggerConfig;
 import fund.data.assets.exception.EntityWithIDNotFoundException;
 
 import org.springdoc.api.ErrorMessage;
@@ -13,7 +14,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 /**
  * Класс с хэндлерами для всех исключений - и для проектных, и для дефолтных в Java.
- * @version 0.2-a
+ * @version 0.4-a
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @ControllerAdvice
@@ -53,9 +54,9 @@ public class CommonExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorMessage> exceptionHandler(Exception e) {
-        //TODO добавь сообщение в лог, что такое исключение было выброшено, и его надо обработать!
+        String errorMessage = e.getClass().getName() + " / " + e.getMessage();
 
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
-                .body(new ErrorMessage(e.getClass().getName() + " / " + e.getMessage()));
+        LoggerConfig.getLogger().error("Unexpected exception was thrown: {}", errorMessage);
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ErrorMessage(errorMessage));
     }
 }
