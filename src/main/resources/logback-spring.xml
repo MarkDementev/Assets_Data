@@ -39,8 +39,26 @@
         </rollingPolicy>
     </appender>
 
+    <appender name="FINANCIAL_TRANSACTIONS_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <filter class="fund.data.assets.logging.FinancialTransactionsFilter" />
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %msg %n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>financial_transactions.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>365</maxHistory>
+            <totalSizeCap>100GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
     <root level="INFO">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="ERRORS_FILE" />
+        <appender-ref ref="FINANCIAL_TRANSACTIONS_FILE" />
     </root>
 </configuration>

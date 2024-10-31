@@ -4,13 +4,13 @@ spring:
   application:
     name: fundAssetsData
 
-  datasource:
-    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
-    url: jdbc:tc:postgresql:16:///test
-
   jpa:
     hibernate:
       ddl-auto: create
+
+  datasource:
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: jdbc:tc:postgresql:16:///test
 
   output:
     ansi:
@@ -21,4 +21,4 @@ spring:
 
 logging:
   level:
-    org.hibernate.engine.jdbc.spi.SqlExceptionHelper : "off"
+    org.hibernate.engine.jdbc.spi.SqlExceptionHelper: "off"
