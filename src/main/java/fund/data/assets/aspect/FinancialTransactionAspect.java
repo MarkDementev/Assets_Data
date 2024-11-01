@@ -54,6 +54,7 @@ public class FinancialTransactionAspect {
     @Around("accountCashPointCut() && args(accountCashDTO)")
     public AccountCash logAfterFinancialTransaction(ProceedingJoinPoint pJP, AccountCashDTO accountCashDTO)
             throws Throwable {
+        final String accountNumberText = "on Account with number ";
         boolean isMethodProceeded = false;
         Instant existedAccountCashUpdatedInstant = null;
         String[] startLogArr;
@@ -65,15 +66,20 @@ public class FinancialTransactionAspect {
                 assetsOwnerIDFromDTO);
 
         if (accountCash.isPresent()) {
-            startLogArr = new String[4];
+            startLogArr = new String[5];
             fillLogArr(startLogArr, accountCash.get());
             startLogArr[3] = accountCash.get().getAmount().toString()
                     + " diff by " + accountCashDTO.getAmountChangeValue();
+            startLogArr[4] = "AccountCash amount is changing " + accountNumberText + accountRepository.findById(
+                    accountIDFromDTO).orElseThrow(() -> new EntityWithIDNotFoundException("Account", accountIDFromDTO))
+                    .getAccountNumber();
             existedAccountCashUpdatedInstant = accountCash.get().getUpdatedAt();
         } else {
-            startLogArr = new String[2];
+            startLogArr = new String[3];
             startLogArr[0] = "New AccountCash is creating";
             startLogArr[1] = "with amount = " + accountCashDTO.getAmountChangeValue();
+            startLogArr[2] = accountNumberText + accountRepository.findById(accountIDFromDTO).orElseThrow(
+                    () -> new EntityWithIDNotFoundException("Account", accountIDFromDTO)).getAccountNumber();
         }
         AccountCash returnValue = (AccountCash) pJP.proceed();
 
@@ -123,7 +129,7 @@ public class FinancialTransactionAspect {
     }
 
     private void fillLogArr(String[] logArr, AccountCash accountCash) {
-        String separator = " ";
+        final String separator = " ";
         logArr[0] = accountCash.getId().toString();
         logArr[1] = accountCash.getAssetsOwner().getName()
                 + separator + accountCash.getAssetsOwner().getSurname()
