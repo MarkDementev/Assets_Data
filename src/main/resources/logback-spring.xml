@@ -33,7 +33,7 @@
             <pattern>%d{HH:mm:ss.SSS} [%thread] %msg %n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>errors_to_correct.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>log/errors_to_correct.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
             <totalSizeCap>10MB</totalSizeCap>
         </rollingPolicy>
@@ -50,7 +50,7 @@
             <pattern>%d{HH:mm:ss.SSS} [%thread] %msg %n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>financial_transactions.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>log/financial_transactions.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>365</maxHistory>
             <totalSizeCap>100GB</totalSizeCap>
         </rollingPolicy>

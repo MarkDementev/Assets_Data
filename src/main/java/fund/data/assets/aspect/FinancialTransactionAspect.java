@@ -8,6 +8,7 @@ import fund.data.assets.model.financial_entities.AccountCash;
 import fund.data.assets.repository.AccountCashRepository;
 import fund.data.assets.repository.AccountRepository;
 import fund.data.assets.repository.RussianAssetsOwnerRepository;
+import fund.data.assets.utils.enums.AssetCurrency;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,8 +22,11 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -51,36 +55,41 @@ public class FinancialTransactionAspect {
     public AccountCash logAfterFinancialTransaction(ProceedingJoinPoint pJP, AccountCashDTO accountCashDTO)
             throws Throwable {
         boolean isMethodProceeded = false;
+        Instant existedAccountCashUpdatedInstant = null;
         String[] startLogArr;
         String[] endLogArr = new String[4];
         Long accountIDFromDTO = accountCashDTO.getAccountID();
+        AssetCurrency assetCurrencyFromDTO = accountCashDTO.getAssetCurrency();
         Long assetsOwnerIDFromDTO = accountCashDTO.getAssetsOwnerID();
-        Optional<AccountCash> accountCash = Optional.ofNullable(
-                accountCashRepository.findByAccountAndAssetCurrencyAndAssetsOwner(
-                    accountRepository.findById(accountIDFromDTO).orElseThrow(
-                        () -> new EntityWithIDNotFoundException("AccountCash", accountIDFromDTO)),
-                    accountCashDTO.getAssetCurrency(),
-                    russianAssetsOwnerRepository.findById(assetsOwnerIDFromDTO).orElseThrow(
-                        () -> new EntityWithIDNotFoundException("AssetsOwner", assetsOwnerIDFromDTO))
-                )
-        );
+        Optional<AccountCash> accountCash = findAccountCash(accountIDFromDTO, assetCurrencyFromDTO,
+                assetsOwnerIDFromDTO);
 
         if (accountCash.isPresent()) {
             startLogArr = new String[4];
             fillLogArr(startLogArr, accountCash.get());
             startLogArr[3] = accountCash.get().getAmount().toString()
                     + " diff by " + accountCashDTO.getAmountChangeValue();
+            existedAccountCashUpdatedInstant = accountCash.get().getUpdatedAt();
         } else {
             startLogArr = new String[2];
-            startLogArr[0] = "AccountCashRepository is empty at start";
-            startLogArr[1] = "Account cash is creating with amount = " + accountCashDTO.getAmountChangeValue();
+            startLogArr[0] = "New AccountCash is creating";
+            startLogArr[1] = "with amount = " + accountCashDTO.getAmountChangeValue();
         }
         AccountCash returnValue = (AccountCash) pJP.proceed();
 
-        //TODO придумай проверку, что транзакция прошла успешно
-//        if () {
-            isMethodProceeded = true;
-//        }
+        if (accountCash.isPresent()) {
+            AccountCash correctedAccountCash = findAccountCash(accountIDFromDTO, assetCurrencyFromDTO,
+                    assetsOwnerIDFromDTO).get();
+
+            if ((existedAccountCashUpdatedInstant == null && correctedAccountCash.getUpdatedAt() != null)
+                    || (!Objects.equals(existedAccountCashUpdatedInstant, correctedAccountCash.getUpdatedAt()))) {
+                isMethodProceeded = true;
+            }
+        } else {
+            if (findAccountCash(accountIDFromDTO, assetCurrencyFromDTO, assetsOwnerIDFromDTO).isPresent()) {
+                isMethodProceeded = true;
+            }
+        }
 
         if (isMethodProceeded) {
             AccountCash accountCashCorrected = accountCashRepository.findAll().stream()
@@ -98,6 +107,19 @@ public class FinancialTransactionAspect {
             logger.warn(FinancialTransactionsFilter.KEY_TO_CONTAINS_END + "{}", Arrays.toString(endLogArr));
         }
         return returnValue;
+    }
+
+    private Optional<AccountCash> findAccountCash(Long accountIDFromDTO, AssetCurrency assetCurrencyFromDTO,
+                                 Long assetsOwnerIDFromDTO) {
+        return Optional.ofNullable(
+                accountCashRepository.findByAccountAndAssetCurrencyAndAssetsOwner(
+                        accountRepository.findById(accountIDFromDTO).orElseThrow(
+                                () -> new EntityWithIDNotFoundException("AccountCash", accountIDFromDTO)),
+                        assetCurrencyFromDTO,
+                        russianAssetsOwnerRepository.findById(assetsOwnerIDFromDTO).orElseThrow(
+                                () -> new EntityWithIDNotFoundException("AssetsOwner", assetsOwnerIDFromDTO))
+                )
+        );
     }
 
     private void fillLogArr(String[] logArr, AccountCash accountCash) {
