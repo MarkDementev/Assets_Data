@@ -22,6 +22,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
+/**
+ * @version 0.6-a
+ * @author MarkDementev a.k.a JavaMarkDem
+ */
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private final JWTHelper jwtHelper;
@@ -40,7 +44,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                                 final HttpServletResponse response) throws AuthenticationException {
         final LoginDto loginData = getLoginData(request);
         final var authRequest = new UsernamePasswordAuthenticationToken(
-                loginData.getUserName(),
+                loginData.getLogin(),
                 loginData.getPassword()
         );
 

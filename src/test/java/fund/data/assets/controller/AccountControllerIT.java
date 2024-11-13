@@ -4,11 +4,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import fund.data.assets.TestUtils;
 import fund.data.assets.config.SpringConfigForTests;
+import fund.data.assets.dto.common.LoginDto;
 import fund.data.assets.exception.EntityWithIDNotFoundException;
 import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.repository.AccountRepository;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,8 @@ import java.util.List;
 
 import static fund.data.assets.TestUtils.asJson;
 import static fund.data.assets.TestUtils.fromJson;
+import static fund.data.assets.config.SecurityConfig.ADMIN_NAME;
+import static fund.data.assets.config.SecurityConfig.LOGIN_PATH;
 import static fund.data.assets.config.SpringConfigForTests.TEST_PROFILE;
 import static fund.data.assets.controller.AccountController.ACCOUNT_CONTROLLER_PATH;
 import static fund.data.assets.controller.AccountController.ID_PATH;
@@ -41,7 +45,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * @version 0.2-a
+ * @version 0.6-a
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @SpringBootTest(classes = SpringConfigForTests.class, webEnvironment = RANDOM_PORT)
@@ -52,6 +56,11 @@ class AccountControllerIT {
 	private TestUtils testUtils;
 	@Autowired
 	private AccountRepository accountRepository;
+
+	@BeforeEach
+	public void loginBeforeTest() throws Exception {
+		testUtils.login(testUtils.getAdminLoginDto());
+	}
 
 	@AfterEach
 	public void clearRepositories() {
@@ -118,7 +127,8 @@ class AccountControllerIT {
 	public void createAccountIT() throws Exception {
 		var response = testUtils.perform(post("/data" + ACCOUNT_CONTROLLER_PATH)
 						.content(asJson(testUtils.getAccountDTO()))
-						.contentType(APPLICATION_JSON))
+						.contentType(APPLICATION_JSON),
+						ADMIN_NAME)
 				.andExpect(status().isCreated())
 				.andReturn()
 				.getResponse();

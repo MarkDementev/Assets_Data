@@ -6,12 +6,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * @version 0.6-a
+ * @author MarkDementev a.k.a JavaMarkDem
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginDto {
     @NotBlank
-    private String userName;
+    private String login;
 
     @NotBlank
     private String password;

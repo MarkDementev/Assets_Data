@@ -14,6 +14,10 @@ import java.util.Map;
 import static io.jsonwebtoken.SignatureAlgorithm.HS256;
 import static io.jsonwebtoken.impl.TextCodec.BASE64;
 
+/**
+ * @version 0.6-a
+ * @author MarkDementev a.k.a JavaMarkDem
+ */
 @Component
 public class JWTHelper {
     private final String secretKey;
@@ -30,7 +34,7 @@ public class JWTHelper {
         this.issuer = issuer;
         this.expirationSec = expirationSec;
         this.clockSkewSec = clockSkewSec;
-        this.clock = DefaultClock.INSTANCE;
+        this.clock = new DefaultClock();
     }
 
     public String expiring(final Map<String, Object> attributes) {

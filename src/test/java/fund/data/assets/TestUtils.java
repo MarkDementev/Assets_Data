@@ -9,6 +9,7 @@ import fund.data.assets.dto.asset.exchange.BuyFixedRateBondDTO;
 import fund.data.assets.dto.asset.exchange.FirstBuyFixedRateBondDTO;
 import fund.data.assets.dto.asset.exchange.SellFixedRateBondDTO;
 import fund.data.assets.dto.asset.exchange.PartialSellFixedRateBondDTO;
+import fund.data.assets.dto.common.LoginDto;
 import fund.data.assets.dto.financial_entities.AccountDTO;
 import fund.data.assets.dto.financial_entities.AccountCashDTO;
 import fund.data.assets.dto.financial_entities.TurnoverCommissionValueDTO;
@@ -16,6 +17,7 @@ import fund.data.assets.dto.common.PercentFloatValueDTO;
 import fund.data.assets.dto.owner.NewRussianAssetsOwnerDTO;
 import fund.data.assets.dto.owner.ContactDataRussianAssetsOwnerDTO;
 import fund.data.assets.dto.owner.PersonalDataRussianAssetsOwnerDTO;
+import fund.data.assets.jwt.JWTHelper;
 import fund.data.assets.model.asset.exchange.FixedRateBondPackage;
 import fund.data.assets.repository.AccountRepository;
 import fund.data.assets.repository.AccountCashRepository;
@@ -40,6 +42,9 @@ import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static fund.data.assets.config.SecurityConfig.ADMIN_NAME;
+import static fund.data.assets.config.SecurityConfig.ADMIN_PASSWORD;
+import static fund.data.assets.config.SecurityConfig.LOGIN_PATH;
 import static fund.data.assets.controller.AccountController.ACCOUNT_CONTROLLER_PATH;
 import static fund.data.assets.controller.AccountCashController.ACCOUNT_CASH_CONTROLLER_PATH;
 import static fund.data.assets.controller.FixedRateBondPackageController.FIXED_RATE_BOND_CONTROLLER_PATH;
@@ -50,6 +55,7 @@ import static fund.data.assets.utils.enums.AssetCurrency.RUSRUB;
 import static fund.data.assets.utils.enums.RussianSexEnum.MAN;
 import static fund.data.assets.utils.enums.RussianSexEnum.WOMAN;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
@@ -77,6 +83,8 @@ public class TestUtils {
     public static final LocalDate TEST_FIXED_RATE_BOND_MATURITY_DATE_NOT_MATURED = LocalDate.of(
             2025, 1, 1);
     private static final ObjectMapper MAPPER = new ObjectMapper().findAndRegisterModules();
+    @Autowired
+    private JWTHelper jwtHelper;
     private final AccountDTO accountDTO = new AccountDTO(
             "defaultBank",
             "1q2w3e4r5t",
@@ -160,6 +168,10 @@ public class TestUtils {
                     JsonNullable.of(""),
                     JsonNullable.of("31,01,1999"),
                     JsonNullable.of("999-99"));
+    private final LoginDto adminLoginDto = new LoginDto(
+            ADMIN_NAME,
+            ADMIN_PASSWORD
+    );
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -459,6 +471,10 @@ public class TestUtils {
         );
     }
 
+    public LoginDto getAdminLoginDto () {
+        return adminLoginDto;
+    }
+
     public ResultActions createDefaultAccount() throws Exception {
         return createAccount(accountDTO);
     }
@@ -688,7 +704,18 @@ public class TestUtils {
         createAccountCash(accountCashDTO);
     }
 
+    public ResultActions login(final LoginDto loginDto) throws Exception {
+        return perform(post(LOGIN_PATH).content(asJson(loginDto)).contentType(APPLICATION_JSON));
+    }
+
     public ResultActions perform(final MockHttpServletRequestBuilder request) throws Exception {
         return mockMvc.perform(request);
+    }
+
+    public ResultActions perform(final MockHttpServletRequestBuilder request, final String byUser) throws Exception {
+        final String token = jwtHelper.expiring(Map.of("username", byUser));
+
+        request.header(AUTHORIZATION, token);
+        return perform(request);
     }
 }

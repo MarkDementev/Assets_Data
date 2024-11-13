@@ -16,22 +16,30 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import static fund.data.assets.config.SecurityConfig.ADMIN_NAME;
+import static fund.data.assets.config.SecurityConfig.ADMIN_ROLE;
+import static fund.data.assets.config.SecurityConfig.USER_ROLE;
+
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.SPRING_SECURITY_FORM_USERNAME_KEY;
 
+/**
+ * @version 0.6-a
+ * @author MarkDementev a.k.a JavaMarkDem
+ */
 public class JWTAuthorizationFilter extends OncePerRequestFilter {
     private static final String BEARER = "Bearer";
-    private final RequestMatcher publicUrls;
+    private final RequestMatcher publicUrl;
     private final JWTHelper jwtHelper;
 
-    public JWTAuthorizationFilter(final RequestMatcher publicUrls, final JWTHelper jwtHelper) {
-        this.publicUrls = publicUrls;
+    public JWTAuthorizationFilter(final RequestMatcher publicUrl, final JWTHelper jwtHelper) {
+        this.publicUrl = publicUrl;
         this.jwtHelper = jwtHelper;
     }
 
     @Override
     protected boolean shouldNotFilter(final HttpServletRequest request) {
-        return publicUrls.matches(request);
+        return publicUrl.matches(request);
     }
 
     @Override
@@ -46,15 +54,18 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
                 .map(Object::toString)
                 .map(this::buildAuthToken)
                 .orElse(null);
+
         SecurityContextHolder.getContext().setAuthentication(authToken);
         filterChain.doFilter(request, response);
     }
 
     private UsernamePasswordAuthenticationToken buildAuthToken(final String username) {
+        String role = username.equals(ADMIN_NAME) ? ADMIN_ROLE : USER_ROLE;
+
         return new UsernamePasswordAuthenticationToken(
                 username,
                 null,
-                List.of(new SimpleGrantedAuthority("ADMIN"))
+                List.of(new SimpleGrantedAuthority(role))
         );
     }
 }
