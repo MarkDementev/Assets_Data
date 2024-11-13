@@ -13,6 +13,7 @@ import fund.data.assets.repository.AccountRepository;
 import fund.data.assets.repository.TurnoverCommissionValueRepository;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,7 @@ import static fund.data.assets.TestUtils.TEST_COMMISSION_PERCENT_VALUE;
 import static fund.data.assets.TestUtils.TEST_COMMISSION_PERCENT_VALUE_FLOAT;
 import static fund.data.assets.TestUtils.TEST_STRING_FORMAT_PERCENT_VALUE;
 import static fund.data.assets.TestUtils.TEST_FORMATTED_PERCENT_VALUE_FLOAT;
+import static fund.data.assets.config.SecurityConfig.ADMIN_NAME;
 import static fund.data.assets.config.SpringConfigForTests.TEST_PROFILE;
 import static fund.data.assets.controller.AccountController.ID_PATH;
 import static fund.data.assets.controller.TurnoverCommissionValueController.TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH;
@@ -50,7 +52,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * @version 0.3-a
+ * @version 0.6-a
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @SpringBootTest(classes = SpringConfigForTests.class, webEnvironment = RANDOM_PORT)
@@ -64,6 +66,11 @@ public class TurnoverCommissionValueControllerIT {
     @Autowired
     private TurnoverCommissionValueRepository turnoverCommissionValueRepository;
 
+    @BeforeEach
+    public void loginBeforeTest() throws Exception {
+        testUtils.login(testUtils.getAdminLoginDto());
+    }
+
     @AfterEach
     public void clearRepositories() {
         testUtils.tearDown();
@@ -76,7 +83,8 @@ public class TurnoverCommissionValueControllerIT {
         TurnoverCommissionValue expectedTurnoverCommissionValue = turnoverCommissionValueRepository.findAll().get(0);
         var response = testUtils.perform(
                 get("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH + ID_PATH,
-                        expectedTurnoverCommissionValue.getId())
+                        expectedTurnoverCommissionValue.getId()),
+                        ADMIN_NAME
                 ).andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
@@ -103,7 +111,8 @@ public class TurnoverCommissionValueControllerIT {
 
         Exception exception = testUtils.perform(
                     get("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH + ID_PATH,
-                            notExistsTurnoverCommissionValueID))
+                            notExistsTurnoverCommissionValueID),
+                        ADMIN_NAME)
                 .andExpect(status().isNotFound())
                 .andReturn().getResolvedException();
 
@@ -116,7 +125,8 @@ public class TurnoverCommissionValueControllerIT {
         testUtils.createDefaultTurnoverCommissionValue();
 
         var response = testUtils.perform(
-                    get("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH)
+                    get("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH),
+                        ADMIN_NAME
                 )
                 .andExpect(status().isOk())
                 .andReturn()
@@ -140,7 +150,8 @@ public class TurnoverCommissionValueControllerIT {
         var response = testUtils.perform(
                 post("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH)
                         .content(asJson(validTurnoverCommissionValueDTO))
-                        .contentType(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON),
+                        ADMIN_NAME
                 )
                 .andExpect(status().isCreated())
                 .andReturn()
@@ -163,7 +174,8 @@ public class TurnoverCommissionValueControllerIT {
     public void createNotValidTurnoverCommissionValueIT() throws Exception {
         testUtils.perform(post("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH)
                 .content(asJson(testUtils.getNotValidTurnoverCommissionValueDTO()))
-                .contentType(APPLICATION_JSON));
+                .contentType(APPLICATION_JSON),
+                ADMIN_NAME);
         assertThat(turnoverCommissionValueRepository.findAll()).hasSize(0);
 
         testUtils.createDefaultTurnoverCommissionValue();
@@ -178,7 +190,8 @@ public class TurnoverCommissionValueControllerIT {
         );
         Exception exception = testUtils.perform(post("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH)
                         .content(asJson(turnoverCommissionValueDTOBothNotUniqueAccountAssetTypeName))
-                        .contentType(APPLICATION_JSON))
+                        .contentType(APPLICATION_JSON),
+                        ADMIN_NAME)
                 .andExpect(status().isBadRequest())
                 .andReturn().getResolvedException();
 
@@ -195,7 +208,8 @@ public class TurnoverCommissionValueControllerIT {
         PercentFloatValueDTO percentFloatValueDTO = new PercentFloatValueDTO(TEST_STRING_FORMAT_PERCENT_VALUE);
         var response = testUtils.perform(put("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH
                         + ID_PATH, createdTurnoverCommissionId)
-                        .content(asJson(percentFloatValueDTO)).contentType(APPLICATION_JSON))
+                        .content(asJson(percentFloatValueDTO)).contentType(APPLICATION_JSON),
+                        ADMIN_NAME)
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
@@ -228,7 +242,8 @@ public class TurnoverCommissionValueControllerIT {
         Exception exception = testUtils.perform(put("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH
                         + ID_PATH, createdTurnoverCommissionId)
                         .content(asJson(notValidPercentFloatValueDTO))
-                        .contentType(APPLICATION_JSON))
+                        .contentType(APPLICATION_JSON),
+                        ADMIN_NAME)
                 .andExpect(status().isBadRequest())
                 .andReturn().getResolvedException();
 
@@ -246,7 +261,8 @@ public class TurnoverCommissionValueControllerIT {
                 accountRepository.findAll().get(0), TEST_ASSET_TYPE_NAME).getId();
 
         testUtils.perform(delete("/data" + TURNOVER_COMMISSION_VALUE_CONTROLLER_PATH + ID_PATH,
-                        createdTurnoverCommissionValueId))
+                        createdTurnoverCommissionValueId),
+                        ADMIN_NAME)
                 .andExpect(status().isOk());
 
         assertNull(turnoverCommissionValueRepository.findByAccountAndAssetTypeName(

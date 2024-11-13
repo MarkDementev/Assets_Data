@@ -20,6 +20,7 @@ import fund.data.assets.utils.enums.AssetCurrency;
 import fund.data.assets.utils.enums.CommissionSystem;
 import fund.data.assets.utils.enums.TaxSystem;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 
@@ -39,6 +40,7 @@ import static fund.data.assets.TestUtils.TEST_FIRST_RUSSIAN_OWNER_CASH_AMOUNT;
 import static fund.data.assets.TestUtils.TEST_SECOND_RUSSIAN_OWNER_CASH_AMOUNT;
 import static fund.data.assets.TestUtils.TEST_DECIMAL_FORMAT;
 import static fund.data.assets.TestUtils.TEST_FIXED_RATE_BOND_LAST_ASSET_SELL_DATE;
+import static fund.data.assets.config.SecurityConfig.ADMIN_NAME;
 import static fund.data.assets.config.SpringConfigForTests.TEST_PROFILE;
 import static fund.data.assets.controller.FixedRateBondPackageController.FIXED_RATE_BOND_CONTROLLER_PATH;
 import static fund.data.assets.controller.FixedRateBondPackageController.BUY_PATH;
@@ -60,7 +62,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * @version 0.3-a
+ * @version 0.6-a
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @SpringBootTest(classes = SpringConfigForTests.class, webEnvironment = RANDOM_PORT)
@@ -82,6 +84,11 @@ public class FixedRateBondControllerIT {
     @Autowired
     private FinancialAssetRelationshipRepository financialAssetRelationshipRepository;
 
+    @BeforeEach
+    public void loginBeforeTest() throws Exception {
+        testUtils.login(testUtils.getAdminLoginDto());
+    }
+
     @AfterEach
     public void clearRepositories() {
         testUtils.tearDown();
@@ -94,7 +101,8 @@ public class FixedRateBondControllerIT {
         FixedRateBondPackage expectedFixedRateBond = fixedRateBondRepository.findAll().get(0);
         var response = testUtils.perform(
                 get("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH,
-                        expectedFixedRateBond.getId())
+                        expectedFixedRateBond.getId()),
+                        ADMIN_NAME
                 ).andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
@@ -141,7 +149,8 @@ public class FixedRateBondControllerIT {
         testUtils.createDefaultFixedRateBond();
 
         var response = testUtils.perform(
-                    get("/data" + FIXED_RATE_BOND_CONTROLLER_PATH)
+                    get("/data" + FIXED_RATE_BOND_CONTROLLER_PATH),
+                        ADMIN_NAME
                 ).andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
@@ -157,7 +166,8 @@ public class FixedRateBondControllerIT {
         var response = testUtils.perform(
                 post("/data" + FIXED_RATE_BOND_CONTROLLER_PATH)
                         .content(asJson(firstBuyFixedRateBondDTO))
-                        .contentType(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON),
+                        ADMIN_NAME
                 )
                 .andExpect(status().isCreated())
                 .andReturn()
@@ -204,7 +214,8 @@ public class FixedRateBondControllerIT {
         var response = testUtils.perform(
                 post("/data" + FIXED_RATE_BOND_CONTROLLER_PATH)
                         .content(asJson(firstBuyFixedRateBondDTO))
-                        .contentType(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON),
+                        ADMIN_NAME
                 )
                 .andExpect(status().isCreated())
                 .andReturn()
@@ -273,7 +284,8 @@ public class FixedRateBondControllerIT {
         testUtils.perform(
                 post("/data" + FIXED_RATE_BOND_CONTROLLER_PATH)
                         .content(asJson(firstBuyFixedRateBondDTO))
-                        .contentType(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON),
+                        ADMIN_NAME
                 )
                 .andExpect(status().isCreated());
 
@@ -305,7 +317,8 @@ public class FixedRateBondControllerIT {
         Exception exception = testUtils.perform(
                 post("/data" + FIXED_RATE_BOND_CONTROLLER_PATH)
                         .content(asJson(notValidFirstBuyFixedRateBondDTO))
-                        .contentType(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON),
+                ADMIN_NAME
         ).andExpect(status().isBadRequest()).andReturn().getResolvedException();
 
         assert exception != null;
@@ -330,7 +343,8 @@ public class FixedRateBondControllerIT {
                         put("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH + BUY_PATH,
                                 createdFixedRateBondPackageId)
                                 .content(asJson(testUtils.getBuyFixedRateBondDTO()))
-                                .contentType(APPLICATION_JSON)
+                                .contentType(APPLICATION_JSON),
+                        ADMIN_NAME
                 )
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
@@ -390,7 +404,8 @@ public class FixedRateBondControllerIT {
                         put("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH + BUY_PATH,
                                 createdFixedRateBondPackageId)
                                 .content(asJson(testUtils.getBuyFixedRateBondNotAllOwnersDTO()))
-                                .contentType(APPLICATION_JSON)
+                                .contentType(APPLICATION_JSON),
+                        ADMIN_NAME
                 )
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
@@ -451,7 +466,8 @@ public class FixedRateBondControllerIT {
                         put("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH + BUY_PATH,
                                 createdFixedRateBondPackageId)
                                 .content(asJson(testUtils.getBuyWithNewOwnerFixedRateBondDTO()))
-                                .contentType(APPLICATION_JSON)
+                                .contentType(APPLICATION_JSON),
+                        ADMIN_NAME
                 )
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
@@ -518,7 +534,8 @@ public class FixedRateBondControllerIT {
                         put("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH + BUY_PATH,
                                 createdFixedRateBondPackageId)
                                 .content(asJson(testUtils.getBuyFixedRateBondDTO()))
-                                .contentType(APPLICATION_JSON)
+                                .contentType(APPLICATION_JSON),
+                        ADMIN_NAME
                 ).andExpect(status().isBadRequest())
                 .andReturn().getResolvedException();
 
@@ -542,7 +559,8 @@ public class FixedRateBondControllerIT {
                 put("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH + BUY_PATH,
                         createdFixedRateBondPackageId)
                         .content(asJson(testUtils.getBuyFixedRateBondNotValidTaxResidencyDTO()))
-                        .contentType(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON),
+                ADMIN_NAME
         ).andExpect(status().isBadRequest()).andReturn().getResolvedException();
 
         assert exception != null;
@@ -565,7 +583,8 @@ public class FixedRateBondControllerIT {
                         put("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH,
                                 createdFixedRateBondPackageId)
                                 .content(asJson(testUtils.getPartialSellFixedRateBondPackageFirstDTO()))
-                                .contentType(APPLICATION_JSON)
+                                .contentType(APPLICATION_JSON),
+                        ADMIN_NAME
                 )
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
@@ -618,7 +637,8 @@ public class FixedRateBondControllerIT {
                         put("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH,
                                 createdFixedRateBondPackageId)
                                 .content(asJson(testUtils.getPartialSellFixedRateBondPackageSecondDTO()))
-                                .contentType(APPLICATION_JSON)
+                                .contentType(APPLICATION_JSON),
+                        ADMIN_NAME
                 )
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
@@ -669,7 +689,8 @@ public class FixedRateBondControllerIT {
                         put("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH,
                                 createdFixedRateBondPackageId)
                                 .content(asJson(testUtils.getPartialSellFixedRateBondPackageNotEnoughAssetsDTO()))
-                                .contentType(APPLICATION_JSON))
+                                .contentType(APPLICATION_JSON),
+                        ADMIN_NAME)
                 .andExpect(status().isBadRequest())
                 .andReturn().getResolvedException();
 
@@ -693,7 +714,8 @@ public class FixedRateBondControllerIT {
                         put("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH,
                                 createdFixedRateBondPackageId)
                                 .content(asJson(testUtils.getPartialSellFixedRateBondPackageNotValidTaxResidencyDTO()))
-                                .contentType(APPLICATION_JSON))
+                                .contentType(APPLICATION_JSON),
+                        ADMIN_NAME)
                 .andExpect(status().isBadRequest())
                 .andReturn().getResolvedException();
 
@@ -716,7 +738,8 @@ public class FixedRateBondControllerIT {
                 delete("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH,
                         createdFixedRateBondID)
                         .content(asJson(testUtils.getFixedRateBondFullSellDTO()))
-                        .contentType(APPLICATION_JSON))
+                        .contentType(APPLICATION_JSON),
+                        ADMIN_NAME)
                 .andExpect(status().isOk());
         assertThat(fixedRateBondRepository.findAll()).hasSize(0);
         assertThat(financialAssetRelationshipRepository.findAll()).hasSize(0);
@@ -736,7 +759,8 @@ public class FixedRateBondControllerIT {
                         delete("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH,
                                 createdFixedRateBondID)
                                 .content(asJson(testUtils.getFixedRateBondFullSellDTODiffWithoutTaxes()))
-                                .contentType(APPLICATION_JSON))
+                                .contentType(APPLICATION_JSON),
+                        ADMIN_NAME)
                 .andExpect(status().isOk());
         assertThat(fixedRateBondRepository.findAll()).hasSize(0);
         assertThat(financialAssetRelationshipRepository.findAll()).hasSize(0);
@@ -755,7 +779,8 @@ public class FixedRateBondControllerIT {
                         delete("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH,
                                 createdFixedRateBondID)
                                 .content(asJson(testUtils.getNotValidCountryFixedRateBondFullSellDTO()))
-                                .contentType(APPLICATION_JSON))
+                                .contentType(APPLICATION_JSON),
+                        ADMIN_NAME)
                 .andExpect(status().isBadRequest())
                 .andReturn().getResolvedException();
 
@@ -777,7 +802,8 @@ public class FixedRateBondControllerIT {
                         delete("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH + REDEEM_PATH,
                                 createdFixedRateBondID)
                                 .content(asJson(testUtils.getAssetsOwnersCountryDTO()))
-                                .contentType(APPLICATION_JSON))
+                                .contentType(APPLICATION_JSON),
+                        ADMIN_NAME)
                 .andExpect(status().isOk());
         assertThat(fixedRateBondRepository.findAll()).hasSize(0);
         assertThat(financialAssetRelationshipRepository.findAll()).hasSize(0);
@@ -797,7 +823,8 @@ public class FixedRateBondControllerIT {
                         delete("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH + REDEEM_PATH,
                                 createdFixedRateBondID)
                                 .content(asJson(testUtils.getAssetsOwnersCountryDTO()))
-                                .contentType(APPLICATION_JSON))
+                                .contentType(APPLICATION_JSON),
+                        ADMIN_NAME)
                 .andExpect(status().isOk());
         assertThat(fixedRateBondRepository.findAll()).hasSize(0);
         assertThat(financialAssetRelationshipRepository.findAll()).hasSize(0);
@@ -816,7 +843,8 @@ public class FixedRateBondControllerIT {
                         delete("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH + REDEEM_PATH,
                                 createdFixedRateBondID)
                                 .content(asJson(testUtils.getNotValidAssetsOwnersCountryDTO()))
-                                .contentType(APPLICATION_JSON))
+                                .contentType(APPLICATION_JSON),
+                        ADMIN_NAME)
                 .andExpect(status().isBadRequest())
                 .andReturn().getResolvedException();
 
@@ -837,7 +865,8 @@ public class FixedRateBondControllerIT {
                         delete("/data" + FIXED_RATE_BOND_CONTROLLER_PATH + ID_PATH + REDEEM_PATH,
                                 createdFixedRateBondID)
                                 .content(asJson(testUtils.getAssetsOwnersCountryDTO()))
-                                .contentType(APPLICATION_JSON))
+                                .contentType(APPLICATION_JSON),
+                        ADMIN_NAME)
                 .andExpect(status().isBadRequest())
                 .andReturn().getResolvedException();
 

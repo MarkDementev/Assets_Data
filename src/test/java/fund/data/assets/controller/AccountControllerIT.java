@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import fund.data.assets.TestUtils;
 import fund.data.assets.config.SpringConfigForTests;
-import fund.data.assets.dto.common.LoginDto;
 import fund.data.assets.exception.EntityWithIDNotFoundException;
 import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.repository.AccountRepository;
@@ -24,7 +23,6 @@ import java.util.List;
 import static fund.data.assets.TestUtils.asJson;
 import static fund.data.assets.TestUtils.fromJson;
 import static fund.data.assets.config.SecurityConfig.ADMIN_NAME;
-import static fund.data.assets.config.SecurityConfig.LOGIN_PATH;
 import static fund.data.assets.config.SpringConfigForTests.TEST_PROFILE;
 import static fund.data.assets.controller.AccountController.ACCOUNT_CONTROLLER_PATH;
 import static fund.data.assets.controller.AccountController.ID_PATH;
@@ -74,7 +72,8 @@ class AccountControllerIT {
 		Account expectedAccount = accountRepository.findByOrganisationWhereAccountOpened(
 				testUtils.getAccountDTO().getOrganisationWhereAccountOpened());
 		var response = testUtils.perform(
-						get("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH, expectedAccount.getId())
+						get("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH, expectedAccount.getId()),
+						ADMIN_NAME
 				).andExpect(status().isOk())
 				.andReturn()
 				.getResponse();
@@ -100,7 +99,7 @@ class AccountControllerIT {
 		notExistsAccountID++;
 
 		Exception exception = testUtils.perform(get("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH,
-						notExistsAccountID))
+						notExistsAccountID), ADMIN_NAME)
 				.andExpect(status().isNotFound())
 				.andReturn().getResolvedException();
 
@@ -112,7 +111,8 @@ class AccountControllerIT {
 	public void getAccountsIT() throws Exception {
 		testUtils.createDefaultAccount();
 
-		var response = testUtils.perform(get("/data" + ACCOUNT_CONTROLLER_PATH))
+		var response = testUtils.perform(get("/data" + ACCOUNT_CONTROLLER_PATH),
+						ADMIN_NAME)
 				.andExpect(status().isOk())
 				.andReturn()
 				.getResponse();
@@ -150,7 +150,7 @@ class AccountControllerIT {
 	public void createNotValidAccountIT() throws Exception {
 		testUtils.perform(post("/data" + ACCOUNT_CONTROLLER_PATH)
 						.content(asJson(testUtils.getNotValidAccountDTO()))
-						.contentType(APPLICATION_JSON));
+						.contentType(APPLICATION_JSON), ADMIN_NAME);
 		assertThat(accountRepository.findAll()).hasSize(0);
 
 		testUtils.createDefaultAccount();
@@ -158,7 +158,7 @@ class AccountControllerIT {
 
 		Exception exception = testUtils.perform(post("/data" + ACCOUNT_CONTROLLER_PATH)
 						.content(asJson(testUtils.getAnotherBankButSameAccountNumberAccountDTO()))
-						.contentType(APPLICATION_JSON))
+						.contentType(APPLICATION_JSON), ADMIN_NAME)
 				.andExpect(status().isBadRequest())
 				.andReturn().getResolvedException();
 
@@ -175,7 +175,8 @@ class AccountControllerIT {
 				testUtils.getAccountDTO().getOrganisationWhereAccountOpened()).getId();
 		var response = testUtils.perform(
 				put("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH, createdAccountId)
-						.content(asJson(testUtils.getSecondAccountDTO())).contentType(APPLICATION_JSON)
+						.content(asJson(testUtils.getSecondAccountDTO())).contentType(APPLICATION_JSON),
+						ADMIN_NAME
 				)
 				.andExpect(status().isOk())
 				.andReturn()
@@ -205,7 +206,8 @@ class AccountControllerIT {
 				put("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH,
 				createdAccountId)
 						.content(asJson(testUtils.getNotValidAccountDTO()))
-						.contentType(APPLICATION_JSON));
+						.contentType(APPLICATION_JSON),
+				ADMIN_NAME);
 
 		assertEquals(testUtils.getAccountDTO().getOrganisationWhereAccountOpened(),
 				accountRepository.findAll().get(0).getOrganisationWhereAccountOpened());
@@ -221,7 +223,7 @@ class AccountControllerIT {
 		Exception exception = testUtils.perform(put("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH,
 						createdSecondAccountId)
 						.content(asJson(testUtils.getAccountDTO()))
-						.contentType(APPLICATION_JSON))
+						.contentType(APPLICATION_JSON), ADMIN_NAME)
 				.andExpect(status().isBadRequest())
 				.andReturn().getResolvedException();
 
@@ -237,7 +239,7 @@ class AccountControllerIT {
 				testUtils.getAccountDTO().getOrganisationWhereAccountOpened()).getId();
 
 		testUtils.perform(
-				delete("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH, createdAccountId))
+				delete("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH, createdAccountId), ADMIN_NAME)
 				.andExpect(status().isOk());
 
 		assertNull(accountRepository.findByOrganisationWhereAccountOpened(

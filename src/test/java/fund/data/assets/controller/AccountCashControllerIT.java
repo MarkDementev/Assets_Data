@@ -15,6 +15,7 @@ import fund.data.assets.repository.RussianAssetsOwnerRepository;
 import fund.data.assets.utils.enums.AssetCurrency;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import java.util.List;
 
 import static fund.data.assets.TestUtils.asJson;
 import static fund.data.assets.TestUtils.fromJson;
+import static fund.data.assets.config.SecurityConfig.ADMIN_NAME;
 import static fund.data.assets.config.SpringConfigForTests.TEST_PROFILE;
 import static fund.data.assets.controller.AccountController.ACCOUNT_CONTROLLER_PATH;
 import static fund.data.assets.controller.AccountController.ID_PATH;
@@ -45,7 +47,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * @version 0.3-a
+ * @version 0.6-a
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @SpringBootTest(classes = SpringConfigForTests.class, webEnvironment = RANDOM_PORT)
@@ -61,6 +63,11 @@ public class AccountCashControllerIT {
     @Autowired
     private RussianAssetsOwnerRepository russianAssetsOwnerRepository;
 
+    @BeforeEach
+    public void loginBeforeTest() throws Exception {
+        testUtils.login(testUtils.getAdminLoginDto());
+    }
+
     @AfterEach
     public void clearRepositories() {
         testUtils.tearDown();
@@ -73,7 +80,8 @@ public class AccountCashControllerIT {
         AccountCash expectedAccountCash = accountCashRepository.findAll().get(0);
         var response = testUtils.perform(
                 get("/data" + ACCOUNT_CASH_CONTROLLER_PATH + ID_PATH,
-                        expectedAccountCash.getId())
+                        expectedAccountCash.getId()),
+                        ADMIN_NAME
                 )
                 .andExpect(status().isOk())
                 .andReturn()
@@ -97,7 +105,8 @@ public class AccountCashControllerIT {
         notExistsAccountCashID++;
 
         Exception exception = testUtils.perform(
-                        get("/data" + ACCOUNT_CASH_CONTROLLER_PATH + ID_PATH, notExistsAccountCashID))
+                        get("/data" + ACCOUNT_CASH_CONTROLLER_PATH + ID_PATH, notExistsAccountCashID),
+                        ADMIN_NAME)
                 .andExpect(status().isNotFound())
                 .andReturn().getResolvedException();
 
@@ -110,7 +119,8 @@ public class AccountCashControllerIT {
         testUtils.createDefaultAccountCash();
 
         var response = testUtils.perform(
-                get("/data" + ACCOUNT_CASH_CONTROLLER_PATH))
+                get("/data" + ACCOUNT_CASH_CONTROLLER_PATH),
+                        ADMIN_NAME)
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
@@ -133,7 +143,8 @@ public class AccountCashControllerIT {
         var response = testUtils.perform(
                         post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
                                 .content(asJson(accountCashDTO))
-                                .contentType(APPLICATION_JSON)
+                                .contentType(APPLICATION_JSON),
+                        ADMIN_NAME
                 )
                 .andExpect(status().isOk())
                 .andReturn()
@@ -157,7 +168,8 @@ public class AccountCashControllerIT {
         testUtils.perform(
                 post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
                         .content(asJson(new AccountCashDTO()))
-                        .contentType(APPLICATION_JSON));
+                        .contentType(APPLICATION_JSON),
+                ADMIN_NAME);
         assertThat(accountCashRepository.findAll()).hasSize(0);
 
         float amountChangeValue = 10.00F;
@@ -169,7 +181,8 @@ public class AccountCashControllerIT {
                 -amountChangeValue
         );
         Exception exception = testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
-                        .content(asJson(accountCashDTO)).contentType(APPLICATION_JSON))
+                        .content(asJson(accountCashDTO)).contentType(APPLICATION_JSON),
+                        ADMIN_NAME)
                 .andExpect(status().isBadRequest())
                 .andReturn().getResolvedException();
 
@@ -180,11 +193,13 @@ public class AccountCashControllerIT {
         accountCashDTO.setAmountChangeValue(amountChangeValue);
         testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
                 .content(asJson(accountCashDTO))
-                .contentType(APPLICATION_JSON));
+                .contentType(APPLICATION_JSON),
+                ADMIN_NAME);
         accountCashDTO.setAmountChangeValue(amountChangeValue * 2);
         testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
                 .content(asJson(accountCashDTO))
-                .contentType(APPLICATION_JSON));
+                .contentType(APPLICATION_JSON),
+                ADMIN_NAME);
         assertThat(accountCashRepository.findAll()).hasSize(1);
         assertEquals(amountChangeValue * 3, accountCashRepository.findAll().get(0).getAmount());
     }
@@ -202,21 +217,25 @@ public class AccountCashControllerIT {
         );
         testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
                 .content(asJson(accountCashDTO))
-                .contentType(APPLICATION_JSON));
+                .contentType(APPLICATION_JSON),
+                ADMIN_NAME);
         testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
                 .content(asJson(accountCashDTO))
-                .contentType(APPLICATION_JSON));
+                .contentType(APPLICATION_JSON),
+                ADMIN_NAME);
         assertEquals(amountChangeValue * 2, accountCashRepository.findAll().get(0).getAmount());
 
         amountChangeValue = -10.00F;
         accountCashDTO.setAmountChangeValue(amountChangeValue);
         testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
                 .content(asJson(accountCashDTO))
-                .contentType(APPLICATION_JSON));
+                .contentType(APPLICATION_JSON),
+                ADMIN_NAME);
         var response = testUtils.perform(
                 post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
                         .content(asJson(accountCashDTO))
-                        .contentType(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON),
+                        ADMIN_NAME
                 ).andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
@@ -243,7 +262,8 @@ public class AccountCashControllerIT {
         );
         Exception exception = testUtils.perform(post("/data" + ACCOUNT_CASH_CONTROLLER_PATH)
                         .content(asJson(accountCashDTOWithNegativeAmount))
-                        .contentType(APPLICATION_JSON))
+                        .contentType(APPLICATION_JSON),
+                        ADMIN_NAME)
                 .andExpect(status().isBadRequest())
                 .andReturn().getResolvedException();
 
@@ -258,7 +278,8 @@ public class AccountCashControllerIT {
         assertThat(accountCashRepository.findAll()).hasSize(1);
 
         Long createdAccountId = accountRepository.findAll().get(0).getId();
-        testUtils.perform(delete("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH, createdAccountId))
+        testUtils.perform(delete("/data" + ACCOUNT_CONTROLLER_PATH + ID_PATH, createdAccountId),
+                        ADMIN_NAME)
                 .andExpect(status().isOk());
         assertThat(accountCashRepository.findAll()).hasSize(0);
 
@@ -266,7 +287,8 @@ public class AccountCashControllerIT {
         assertThat(accountCashRepository.findAll()).hasSize(1);
 
         Long createdOwnerId = russianAssetsOwnerRepository.findAll().get(0).getId();
-        testUtils.perform(delete("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH + ID_PATH, createdOwnerId))
+        testUtils.perform(delete("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH + ID_PATH, createdOwnerId),
+                        ADMIN_NAME)
                 .andExpect(status().isOk());
         assertThat(accountCashRepository.findAll()).hasSize(0);
     }

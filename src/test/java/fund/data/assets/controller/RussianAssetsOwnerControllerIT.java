@@ -11,6 +11,7 @@ import fund.data.assets.repository.RussianAssetsOwnerRepository;
 import fund.data.assets.service.RussianAssetsOwnerService;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import java.util.List;
 
 import static fund.data.assets.TestUtils.fromJson;
 import static fund.data.assets.TestUtils.asJson;
+import static fund.data.assets.config.SecurityConfig.ADMIN_NAME;
 import static fund.data.assets.config.SpringConfigForTests.TEST_PROFILE;
 import static fund.data.assets.controller.RussianAssetsOwnerController.ID_PATH;
 import static fund.data.assets.controller.RussianAssetsOwnerController.CONTACT_DATA_PATH;
@@ -43,7 +45,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * @version 0.3-a
+ * @version 0.6-a
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @SpringBootTest(classes = SpringConfigForTests.class, webEnvironment = RANDOM_PORT)
@@ -57,6 +59,11 @@ public class RussianAssetsOwnerControllerIT {
     @Autowired
     private RussianAssetsOwnerService russianAssetsOwnerService;
 
+    @BeforeEach
+    public void loginBeforeTest() throws Exception {
+        testUtils.login(testUtils.getAdminLoginDto());
+    }
+
     @AfterEach
     public void clearRepositories() {
         testUtils.tearDown();
@@ -69,7 +76,8 @@ public class RussianAssetsOwnerControllerIT {
         RussianAssetsOwner expectedRussianAssetsOwner = russianAssetsOwnerRepository.findAll().get(0);
         var response = testUtils.perform(
                     get("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH + ID_PATH,
-                            expectedRussianAssetsOwner.getId())
+                            expectedRussianAssetsOwner.getId()),
+                        ADMIN_NAME
                 ).andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
@@ -107,7 +115,8 @@ public class RussianAssetsOwnerControllerIT {
         expectedRussianAssetsOwnerID++;
 
         Exception exception = testUtils.perform(
-                        get("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH + ID_PATH, expectedRussianAssetsOwnerID)
+                        get("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH + ID_PATH, expectedRussianAssetsOwnerID),
+                        ADMIN_NAME
                 ).andExpect(status().isNotFound())
                 .andReturn().getResolvedException();
         assert exception != null;
@@ -119,7 +128,8 @@ public class RussianAssetsOwnerControllerIT {
         testUtils.createDefaultRussianAssetsOwner();
 
         var response = testUtils.perform(
-                    get("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH)
+                    get("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH),
+                        ADMIN_NAME
                 ).andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
@@ -134,7 +144,8 @@ public class RussianAssetsOwnerControllerIT {
         var response = testUtils.perform(
                         post("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH)
                                 .content(asJson(testUtils.getNewRussianAssetsOwnerDTO()))
-                                .contentType(APPLICATION_JSON)
+                                .contentType(APPLICATION_JSON),
+                        ADMIN_NAME
                 )
                 .andExpect(status().isCreated())
                 .andReturn()
@@ -177,7 +188,8 @@ public class RussianAssetsOwnerControllerIT {
         testUtils.perform(
                 post("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH)
                         .content(asJson(testUtils.getNotValidNewRussianAssetsOwnerDTO()))
-                        .contentType(APPLICATION_JSON))
+                        .contentType(APPLICATION_JSON),
+                        ADMIN_NAME)
                 .andExpect(status().isBadRequest());
         assertThat(russianAssetsOwnerRepository.findAll()).hasSize(0);
 
@@ -202,7 +214,8 @@ public class RussianAssetsOwnerControllerIT {
         );
         Exception exception = testUtils.perform(post("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH)
                         .content(asJson(newRussianAssetsOwnerDTOWithAlreadyExistsPassportData))
-                        .contentType(APPLICATION_JSON))
+                        .contentType(APPLICATION_JSON),
+                        ADMIN_NAME)
                 .andExpect(status().isBadRequest())
                 .andReturn().getResolvedException();
 
@@ -228,7 +241,8 @@ public class RussianAssetsOwnerControllerIT {
         );
         testUtils.perform(post("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH)
                         .content(asJson(newRussianAssetsOwnerDTOWithAlreadyExistsPhoneAndEmail))
-                        .contentType(APPLICATION_JSON))
+                        .contentType(APPLICATION_JSON),
+                        ADMIN_NAME)
                         .andExpect(status().isBadRequest());
         assertThat(russianAssetsOwnerRepository.findAll()).hasSize(1);
     }
@@ -242,7 +256,8 @@ public class RussianAssetsOwnerControllerIT {
                 put("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH
                         + CONTACT_DATA_PATH + ID_PATH, createdRussianAssetsOwnerId)
                         .content(asJson(testUtils.getValidRussianAssetsOwnerContactDataDTO()))
-                        .contentType(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON),
+                        ADMIN_NAME
                 )
                 .andExpect(status().isOk())
                 .andReturn()
@@ -287,7 +302,8 @@ public class RussianAssetsOwnerControllerIT {
         var responseUpdatePersonalData = testUtils.perform(put("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH
                                 + PERSONAL_DATA_PATH + ID_PATH, createdRussianAssetsOwnerId)
                         .content(asJson(testUtils.getValidRussianAssetsOwnerPersonalDataDTO()))
-                        .contentType(APPLICATION_JSON))
+                        .contentType(APPLICATION_JSON),
+                        ADMIN_NAME)
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
@@ -338,7 +354,8 @@ public class RussianAssetsOwnerControllerIT {
                 put("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH
                 + CONTACT_DATA_PATH + ID_PATH, createdRussianAssetsOwnerId)
                         .content(asJson(testUtils.getNotValidRussianAssetsOwnerContactDataDTO()))
-                        .contentType(APPLICATION_JSON));
+                        .contentType(APPLICATION_JSON),
+                ADMIN_NAME);
         assertEquals(russianAssetsOwnerRepository.findAll().get(0).getEmail(),
                 testUtils.getNewRussianAssetsOwnerDTO().getEmail());
         assertEquals(russianAssetsOwnerRepository.findAll().get(0).getMobilePhoneNumber(),
@@ -349,7 +366,8 @@ public class RussianAssetsOwnerControllerIT {
                 put("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH
                 + PERSONAL_DATA_PATH + ID_PATH, createdRussianAssetsOwnerId)
                         .content(asJson(testUtils.getNotValidRussianAssetsOwnerPersonalDataDTO()))
-                        .contentType(APPLICATION_JSON));
+                        .contentType(APPLICATION_JSON),
+                ADMIN_NAME);
         assertEquals(russianAssetsOwnerRepository.findAll().get(0).getName(),
                 testUtils.getNewRussianAssetsOwnerDTO().getName());
         assertEquals(russianAssetsOwnerRepository.findAll().get(0).getSurname(),
@@ -388,7 +406,8 @@ public class RussianAssetsOwnerControllerIT {
 
         testUtils.perform(
                 delete("/data" + RUSSIAN_OWNERS_CONTROLLER_PATH + ID_PATH,
-                        createdRussianAssetsOwnerId))
+                        createdRussianAssetsOwnerId),
+                        ADMIN_NAME)
                 .andExpect(status().isOk());
 
         assertThat(russianAssetsOwnerRepository.findAll()).hasSize(0);

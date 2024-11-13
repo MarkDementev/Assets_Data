@@ -59,6 +59,10 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
+/**
+ * @version 0.6-a
+ * @author MarkDementev a.k.a JavaMarkDem
+ */
 @Component
 public class TestUtils {
     public static final String TEST_COMMISSION_PERCENT_VALUE = "1";
@@ -597,7 +601,7 @@ public class TestUtils {
                 .content(asJson(accountDTO))
                 .contentType(APPLICATION_JSON);
 
-        return perform(request);
+        return perform(request, ADMIN_NAME);
     }
 
     public ResultActions createTurnoverCommissionValue(final TurnoverCommissionValueDTO turnoverCommissionValueDTO)
@@ -606,7 +610,7 @@ public class TestUtils {
                 .content(asJson(turnoverCommissionValueDTO))
                 .contentType(APPLICATION_JSON);
 
-        return perform(request);
+        return perform(request, ADMIN_NAME);
     }
 
     public ResultActions createRussianAssetsOwner(final NewRussianAssetsOwnerDTO russianAssetsOwnerDTO)
@@ -615,7 +619,7 @@ public class TestUtils {
                 .content(asJson(russianAssetsOwnerDTO))
                 .contentType(APPLICATION_JSON);
 
-        return perform(request);
+        return perform(request, ADMIN_NAME);
     }
 
     public ResultActions createAccountCash(final AccountCashDTO accountCashDTO) throws Exception {
@@ -623,7 +627,7 @@ public class TestUtils {
                 .content(asJson(accountCashDTO))
                 .contentType(APPLICATION_JSON);
 
-        return perform(request);
+        return perform(request, ADMIN_NAME);
     }
 
     public ResultActions createFixedRateBond(final FirstBuyFixedRateBondDTO firstBuyFixedRateBondDTO)
@@ -632,7 +636,7 @@ public class TestUtils {
                 .content(asJson(firstBuyFixedRateBondDTO))
                 .contentType(APPLICATION_JSON);
 
-        return perform(request);
+        return perform(request, ADMIN_NAME);
     }
 
     public Map<String, Float> prepareEntitiesBeforeFirstBuyFixedRateBondThenGetAssetOwnersWithAssetCounts()
