@@ -1,3 +1,6 @@
+server:
+  port: 5001
+
 base-url: /data
 
 spring:
@@ -7,6 +10,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+
+springdoc:
+  swagger-ui:
+    path: /swagger.html
 
 logging:
   level:

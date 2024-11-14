@@ -5,6 +5,13 @@ spring:
     password: password
     driverClassName: org.h2.Driver
 
+  h2:
+    console:
+      enabled: true
+      path: /h2console/
+      settings:
+        web-allow-others: true
+
   jpa:
     spring.jpa.database-platform: org.hibernate.dialect.H2Dialect
     show-sql: true
