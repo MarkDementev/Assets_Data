@@ -8,7 +8,7 @@ plugins {
 }
 
 group = 'fund.data'
-version = '0.0.1-alpha'
+version = '0.6-a'
 
 application {
 	mainClass = 'fund.data.assets.FundAssetsDataApplication'
