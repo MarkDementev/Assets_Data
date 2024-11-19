@@ -1,0 +1,1 @@
+CREATE DATABASE assets_db;

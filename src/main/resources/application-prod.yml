@@ -1,7 +1,7 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5001/assets_db
-    username: username
+    url: jdbc:postgresql://localhost:15432/assets_db
+    username: postgres
     password: password
     driverClassName: org.postgresql.Driver
 
@@ -14,3 +14,4 @@ spring:
   liquibase:
     drop-first: false
     change-log: classpath:db/changelog/db.changelog-master.xml
+    default-schema: public

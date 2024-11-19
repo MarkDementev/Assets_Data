@@ -8,17 +8,18 @@ services:
     ports:
       - "5001:5001"
     depends_on:
-      assets-db:
+      service-assets-db:
         condition: service_healthy
     environment:
       - SERVER_PORT= 5001
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://assets-db/assets_db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://service-assets-db/assets_db
 
-  assets-db:
+  service-assets-db:
     image: postgres:17.1
     environment:
-      POSTGRES_USER: username
+      PGUSER: postgres
       POSTGRES_PASSWORD: password
+      POSTGRES_DB: assets_db
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready", "-d", "assets_db" ]
       interval: 10s
@@ -27,13 +28,13 @@ services:
     ports:
       - "15432:5432"
     volumes:
-      - ./src/main/resources/db/create_assets_db.sql
+      - ./infrastructure/db/create_db.sql:/docker-entrypoint-initdb.d/create_db.sql
       - db-data:/var/lib/postgresql/data
     restart: unless-stopped
 
   pgadmin:
     container_name: pgadmin_container
-    image: elestio/pgadmin:4.8
+    image: elestio/pgadmin:REL-8_13
     restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
