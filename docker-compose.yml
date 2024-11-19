@@ -1,0 +1,48 @@
+version: '3.9'
+services:
+  fund-assets-data:
+    image: fund-assets-data:0.1-b
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    depends_on:
+      assets-db:
+        condition: service_healthy
+    environment:
+      - SERVER_PORT= 5001
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://assets-db/assets_db
+
+  assets-db:
+    image: postgres:17.1
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready", "-d", "assets_db" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    ports:
+      - "15432:5432"
+    volumes:
+      - ./src/main/resources/db/create_assets_db.sql
+      - db-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  pgadmin:
+    container_name: pgadmin_container
+    image: elestio/pgadmin:4.8
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      -  "5050:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
+volumes:
+  db-data:
+  pgadmin-data:
