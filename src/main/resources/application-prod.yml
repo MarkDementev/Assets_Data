@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5001/assets_db
+    username: username
+    password: password
+    driverClassName: org.postgresql.Driver
+
+  jpa:
+    spring.jpa.database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+
+  liquibase:
+    drop-first: false
+    change-log: classpath:db/changelog/db.changelog-master.xml
