@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <include file="migrations/create-accounts-table.xml" relativeToChangelogFile="true"/>
+    <include file="migrations/create-turnover-commission-value-table.xml" relativeToChangelogFile="true"/>
+    <include file="migrations/create-assets-owner-table.xml" relativeToChangelogFile="true"/>
+    <include file="migrations/create-russian-assets-owner-table.xml" relativeToChangelogFile="true"/>
+    <include file="migrations/create-account-cash-table.xml" relativeToChangelogFile="true"/>
+    <include file="migrations/create-abstract-assets-asset-relationship-tables.xml" relativeToChangelogFile="true"/>
+    <include file="migrations/create-financial-asset-relationship-table.xml" relativeToChangelogFile="true"/>
+    <include file="migrations/create-exchange-assets-table.xml" relativeToChangelogFile="true"/>
+    <include file="migrations/create-fixed-rate-bonds-table.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>

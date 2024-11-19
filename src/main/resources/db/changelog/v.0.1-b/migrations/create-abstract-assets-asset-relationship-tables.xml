@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="create-abstract-assets-asset-relationship-tables" author="MarkDementev">
+        <createTable tableName="abstract_assets">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="asset_currency" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+            <column name="asset_type_name" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+            <column name="asset_title" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+            <column name="asset_count" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="asset_tax_system" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+            <column name="asset_relationship_id" type="BIGINT">
+            </column>
+            <column name="created_at" type="TIMESTAMP(3) WITH TIMEZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP(3) WITH TIMEZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="abstract_asset_ownerships_with_account_placement">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="asset_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="asset_owners_with_asset_counts" type="BIGINT">
+            </column>
+            <column name="created_at" type="TIMESTAMP(3) WITH TIMEZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP(3) WITH TIMEZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="asset_ownership_counts">
+            <column name="abstract_asset_ownerships_with_account_placement_id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="assets_owner_id" type="varchar">
+            </column>
+            <column name="asset_count" type="FLOAT">
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="fk6i7kp3w5gfh4o7jgq9oy1bbxj"
+                                 baseTableName="abstract_assets"
+                                 baseColumnNames="asset_relationship_id"
+                                 referencedTableName="abstract_asset_ownerships_with_account_placement"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint constraintName="fkpg8nabj8k2yd8qfiep310xrqx"
+                                 baseTableName="asset_ownership_counts"
+                                 baseColumnNames="abstract_asset_ownerships_with_account_placement_id"
+                                 referencedTableName="abstract_asset_ownerships_with_account_placement"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>
