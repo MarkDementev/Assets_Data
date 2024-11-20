@@ -62,7 +62,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * @version 0.6-a
+ * @version 0.1-b
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @SpringBootTest(classes = SpringConfigForTests.class, webEnvironment = RANDOM_PORT)
@@ -115,7 +115,7 @@ public class FixedRateBondControllerIT {
          */
         assertNotNull(fixedRateBondPackageFromResponse.getId());
         assertEquals(expectedFixedRateBond.getAssetCurrency(), fixedRateBondPackageFromResponse.getAssetCurrency());
-        assertEquals(FixedRateBondPackage.class.getTypeName(), fixedRateBondPackageFromResponse.getAssetTypeName());
+        assertEquals(FixedRateBondPackage.class.getSimpleName(), fixedRateBondPackageFromResponse.getAssetTypeName());
         assertEquals(expectedFixedRateBond.getAssetTitle(), fixedRateBondPackageFromResponse.getAssetTitle());
         assertEquals(expectedFixedRateBond.getAssetCount(), fixedRateBondPackageFromResponse.getAssetCount());
         assertEquals(TaxSystem.EQUAL_COUPON_DIVIDEND_TRADE, fixedRateBondPackageFromResponse.getAssetTaxSystem());
@@ -177,7 +177,7 @@ public class FixedRateBondControllerIT {
 
         assertNotNull(fixedRateBondPackageFromResponse.getId());
         assertEquals(firstBuyFixedRateBondDTO.getAssetCurrency(), fixedRateBondPackageFromResponse.getAssetCurrency());
-        assertEquals(FixedRateBondPackage.class.getTypeName(), fixedRateBondPackageFromResponse.getAssetTypeName());
+        assertEquals(FixedRateBondPackage.class.getSimpleName(), fixedRateBondPackageFromResponse.getAssetTypeName());
         assertEquals(firstBuyFixedRateBondDTO.getAssetTitle(), fixedRateBondPackageFromResponse.getAssetTitle());
         assertEquals(firstBuyFixedRateBondDTO.getAssetCount(), fixedRateBondPackageFromResponse.getAssetCount());
         assertEquals(TaxSystem.EQUAL_COUPON_DIVIDEND_TRADE, fixedRateBondPackageFromResponse.getAssetTaxSystem());

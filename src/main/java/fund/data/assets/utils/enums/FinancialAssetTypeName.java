@@ -5,11 +5,11 @@ import fund.data.assets.model.asset.relationship.FinancialAssetRelationship;
 
 /**
  * Список типов активов, поддерживаемый фондом, для работы с которыми используется {@link FinancialAssetRelationship}.
- * @version 0.0.1-alpha
+ * @version 0.1-b
  * @author MarkDementev a.k.a JavaMarkDem
  */
 public enum FinancialAssetTypeName {
-    FRB(FixedRateBondPackage.class.getTypeName());
+    FRB(FixedRateBondPackage.class.getSimpleName());
 
     private final String title;
 

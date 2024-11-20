@@ -60,7 +60,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 /**
- * @version 0.6-a
+ * @version 0.1-b
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Component
@@ -654,7 +654,7 @@ public class TestUtils {
         TurnoverCommissionValueDTO newTurnoverCommissionValueDTO = new TurnoverCommissionValueDTO(
                 accountRepository.findByOrganisationWhereAccountOpened(
                         getAccountDTO().getOrganisationWhereAccountOpened()).getId(),
-                FixedRateBondPackage.class.getTypeName(),
+                FixedRateBondPackage.class.getSimpleName(),
                 TEST_COMMISSION_PERCENT_VALUE
         );
         createTurnoverCommissionValue(newTurnoverCommissionValueDTO);

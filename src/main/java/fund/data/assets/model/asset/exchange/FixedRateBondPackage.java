@@ -34,7 +34,7 @@ import java.util.Map;
  * Один из вариантов финализации сути Asset.
  * Представляет собой информацию о пакете облигаций с общим ISIN на балансе фонда. В пакете может быть как одна
  * облигация, так и бесконечно большое количество.
- * @version 0.0.1-alpha
+ * @version 0.1-b
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Entity
@@ -126,10 +126,11 @@ public class FixedRateBondPackage extends ExchangeAsset {
                                 String assetIssuerTitle, LocalDate lastAssetBuyOrSellDate, Integer bondParValue,
                                 Float purchaseBondParValuePercent, Float bondsAccruedInterest, Float bondCouponValue,
                                 Integer expectedBondCouponPaymentsCount, LocalDate bondMaturityDate) {
-        super(assetCurrency, FixedRateBondPackage.class.getTypeName(), assetTitle, assetCount,
+        super(assetCurrency, FixedRateBondPackage.class.getSimpleName(), assetTitle, assetCount,
                 (TaxSystem) AutoSelector.selectAssetOperationsCostSystem(assetCurrency,
-                        FixedRateBondPackage.class.getTypeName(), AutoSelector.TAX_SYSTEM_CHOOSE),
+                        FixedRateBondPackage.class.getSimpleName(), AutoSelector.TAX_SYSTEM_CHOOSE),
                 assetOwnersWithAssetCounts, account, iSIN, assetIssuerTitle, lastAssetBuyOrSellDate);
+
         this.bondParValue = bondParValue;
         this.purchaseBondParValuePercent = purchaseBondParValuePercent;
         this.bondsAccruedInterest = bondsAccruedInterest;
@@ -140,7 +141,7 @@ public class FixedRateBondPackage extends ExchangeAsset {
             this.totalCommissionForPurchase = commissionCalculator.calculateTotalCommissionForPurchase(
                     getAssetCommissionSystem(),
                     account,
-                    FixedRateBondPackage.class.getTypeName(),
+                    FixedRateBondPackage.class.getSimpleName(),
                     getAssetCount(),
                     (purchaseBondParValuePercent / 100.00F) * bondParValue + bondsAccruedInterest);
         } else {

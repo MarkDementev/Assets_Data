@@ -6,7 +6,7 @@
             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <changeSet id="create-accounts-table" author="MarkDementev">
         <createTable tableName="accounts">
-            <column name="id" type="BIGINT">
+            <column name="id" type="SERIAL">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="organisation_where_account_opened" type="varchar">
