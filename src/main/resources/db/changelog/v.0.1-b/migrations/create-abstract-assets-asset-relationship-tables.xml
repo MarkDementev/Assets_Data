@@ -6,7 +6,7 @@
             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <changeSet id="create-abstract-assets-asset-relationship-tables" author="MarkDementev">
         <createTable tableName="abstract_assets">
-            <column name="id" type="BIGINT">
+            <column name="id" type="SERIAL">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="asset_currency" type="varchar">
@@ -34,7 +34,7 @@
             </column>
         </createTable>
         <createTable tableName="abstract_asset_ownerships_with_account_placement">
-            <column name="id" type="BIGINT">
+            <column name="id" type="SERIAL">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="asset_id" type="BIGINT">
@@ -50,7 +50,7 @@
             </column>
         </createTable>
         <createTable tableName="asset_ownership_counts">
-            <column name="abstract_asset_ownerships_with_account_placement_id" type="BIGINT">
+            <column name="abstract_asset_ownerships_with_account_placement_id" type="SERIAL">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="assets_owner_id" type="varchar">
