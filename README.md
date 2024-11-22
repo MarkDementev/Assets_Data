@@ -58,11 +58,10 @@ POST data/accounts + JSON
 }
 ```
 
-### 2 – Creating cash account
+### 2 – Creating assets owner
 
 ### 3 – Creating commission value
 
-### 4 – Creating assets owner
+### 4 – Creating cash account
 
 ### 5 – Creating asset (fixed rate bond in this scenario)
-
