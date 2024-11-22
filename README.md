@@ -23,7 +23,40 @@ The code is covered with comments using JavaDoc. Also, when running the applicat
 
 The basic usage scenario is as follows. It involves creating a bank account, recording data on the brokerage tariff, creating an asset owner, indicating the amount of available funds in the account. After that, it is possible to carry out transactions with investment assets.
 
+Service requires authentication to /login before any requests!
+
 ### 1 - Creating account
+
+#### Request:
+
+```sh
+POST data/accounts + JSON
+```
+
+```sh
+{
+    "organisationWhereAccountOpened": "ABC Bank",
+    "accountNumber": "1234567890",
+    "accountOpeningDate": "2000-01-01"
+}
+```
+
+#### Response:
+
+```sh
+{
+    "id": 1,
+    "organisationWhereAccountOpened": "ABC Bank",
+    "accountNumber": "1234567890",
+    "accountOpeningDate": [
+        2000,
+        1,
+        1
+    ],
+    "createdAt": 1732280628.893573000,
+    "updatedAt": 1732280628.893643000
+}
+```
 
 ### 2 – Creating cash account
 
