@@ -5,7 +5,7 @@
 
 Spring Boot REST application – web-service for storing data of investing assets. The service is intended for private investors who do not have enough brokerage applications to control their own assets. This problem often arises for investors with average capital, the size of which is already larger than the market average, but less than for creating a family office.
 
-##Functionality of version 0.1-b
+## Functionality of version 0.1-b
 
 The service currently supports operations with the following types of assets:
 
