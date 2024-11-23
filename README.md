@@ -21,7 +21,7 @@ The initial support for these types of assets is due to the historically highest
 
 The code is covered with comments using JavaDoc. Also, when running the application, documentation is available using Swagger at /swagger.html.
 
-The basic usage scenario is as follows. It involves creating a bank account, recording data on the brokerage tariff, creating an asset owner, indicating the amount of available funds in the account. After that, it is possible to carry out transactions with investment assets.
+The basic usage scenario is as follows. It involves creating a bank account, recording data on the brokerage tariff, creating an assets owner, indicating the amount of available funds in the account. After that, it is possible to carry out transactions with investment assets.
 
 NB: Service requires authentication to /login before any another requests!
 
@@ -99,6 +99,8 @@ POST /data/turnover-commission-values + JSON
 ```
 
 ### 3 – Creating assets owner
+
+#### Request:
 
 ```sh
 POST data/owners/russia + JSON
