@@ -6,8 +6,7 @@
             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <changeSet id="create-russian-assets-owner-table" author="MarkDementev">
         <createTable tableName= "russian_assets_owners">
-            <column name="assets_owner_id" type="BIGINT">
-                <constraints nullable="false"/>
+            <column name="id" type="SERIAL">
             </column>
             <column name="patronymic" type="varchar">
                 <constraints nullable="false"/>
@@ -37,10 +36,5 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <addForeignKeyConstraint constraintName="fkja343e88qpilynvqdufpa5sh4"
-                                 baseTableName="russian_assets_owners"
-                                 baseColumnNames="assets_owner_id"
-                                 referencedTableName="assets_owners_with_every_country_personal_data"
-                                 referencedColumnNames="id"/>
     </changeSet>
 </databaseChangeLog>

@@ -58,9 +58,100 @@ POST data/accounts + JSON
 }
 ```
 
-### 2 – Creating assets owner
+### 2 – Creating commission value
 
-### 3 – Creating commission value
+#### Request:
+
+```sh
+POST /data/turnover-commission-values + JSON
+```
+
+```sh
+{
+    "accountID": 1,
+    "assetTypeName": "FixedRateBondPackage",
+    "commissionPercentValue": "10"
+}
+```
+
+#### Response:
+
+```sh
+{
+    "id": 1,
+    "account": {
+        "id": 1,
+        "organisationWhereAccountOpened": "ABC Bank",
+        "accountNumber": "1234567890",
+        "accountOpeningDate": [
+            2000,
+            1,
+            1
+        ],
+        "createdAt": 1732298164.299000000,
+        "updatedAt": 1732298164.299000000
+    },
+    "assetTypeName": "FixedRateBondPackage",
+    "commissionPercentValue": 0.1,
+    "createdAt": 1732298181.227027000,
+    "updatedAt": 1732298181.227042000
+}
+```
+
+### 3 – Creating assets owner
+
+```sh
+POST data/owners/russia + JSON
+```
+
+```sh
+{
+    "name": "name",
+    "surname": "surname",
+    "birthDate": "25.05.1999",
+    "email": "Email_sur@mail.ru",
+    "patronymic": "patronymic",
+    "sex": "MAN",
+    "mobilePhoneNumber": "9888888888",
+    "passportSeries": "2424",
+    "passportNumber": "111111",
+    "placeOfBirth": "placeOfBirth",
+    "placeOfPassportGiven": "placeOfPassportGiven",
+    "issueDate": "24.08.2021",
+    "issuerOrganisationCode": "377-777"
+}
+```
+
+#### Response:
+
+```sh
+{
+    "id": 1,
+    "name": "name",
+    "surname": "surname",
+    "birthDate": [
+        1999,
+        5,
+        25
+    ],
+    "email": "Email_sur@mail.ru",
+    "createdAt": 1732377693.645703000,
+    "updatedAt": 1732377693.645791000,
+    "patronymic": "patronymic",
+    "sex": "MAN",
+    "mobilePhoneNumber": "+79888888888",
+    "passportSeries": "2424",
+    "passportNumber": "111111",
+    "placeOfBirth": "placeOfBirth",
+    "placeOfPassportGiven": "placeOfPassportGiven",
+    "issueDate": [
+        2021,
+        8,
+        24
+    ],
+    "issuerOrganisationCode": "377-777"
+}
+```
 
 ### 4 – Creating cash account
 

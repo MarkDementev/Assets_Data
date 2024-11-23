@@ -7,7 +7,7 @@
     <changeSet id="create-assets-owner-table" author="MarkDementev">
         <createTable tableName="assets_owners_with_every_country_personal_data">
             <column name="id" type="SERIAL">
-                <constraints primaryKey="true" nullable="false"/>
+                <constraints primaryKey="true"/>
             </column>
             <column name="name" type="varchar">
                 <constraints nullable="false"/>

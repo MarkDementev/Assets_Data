@@ -13,4 +13,9 @@ springdoc:
 
 logging:
   level:
-    org.hibernate.engine.jdbc.spi.SqlExceptionHelper: "off"
+    org:
+      hibernate:
+        engine:
+          jdbc:
+            spi:
+              SqlExceptionHelper: "off"
