@@ -1,5 +1,9 @@
 package fund.data.assets.model.asset;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+import fund.data.assets.model.asset.exchange.FixedRateBondPackage;
 import fund.data.assets.model.asset.relationship.AssetRelationship;
 import fund.data.assets.model.asset.relationship.FinancialAssetRelationship;
 import fund.data.assets.model.financial_entities.Account;
@@ -40,12 +44,14 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 /**
  * Актив с учётом своего количества.
  * Абстрактный класс - отец всех типов и вариантов активов.
- * @version 0.0.1-alpha
+ * @version 0.1-b
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Entity
 @Table(name = "abstract_assets")
 @Inheritance(strategy = InheritanceType.JOINED)
+@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
+@JsonSubTypes({@JsonSubTypes.Type(value = FixedRateBondPackage.class)})
 @NoArgsConstructor
 @Getter
 @Setter

@@ -7,7 +7,7 @@
     <changeSet id="create-abstract-assets-asset-relationship-tables" author="MarkDementev">
         <createTable tableName="abstract_assets">
             <column name="id" type="SERIAL">
-                <constraints primaryKey="true" nullable="false"/>
+                <constraints primaryKey="true"/>
             </column>
             <column name="asset_currency" type="varchar">
                 <constraints nullable="false"/>
@@ -35,10 +35,9 @@
         </createTable>
         <createTable tableName="abstract_asset_ownerships_with_account_placement">
             <column name="id" type="SERIAL">
-                <constraints primaryKey="true" nullable="false"/>
+                <constraints primaryKey="true"/>
             </column>
             <column name="asset_id" type="BIGINT">
-                <constraints nullable="false"/>
             </column>
             <column name="asset_owners_with_asset_counts" type="BIGINT">
             </column>
@@ -51,7 +50,7 @@
         </createTable>
         <createTable tableName="asset_ownership_counts">
             <column name="abstract_asset_ownerships_with_account_placement_id" type="SERIAL">
-                <constraints primaryKey="true" nullable="false"/>
+                <constraints primaryKey="true"/>
             </column>
             <column name="assets_owner_id" type="varchar">
             </column>

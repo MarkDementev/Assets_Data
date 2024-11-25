@@ -9,13 +9,13 @@
             <column name="asset_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="iSIN" type="varchar">
+            <column name="isin" type="varchar">
                 <constraints nullable="false"/>
             </column>
             <column name="asset_issuer_title" type="varchar">
                 <constraints nullable="false"/>
             </column>
-            <column name="last_asset_buy_date" type="TIMESTAMP">
+            <column name="last_asset_buy_or_sell_date" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
             <column name="asset_commission_system" type="varchar">

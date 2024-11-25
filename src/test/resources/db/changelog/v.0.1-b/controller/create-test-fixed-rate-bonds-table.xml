@@ -15,7 +15,7 @@
             <column name="purchase_bond_par_value_percent" type="FLOAT">
                 <constraints nullable="false"/>
             </column>
-            <column name="bond_accrued_interest" type="FLOAT">
+            <column name="bonds_accrued_interest" type="FLOAT">
                 <constraints nullable="false"/>
             </column>
             <column name="total_commission_for_purchase" type="FLOAT">

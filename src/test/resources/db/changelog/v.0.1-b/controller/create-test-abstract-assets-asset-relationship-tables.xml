@@ -38,7 +38,6 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="asset_id" type="BIGINT">
-                <constraints nullable="false"/>
             </column>
             <column name="asset_owners_with_asset_counts" type="BIGINT">
             </column>

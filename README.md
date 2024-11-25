@@ -30,7 +30,7 @@ NB: Service requires authentication to /login before any another requests!
 #### Request:
 
 ```sh
-POST data/accounts + JSON
+POST /data/accounts + JSON
 ```
 
 ```sh
@@ -103,7 +103,7 @@ POST /data/turnover-commission-values + JSON
 #### Request:
 
 ```sh
-POST data/owners/russia + JSON
+POST /data/owners/russia + JSON
 ```
 
 ```sh
@@ -157,4 +157,151 @@ POST data/owners/russia + JSON
 
 ### 4 – Creating cash account
 
+```sh
+POST /data/account_cash + JSON
+```
+
+```sh
+{
+    "accountID": 1,
+    "assetCurrency": "RUSRUB",
+    "assetsOwnerID": 1,
+    "amountChangeValue": "100000"
+}
+```
+
+#### Response:
+
+```sh
+{
+    "id": 1,
+    "account": {
+        "id": 1,
+        "organisationWhereAccountOpened": "ABC Bank",
+        "accountNumber": "1234567890",
+        "accountOpeningDate": [
+            2000,
+            1,
+            1
+        ],
+        "createdAt": 1732524942.169000000,
+        "updatedAt": 1732524942.169000000
+    },
+    "assetCurrency": "RUSRUB",
+    "assetsOwner": {
+        "id": 1,
+        "name": "name",
+        "surname": "surname",
+        "birthDate": [
+            1999,
+            5,
+            25
+        ],
+        "email": "Email_sur@mail.ru",
+        "createdAt": 1732525026.136000000,
+        "updatedAt": 1732525026.137000000,
+        "patronymic": "patronymic",
+        "sex": "MAN",
+        "mobilePhoneNumber": "+79888888888",
+        "passportSeries": "2424",
+        "passportNumber": "111111",
+        "placeOfBirth": "placeOfBirth",
+        "placeOfPassportGiven": "placeOfPassportGiven",
+        "issueDate": [
+            2021,
+            8,
+            24
+        ],
+        "issuerOrganisationCode": "377-777"
+    },
+    "amount": 100000.0,
+    "createdAt": 1732526019.328225000,
+    "updatedAt": 1732526019.328245000
+}
+```
+
 ### 5 – Creating asset (fixed rate bond in this scenario)
+
+```sh
+POST /data/bonds/simple + JSON
+```
+
+```sh
+{
+    "assetsOwnersTaxResidency": "RUS",
+    "assetCount": 5,
+    "assetOwnersWithAssetCounts": {
+        "1": 5.0
+    },
+    "lastAssetBuyDate": "2024-11-24",
+    "purchaseBondParValuePercent": 110.0,
+    "bondsAccruedInterest": 25.4,
+    "expectedBondCouponPaymentsCount": 4,
+    "assetCurrency": "RUSRUB",
+    "assetTitle": "FixedRateBondPackage",
+    "accountID": 1,
+    "isin": "RU000A103NZ7",
+    "assetIssuerTitle": "assetIssuerTitle",
+    "bondParValue": 1000,
+    "bondCouponValue": 100.0,
+    "bondMaturityDate": "2026-11-25"
+}
+```
+
+#### Response:
+
+```sh
+{
+    "id": 1,
+    "assetCurrency": "RUSRUB",
+    "assetTypeName": "FixedRateBondPackage",
+    "assetTitle": "FixedRateBondPackage",
+    "assetCount": 5,
+    "assetTaxSystem": "EQUAL_COUPON_DIVIDEND_TRADE",
+    "assetRelationship": {
+        "id": 1,
+        "assetId": 1,
+        "assetOwnersWithAssetCounts": {
+            "1": 5.0
+        },
+        "createdAt": 1732548239.807618000,
+        "updatedAt": 1732548239.837277000,
+        "account": {
+            "id": 1,
+            "organisationWhereAccountOpened": "ABC Bank",
+            "accountNumber": "1234567890",
+            "accountOpeningDate": [
+                2000,
+                1,
+                1
+            ],
+            "createdAt": 1732548202.234000000,
+            "updatedAt": 1732548202.234000000
+        }
+    },
+    "createdAt": 1732548239.812206000,
+    "updatedAt": 1732548239.812224000,
+    "assetIssuerTitle": "assetIssuerTitle",
+    "lastAssetBuyOrSellDate": [
+        2024,
+        11,
+        24
+    ],
+    "assetCommissionSystem": "TURNOVER",
+    "bondParValue": 1000,
+    "purchaseBondParValuePercent": 110.0,
+    "bondsAccruedInterest": 25.4,
+    "totalCommissionForPurchase": 562.7,
+    "totalAssetPurchasePriceWithCommission": 6189.7,
+    "bondCouponValue": 100.0,
+    "expectedBondCouponPaymentsCount": 4,
+    "bondMaturityDate": [
+        2026,
+        11,
+        25
+    ],
+    "simpleYieldToMaturity": 12.498895,
+    "markDementevYieldIndicator": 4.451366,
+    "isin": "RU000A103NZ7"
+}
+```

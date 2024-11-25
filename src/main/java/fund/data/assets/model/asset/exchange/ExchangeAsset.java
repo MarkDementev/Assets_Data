@@ -1,5 +1,8 @@
 package fund.data.assets.model.asset.exchange;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import fund.data.assets.model.asset.Asset;
 import fund.data.assets.model.financial_entities.Account;
 import fund.data.assets.utils.AutoSelector;
@@ -11,6 +14,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Table;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotBlank;
@@ -28,11 +33,14 @@ import java.util.Map;
 /**
  * Биржевой актив - сущность для начала конкретизации сути актива.
  * Абстрактный класс - наследник абстрактного Asset.
- * @version 0.0.1-alpha
+ * @version 0.1-b
  * @author MarkDementev a.k.a JavaMarkDem
  */
 @Entity
 @Table(name = "exchange_assets")
+@Inheritance(strategy = InheritanceType.JOINED)
+@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
+@JsonSubTypes({@JsonSubTypes.Type(value = FixedRateBondPackage.class)})
 @NoArgsConstructor
 @Getter
 @Setter

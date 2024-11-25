@@ -1,5 +1,7 @@
 package fund.data.assets.model.asset.exchange;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+
 import fund.data.assets.config.SpringConfiguration;
 import fund.data.assets.exception.UnrealAddingAssetsParameterException;
 import fund.data.assets.model.financial_entities.Account;
@@ -39,6 +41,7 @@ import java.util.Map;
  */
 @Entity
 @Table(name = "fixed_rate_bonds")
+@JsonSubTypes({@JsonSubTypes.Type(value = FixedRateBondPackage.class)})
 @NoArgsConstructor
 @Getter
 @Setter
