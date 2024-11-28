@@ -3,7 +3,7 @@
 
 # Overview
 
-Spring Boot REST application – web-service for storing data of investing assets. The service is intended for private investors who do not have enough brokerage applications to control their own assets. This problem often arises for investors with average capital, the size of which is already larger than the market average, but less than for creating a family office.
+Spring Boot REST application – web-service for storing data of investing assets. Designed for private investors who find brokerage apps insufficient. The problem often arises for investors with average capital, the size of which is greater than the market median, but less than for creating a family office.
 
 ## Functionality of version 0.1-b
 
